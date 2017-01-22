@@ -92,8 +92,23 @@ public class ECmonitor extends AnalysisMonitor {
         dg_pion.addDataSet(hi_angle_en, 3);
         this.getDataGroup().add(dg_pion, 2);
         
-        this.getAnalysisCanvas().getCanvas("Electrons").draw(dg_electron);
-        this.getAnalysisCanvas().getCanvas("Pizeros").draw(dg_pion);
+        this.getAnalysisCanvas().getCanvas("Electrons").cd(0);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(hi_dE_EC);
+        this.getAnalysisCanvas().getCanvas("Electrons").cd(1);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(hi_sf_EC);
+        this.getAnalysisCanvas().getCanvas("Electrons").cd(2);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(hi_Evsp_EC);
+        this.getAnalysisCanvas().getCanvas("Electrons").cd(3);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(hi_sfvsp_EC);
+        
+        this.getAnalysisCanvas().getCanvas("Pizeros").cd(0);
+        this.getAnalysisCanvas().getCanvas("Pizeros").draw(hi_pi0_mass);
+        this.getAnalysisCanvas().getCanvas("Pizeros").cd(1);
+        this.getAnalysisCanvas().getCanvas("Pizeros").draw(hi_en_asy);
+        this.getAnalysisCanvas().getCanvas("Pizeros").cd(2);
+        this.getAnalysisCanvas().getCanvas("Pizeros").draw(hi_angle);
+        this.getAnalysisCanvas().getCanvas("Pizeros").cd(3);
+        this.getAnalysisCanvas().getCanvas("Pizeros").draw(hi_angle_en);
         
         this.getAnalysisCanvas().getCanvas("Electrons").update();
         this.getAnalysisCanvas().getCanvas("Pizeros").update();

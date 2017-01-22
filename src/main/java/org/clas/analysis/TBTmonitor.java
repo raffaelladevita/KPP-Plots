@@ -41,10 +41,10 @@ public class TBTmonitor extends AnalysisMonitor {
     public void createHistos() {
         // initialize canvas and create histograms
         this.setNumberOfEvents(0);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").divide(2, 3);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").divide(3,2);
         this.getAnalysisCanvas().getCanvas("Negative Tracks").setGridX(false);
         this.getAnalysisCanvas().getCanvas("Negative Tracks").setGridY(false);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").divide(2, 3);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").divide(3,2);
         this.getAnalysisCanvas().getCanvas("Positive Tracks").setGridX(false);
         this.getAnalysisCanvas().getCanvas("Positive Tracks").setGridY(false);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").divide(4, 2);
@@ -152,10 +152,47 @@ public class TBTmonitor extends AnalysisMonitor {
         mc.addDataSet(hi_dphi_neg, 6);
         mc.addDataSet(hi_dvz_neg, 7);
         this.getDataGroup().add(mc, 3);
-        
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(dg_neg);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(dg_pos);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(mc);
+
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(0);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_p_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(1);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_theta_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(2);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_phi_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(3);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_vz_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(4);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_theta_p_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(5);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_theta_phi_neg);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(0);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_p_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(1);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_theta_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(2);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_phi_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(3);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_vz_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(4);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_theta_p_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(5);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_theta_phi_pos);        
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(0);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dp_pos);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(1);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dtheta_pos);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(2);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dphi_pos);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(3);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dvz_pos);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(4);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dp_neg);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(5);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dtheta_neg);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(6);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dphi_neg);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(7);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dvz_neg);
         
         this.getAnalysisCanvas().getCanvas("Negative Tracks").update();
         this.getAnalysisCanvas().getCanvas("Positive Tracks").update();
@@ -251,6 +288,8 @@ public class TBTmonitor extends AnalysisMonitor {
                     this.getDataGroup().getItem(1).getH2F("hi_theta_p_neg").fill(recParticle.p(),Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(1).getH2F("hi_theta_phi_neg").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recParticle.theta()));                    
                 }
+                if(partRecNeg==null && recParticle.charge()<0) partRecNeg=recParticle;
+                if(partRecPos==null && recParticle.charge()>0) partRecPos=recParticle;
             }
         }
         if(event.hasBank("MC::Particle")==true){

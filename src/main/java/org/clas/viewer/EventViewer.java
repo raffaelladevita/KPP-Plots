@@ -36,6 +36,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import org.clas.analysis.ECmonitor;
 import org.clas.analysis.HTCCmonitor;
+import org.clas.analysis.TBTmonitor;
 
 import org.jlab.detector.decode.CodaEventDecoder;
 import org.jlab.detector.decode.DetectorEventDecoder;
@@ -77,7 +78,7 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
    // detector monitors
     AnalysisMonitor[] monitors = {
     		new HBTmonitor("HBT"),
-    		new HBTmonitor("TBT"),
+    		new TBTmonitor("TBT"),
                 new ECmonitor("EC"),
         	new HTCCmonitor("HTCC")
     };
