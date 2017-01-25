@@ -43,11 +43,15 @@ import org.jlab.detector.decode.DetectorEventDecoder;
 import org.jlab.detector.view.DetectorListener;
 import org.jlab.detector.view.DetectorPane2D;
 import org.jlab.detector.view.DetectorShape2D;
+import org.jlab.groot.base.GStyle;
+import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.data.IDataSet;
 import org.jlab.groot.data.TDirectory;
+import org.jlab.groot.fitter.DataFitter;
 import org.jlab.groot.graphics.EmbeddedCanvasTabbed;
 import org.jlab.groot.group.DataGroup;
+import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataEvent;
 import org.jlab.io.base.DataEventType;
 import org.jlab.io.task.DataSourceProcessorPane;
@@ -64,7 +68,7 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
     JPanel mainPanel 				= null;
     JMenuBar menuBar                            = null;
     DataSourceProcessorPane processorPane 	= null;
-    EmbeddedCanvasTabbed CLAS12Canvas                 = null;
+    EmbeddedCanvasTabbed CLAS12Canvas           = null;
 
     
     CodaEventDecoder               decoder = new CodaEventDecoder();
@@ -75,7 +79,7 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
     
     private int updateTime = 2000;
     
-   // detector monitors
+    // detector monitors
     AnalysisMonitor[] monitors = {
     		new HBTmonitor("HBT"),
     		new TBTmonitor("TBT"),
@@ -121,8 +125,12 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
         mainPanel.add(processorPane,BorderLayout.PAGE_END);
         
     
+        GStyle.getAxisAttributesX().setTitleFontSize(18);
+        GStyle.getAxisAttributesX().setLabelFontSize(14);
+        GStyle.getAxisAttributesY().setTitleFontSize(18);
+        GStyle.getAxisAttributesY().setLabelFontSize(14);
         CLAS12Canvas    = new EmbeddedCanvasTabbed("Summaries");
-        CLAS12Canvas.getCanvas("Summaries").divide(3,4);
+        CLAS12Canvas.getCanvas("Summaries").divide(2,2);
         CLAS12Canvas.getCanvas("Summaries").setGridX(false);
         CLAS12Canvas.getCanvas("Summaries").setGridY(false);
         JPanel    CLAS12View = new JPanel(new BorderLayout());
@@ -235,27 +243,25 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
 
     public void plotSummaries() {
         this.CLAS12Canvas.getCanvas("Summaries").cd(0);
-/*        if(this.monitors[0].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[0].getAnalysisSummary().getH1F("summary"));
+        if(this.monitors[0].getDataGroup().getItem(1).getH1F("hi_vz_neg")!=null) {
+            H1F hh = (H1F) this.monitors[0].getDataGroup().getItem(1).getH1F("hi_vz_neg");
+            this.CLAS12Canvas.getCanvas("Summaries").draw(hh);
+            F1D f1 = new F1D("f1","[amp]*gaus(x,[mean],[sigma])", -4.0, 4.0);
+            f1.setParameter(0, 100);
+            System.out.println(hh.getEntries());
+            f1.setParameter(2, 1.0);
+            f1.setLineWidth(2);
+            f1.setLineColor(2);
+            f1.setOptStat("111");
+            DataFitter.fit(f1, hh, "Q"); //No options uses error for sigma
+ //           this.CLAS12Canvas.getCanvas("Summaries").draw(f1,"same");
+        }
         this.CLAS12Canvas.getCanvas("Summaries").cd(1);
-        if(this.monitors[1].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getAnalysisSummary().getH1F("sumHBT"));
-        this.CLAS12Canvas.getCanvas("Summaries").cd(2);
-        if(this.monitors[1].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getAnalysisSummary().getH1F("sumTBT"));
+        if(this.monitors[2].getDataGroup().getItem(1).getH2F("hi_Evsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getDataGroup().getItem(1).getH2F("hi_Evsp_EC"));
         this.CLAS12Canvas.getCanvas("Summaries").cd(3);
-        if(this.monitors[2].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getAnalysisSummary().getH1F("sumP1A"));
-        this.CLAS12Canvas.getCanvas("Summaries").cd(4);
-        if(this.monitors[2].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getAnalysisSummary().getH1F("sumP1B"));
-        this.CLAS12Canvas.getCanvas("Summaries").cd(5);
-        if(this.monitors[2].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getAnalysisSummary().getH1F("sumP2"));
-        this.CLAS12Canvas.getCanvas("Summaries").cd(6);
-        if(this.monitors[5].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[5].getAnalysisSummary().getH1F("sumECin"));
-        this.CLAS12Canvas.getCanvas("Summaries").cd(7);
-        if(this.monitors[5].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[5].getAnalysisSummary().getH1F("sumECout"));
-        this.CLAS12Canvas.getCanvas("Summaries").cd(8);
-        if(this.monitors[5].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[5].getAnalysisSummary().getH1F("sumPCAL"));
-        this.CLAS12Canvas.getCanvas("Summaries").cd(9);
-        if(this.monitors[3].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[3].getAnalysisSummary().getH1F("summary"));
-        this.CLAS12Canvas.getCanvas("Summaries").cd(10);
-        if(this.monitors[4].getAnalysisSummary()!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[4].getAnalysisSummary().getH1F("summary"));  */     
+        if(this.monitors[2].getDataGroup().getItem(1).getH2F("hi_sfvsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getDataGroup().getItem(1).getH2F("hi_sfvsp_EC"));
+        this.CLAS12Canvas.getCanvas("Summaries").cd(2);
+        if(this.monitors[2].getDataGroup().getItem(2).getH1F("hi_pi0_mass")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getDataGroup().getItem(2).getH1F("hi_pi0_mass"));    
     }
     
     public void setCanvasUpdate(int time) {

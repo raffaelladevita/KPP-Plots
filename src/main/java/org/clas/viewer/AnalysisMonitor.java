@@ -7,6 +7,7 @@ package org.clas.viewer;
 
 import javax.swing.JPanel;
 import org.jlab.detector.view.DetectorPane2D;
+import org.jlab.groot.base.GStyle;
 import org.jlab.groot.graphics.EmbeddedCanvasTabbed;
 import org.jlab.groot.group.DataGroup;
 import org.jlab.io.base.DataEvent;
@@ -29,6 +30,10 @@ public class AnalysisMonitor implements IDataEventListener {
     private int                    numberOfEvents;
 
     public AnalysisMonitor(String name){
+        GStyle.getAxisAttributesX().setTitleFontSize(18);
+        GStyle.getAxisAttributesX().setLabelFontSize(14);
+        GStyle.getAxisAttributesY().setTitleFontSize(18);
+        GStyle.getAxisAttributesY().setLabelFontSize(14);
         this.analysisName = name;
         this.analysisPanel  = new JPanel();
         this.analysisCanvas = new EmbeddedCanvasTabbed();

@@ -66,7 +66,7 @@ public class TBTmonitor extends AnalysisMonitor {
         hi_theta_neg.setTitleY("Counts");
         H1F hi_phi_neg = new H1F("hi_phi_neg", "hi_phi_neg", 100, -180.0, 180.0);   
         hi_phi_neg.setTitleX("#phi (deg)");
-        H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 100, -50.0, 50.0);   
+        H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 100, -20.0, 20.0);   
         hi_vz_neg.setTitleX("Vz (cm)");
         hi_vz_neg.setTitleY("Counts");
         H2F hi_theta_p_neg = new H2F("hi_theta_p_neg", "hi_theta_p_neg", 100, 0.0, 8.0, 100, 0.0, 40.0); 
@@ -92,7 +92,7 @@ public class TBTmonitor extends AnalysisMonitor {
         hi_theta_pos.setTitleY("Counts");
         H1F hi_phi_pos = new H1F("hi_phi_pos", "hi_phi_pos", 100, -180.0, 180.0);   
         hi_phi_pos.setTitleX("#phi (deg)");
-        H1F hi_vz_pos = new H1F("hi_vz_pos", "hi_vz_pos", 100, -50.0, 50.0);   
+        H1F hi_vz_pos = new H1F("hi_vz_pos", "hi_vz_pos", 100, -20.0, 20.0);   
         hi_vz_pos.setTitleX("Vz (cm)");
         hi_vz_pos.setTitleY("Counts");
         H2F hi_theta_p_pos = new H2F("hi_theta_p_pos", "hi_theta_p_pos", 100, 0.0, 8.0, 100, 0.0, 40.0); 
@@ -122,7 +122,7 @@ public class TBTmonitor extends AnalysisMonitor {
         hi_dphi_pos.setTitleX("#Delta #phi (deg)");
         hi_dphi_pos.setTitleY("Counts");
         hi_dphi_pos.setTitle("Positive Tracks");
-        H1F hi_dvz_pos = new H1F("hi_dvz_pos", "hi_dvz_pos", 100, -50.0, 50.0);   
+        H1F hi_dvz_pos = new H1F("hi_dvz_pos", "hi_dvz_pos", 100, -20.0, 20.0);   
         hi_dvz_pos.setTitleX("#Delta Vz (cm)");
         hi_dvz_pos.setTitleY("Counts");
         hi_dvz_pos.setTitle("Positive Tracks");
@@ -138,7 +138,7 @@ public class TBTmonitor extends AnalysisMonitor {
         hi_dphi_neg.setTitleX("#Delta #phi (deg)");
         hi_dphi_neg.setTitleY("Counts");
         hi_dphi_neg.setTitle("Negative Tracks");
-        H1F hi_dvz_neg = new H1F("hi_dvz_neg", "hi_dvz_neg", 100, -50.0, 50.0);   
+        H1F hi_dvz_neg = new H1F("hi_dvz_neg", "hi_dvz_neg", 100, -20.0, 20.0);   
         hi_dvz_neg.setTitleX("#Delta Vz (cm)");
         hi_dvz_neg.setTitleY("Counts");
         hi_dvz_neg.setTitle("Negative Tracks");
