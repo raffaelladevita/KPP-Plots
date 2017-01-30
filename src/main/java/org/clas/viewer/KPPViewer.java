@@ -61,7 +61,7 @@ import org.jlab.io.task.IDataEventListener;
  *
  * @author ziegler
  */
-public class PlotViewer implements IDataEventListener, DetectorListener, ActionListener, ChangeListener {
+public class KPPViewer implements IDataEventListener, DetectorListener, ActionListener, ChangeListener {
     
     List<DetectorPane2D> AnalysisPanels 	= new ArrayList<DetectorPane2D>();
     JTabbedPane tabbedpane           		= null;
@@ -87,7 +87,7 @@ public class PlotViewer implements IDataEventListener, DetectorListener, ActionL
         	new HTCCmonitor("HTCC")
     };
         
-    public PlotViewer() {    	
+    public KPPViewer() {    	
         		
 	// create menu bar
         menuBar = new JMenuBar();
@@ -324,7 +324,7 @@ public class PlotViewer implements IDataEventListener, DetectorListener, ActionL
     public static void main(String[] args){
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        PlotViewer viewer = new PlotViewer();
+        KPPViewer viewer = new KPPViewer();
         //frame.add(viewer.getPanel());
         frame.add(viewer.mainPanel);
         frame.setJMenuBar(viewer.menuBar);
