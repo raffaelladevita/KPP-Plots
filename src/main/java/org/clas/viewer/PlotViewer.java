@@ -61,7 +61,7 @@ import org.jlab.io.task.IDataEventListener;
  *
  * @author ziegler
  */
-public class EventViewer implements IDataEventListener, DetectorListener, ActionListener, ChangeListener {
+public class PlotViewer implements IDataEventListener, DetectorListener, ActionListener, ChangeListener {
     
     List<DetectorPane2D> AnalysisPanels 	= new ArrayList<DetectorPane2D>();
     JTabbedPane tabbedpane           		= null;
@@ -87,7 +87,7 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
         	new HTCCmonitor("HTCC")
     };
         
-    public EventViewer() {    	
+    public PlotViewer() {    	
         		
 	// create menu bar
         menuBar = new JMenuBar();
@@ -243,19 +243,7 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
 
     public void plotSummaries() {
         this.CLAS12Canvas.getCanvas("Summaries").cd(0);
-        if(this.monitors[0].getDataGroup().getItem(1).getH1F("hi_vz_neg")!=null) {
-            H1F hh = (H1F) this.monitors[0].getDataGroup().getItem(1).getH1F("hi_vz_neg");
-            this.CLAS12Canvas.getCanvas("Summaries").draw(hh);
-            F1D f1 = new F1D("f1","[amp]*gaus(x,[mean],[sigma])", -4.0, 4.0);
-            f1.setParameter(0, 100);
-            System.out.println(hh.getEntries());
-            f1.setParameter(2, 1.0);
-            f1.setLineWidth(2);
-            f1.setLineColor(2);
-            f1.setOptStat("111");
-            DataFitter.fit(f1, hh, "Q"); //No options uses error for sigma
- //           this.CLAS12Canvas.getCanvas("Summaries").draw(f1,"same");
-        }
+        if(this.monitors[0].getDataGroup().getItem(1).getH1F("hi_vz_neg")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[0].getDataGroup().getItem(1).getH1F("hi_vz_neg"));
         this.CLAS12Canvas.getCanvas("Summaries").cd(1);
         if(this.monitors[2].getDataGroup().getItem(1).getH2F("hi_Evsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getDataGroup().getItem(1).getH2F("hi_Evsp_EC"));
         this.CLAS12Canvas.getCanvas("Summaries").cd(3);
@@ -336,7 +324,7 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
     public static void main(String[] args){
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        EventViewer viewer = new EventViewer();
+        PlotViewer viewer = new PlotViewer();
         //frame.add(viewer.getPanel());
         frame.add(viewer.mainPanel);
         frame.setJMenuBar(viewer.menuBar);

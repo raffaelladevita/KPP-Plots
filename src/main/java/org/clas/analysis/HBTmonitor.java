@@ -13,8 +13,10 @@ import org.jlab.detector.base.DetectorType;
 import org.jlab.detector.view.DetectorShape2D;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
+import org.jlab.groot.fitter.DataFitter;
 import org.jlab.groot.graphics.EmbeddedCanvasTabbed;
 import org.jlab.groot.group.DataGroup;
+import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
 import org.jlab.rec.dc.Constants;
@@ -69,6 +71,12 @@ public class HBTmonitor extends AnalysisMonitor {
         H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 100, -20.0, 20.0);   
         hi_vz_neg.setTitleX("Vz (cm)");
         hi_vz_neg.setTitleY("Counts");
+        F1D f1_vz_neg = new F1D("f1_vz_neg","[amp]*gaus(x,[mean],[sigma])", -4.0, 4.0);
+        f1_vz_neg.setParameter(0, 0);
+        f1_vz_neg.setParameter(2, 1.0);
+        f1_vz_neg.setLineWidth(2);
+        f1_vz_neg.setLineColor(2);
+        f1_vz_neg.setOptStat("111");
         H2F hi_theta_p_neg = new H2F("hi_theta_p_neg", "hi_theta_p_neg", 100, 0.0, 8.0, 100, 0.0, 40.0); 
         hi_theta_p_neg.setTitleX("p (GeV)");
         hi_theta_p_neg.setTitleY("#theta (deg)");        
@@ -80,6 +88,7 @@ public class HBTmonitor extends AnalysisMonitor {
         dg_neg.addDataSet(hi_theta_neg, 1);
         dg_neg.addDataSet(hi_phi_neg, 2);
         dg_neg.addDataSet(hi_vz_neg, 3);
+        dg_neg.addDataSet(f1_vz_neg, 3);
         dg_neg.addDataSet(hi_theta_p_neg, 4);
         dg_neg.addDataSet(hi_theta_phi_neg, 5);
         this.getDataGroup().add(dg_neg, 1);
@@ -95,6 +104,12 @@ public class HBTmonitor extends AnalysisMonitor {
         H1F hi_vz_pos = new H1F("hi_vz_pos", "hi_vz_pos", 100, -20.0, 20.0);   
         hi_vz_pos.setTitleX("Vz (cm)");
         hi_vz_pos.setTitleY("Counts");
+        F1D f1_vz_pos = new F1D("f1_vz_pos","[amp]*gaus(x,[mean],[sigma])", -4.0, 4.0);
+        f1_vz_pos.setParameter(0, 0);
+        f1_vz_pos.setParameter(2, 1.0);
+        f1_vz_pos.setLineWidth(2);
+        f1_vz_pos.setLineColor(2);
+        f1_vz_pos.setOptStat("1111");
         H2F hi_theta_p_pos = new H2F("hi_theta_p_pos", "hi_theta_p_pos", 100, 0.0, 8.0, 100, 0.0, 40.0); 
         hi_theta_p_pos.setTitleX("p (GeV)");
         hi_theta_p_pos.setTitleY("#theta (deg)");        
@@ -106,6 +121,7 @@ public class HBTmonitor extends AnalysisMonitor {
         dg_pos.addDataSet(hi_theta_pos, 1);
         dg_pos.addDataSet(hi_phi_pos, 2);
         dg_pos.addDataSet(hi_vz_pos, 3);
+        dg_pos.addDataSet(f1_vz_pos, 3);
         dg_pos.addDataSet(hi_theta_p_pos, 4);
         dg_pos.addDataSet(hi_theta_phi_pos, 5);
         this.getDataGroup().add(dg_pos, 2);
@@ -161,6 +177,7 @@ public class HBTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_phi_neg);
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(3);
         this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_vz_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(f1_vz_neg,"same");
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(4);
         this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_theta_p_neg);
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(5);
@@ -173,6 +190,7 @@ public class HBTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_phi_pos);
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(3);
         this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_vz_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(f1_vz_pos);
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(4);
         this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_theta_p_pos);
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(5);
@@ -331,6 +349,15 @@ public class HBTmonitor extends AnalysisMonitor {
     @Override
     public void timerUpdate() {
 //        System.out.println("Updating HBT");
+        H1F hi_vz = null;
+        //fitting negative tracks vertex
+        hi_vz = this.getDataGroup().getItem(1).getH1F("hi_vz_neg");
+        this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(0, hi_vz.getBinContent(hi_vz.getMaximumBin()));
+        DataFitter.fit(this.getDataGroup().getItem(1).getF1D("f1_vz_neg"), hi_vz, "Q"); //No options uses error for sigma
+        //fitting positive tracks vertex
+        this.getDataGroup().getItem(2).getH1F("hi_vz_pos");
+        this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(0, hi_vz.getBinContent(hi_vz.getLineWidth()));
+        DataFitter.fit(this.getDataGroup().getItem(2).getF1D("f1_vz_pos"), hi_vz, "Q"); //No options uses error for sigma
    }
 
     @Override
