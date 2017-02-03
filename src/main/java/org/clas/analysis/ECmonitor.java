@@ -5,20 +5,13 @@
  */
 package org.clas.analysis;
 
-import java.awt.BorderLayout;
-import javax.swing.JSplitPane;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
-import org.jlab.detector.base.DetectorType;
-import org.jlab.detector.view.DetectorShape2D;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
-import org.jlab.groot.graphics.EmbeddedCanvasTabbed;
 import org.jlab.groot.group.DataGroup;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
-import org.jlab.rec.dc.Constants;
-import org.jlab.rec.dc.GeometryLoader;
 
 /**
  *
@@ -29,10 +22,8 @@ public class ECmonitor extends AnalysisMonitor {
 
     public ECmonitor(String name) {
         super(name);
-        EmbeddedCanvasTabbed canvas = new EmbeddedCanvasTabbed("Electrons");
-        canvas.addCanvas("Pizeros");
-        this.setAnalysisCanvas(canvas);
-        this.init();
+        this.setAnalysisTabNames("Electrons","Pizeros");
+        this.init(false);
     }
 
     
@@ -40,12 +31,6 @@ public class ECmonitor extends AnalysisMonitor {
     public void createHistos() {
         // initialize canvas and create histograms
         this.setNumberOfEvents(0);
-        this.getAnalysisCanvas().getCanvas("Electrons").divide(2, 2);
-        this.getAnalysisCanvas().getCanvas("Electrons").setGridX(false);
-        this.getAnalysisCanvas().getCanvas("Electrons").setGridY(false);
-        this.getAnalysisCanvas().getCanvas("Pizeros").divide(2, 2);
-        this.getAnalysisCanvas().getCanvas("Pizeros").setGridX(false);
-        this.getAnalysisCanvas().getCanvas("Pizeros").setGridY(false);
         H1F summary = new H1F("summary","summary",6,1,7);
         summary.setTitleX("sector");
         summary.setTitleY("DC hits");
@@ -91,46 +76,37 @@ public class ECmonitor extends AnalysisMonitor {
         dg_pion.addDataSet(hi_angle, 2);
         dg_pion.addDataSet(hi_angle_en, 3);
         this.getDataGroup().add(dg_pion, 2);
+    }
+    
+    @Override
+    public void plotHistos() {
+        this.getAnalysisCanvas().getCanvas("Electrons").divide(2, 2);
+        this.getAnalysisCanvas().getCanvas("Electrons").setGridX(false);
+        this.getAnalysisCanvas().getCanvas("Electrons").setGridY(false);
+        this.getAnalysisCanvas().getCanvas("Pizeros").divide(2, 2);
+        this.getAnalysisCanvas().getCanvas("Pizeros").setGridX(false);
+        this.getAnalysisCanvas().getCanvas("Pizeros").setGridY(false);
         
         this.getAnalysisCanvas().getCanvas("Electrons").cd(0);
-        this.getAnalysisCanvas().getCanvas("Electrons").draw(hi_dE_EC);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH1F("hi_dE_EC"));
         this.getAnalysisCanvas().getCanvas("Electrons").cd(1);
-        this.getAnalysisCanvas().getCanvas("Electrons").draw(hi_sf_EC);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH1F("hi_sf_EC"));
         this.getAnalysisCanvas().getCanvas("Electrons").cd(2);
-        this.getAnalysisCanvas().getCanvas("Electrons").draw(hi_Evsp_EC);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH2F("hi_Evsp_EC"));
         this.getAnalysisCanvas().getCanvas("Electrons").cd(3);
-        this.getAnalysisCanvas().getCanvas("Electrons").draw(hi_sfvsp_EC);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH2F("hi_sfvsp_EC"));
         
         this.getAnalysisCanvas().getCanvas("Pizeros").cd(0);
-        this.getAnalysisCanvas().getCanvas("Pizeros").draw(hi_pi0_mass);
+        this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass"));
         this.getAnalysisCanvas().getCanvas("Pizeros").cd(1);
-        this.getAnalysisCanvas().getCanvas("Pizeros").draw(hi_en_asy);
+        this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getH1F("hi_en_asy"));
         this.getAnalysisCanvas().getCanvas("Pizeros").cd(2);
-        this.getAnalysisCanvas().getCanvas("Pizeros").draw(hi_angle);
+        this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getH1F("hi_angle"));
         this.getAnalysisCanvas().getCanvas("Pizeros").cd(3);
-        this.getAnalysisCanvas().getCanvas("Pizeros").draw(hi_angle_en);
+        this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getH2F("hi_angle_en"));
         
         this.getAnalysisCanvas().getCanvas("Electrons").update();
-        this.getAnalysisCanvas().getCanvas("Pizeros").update();
-
-    }
-
-    public void drawDetector() {
-        // Load the Constants
-        Constants.Load(true, true, 0);
-        GeometryLoader.Load(10, "default");
-
-    }
-
-    @Override
-    public void init() {
-        this.getAnalysisPanel().setLayout(new BorderLayout());
-        this.drawDetector();
-        JSplitPane   splitPane = new JSplitPane();
-        splitPane.setLeftComponent(this.getAnalysisView());
-        splitPane.setRightComponent(this.getAnalysisCanvas());
-        this.getAnalysisPanel().add(this.getAnalysisCanvas(),BorderLayout.CENTER);  
-        this.createHistos();
+        this.getAnalysisCanvas().getCanvas("Pizeros").update();    
     }
         
     @Override
@@ -141,9 +117,9 @@ public class ECmonitor extends AnalysisMonitor {
         Particle partGamma2 = null;
         Particle partPi0    = null;
         // event builder
-        DataBank recBankEB = event.getBank("REC::Particle");
-        DataBank recDeteEB = event.getBank("REC::Detector");
-        DataBank recBankTB = event.getBank("TimeBasedTrkg::TBTracks");
+        DataBank recBankEB = event.getBank("RECHB::Particle");
+        DataBank recDeteEB = event.getBank("RECHB::Detector");
+        DataBank recBankTB = event.getBank("HitBasedTrkg::HBTracks");
         if(recBankEB!=null && recDeteEB!=null) {
             int nrows = recBankEB.rows();
             for(int loop = 0; loop < nrows; loop++){
@@ -201,24 +177,9 @@ public class ECmonitor extends AnalysisMonitor {
                 }
         }
    }
-   
-   
-    @Override
-    public void resetEventListener() {
-        System.out.println("Resetting EC histogram");
-        this.createHistos();
-    }
 
     @Override
     public void timerUpdate() {
 //        System.out.println("Updating DC");
-   }
-
-    @Override
-    public void setCanvasUpdate(int time) {
-        this.getAnalysisCanvas().getCanvas("Electrons").initTimer(time);
-        this.getAnalysisCanvas().getCanvas("Electrons").initTimer(time);
     }
- 
-
 }

@@ -5,8 +5,6 @@
  */
 package org.clas.analysis;
 
-import java.awt.BorderLayout;
-import javax.swing.JSplitPane;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
 import org.jlab.detector.base.DetectorType;
@@ -14,7 +12,6 @@ import org.jlab.detector.view.DetectorShape2D;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
-import org.jlab.groot.graphics.EmbeddedCanvasTabbed;
 import org.jlab.groot.group.DataGroup;
 import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
@@ -31,11 +28,8 @@ public class HBTmonitor extends AnalysisMonitor {
 
     public HBTmonitor(String name) {
         super(name);
-        EmbeddedCanvasTabbed canvas = new EmbeddedCanvasTabbed("Negative Tracks");
-        canvas.addCanvas("Positive Tracks");
-        canvas.addCanvas("Monte Carlo");
-        this.setAnalysisCanvas(canvas);
-        this.init();
+        this.setAnalysisTabNames("Monte Carlo","Positive Tracks","Negative Tracks");
+        this.init(false);
     }
 
     
@@ -43,15 +37,6 @@ public class HBTmonitor extends AnalysisMonitor {
     public void createHistos() {
         // initialize canvas and create histograms
         this.setNumberOfEvents(0);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").divide(3,2);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").setGridX(false);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").setGridY(false);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").divide(3,2);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").setGridX(false);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").setGridY(false);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").divide(4, 2);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").setGridX(false);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").setGridY(false);
         H1F summary = new H1F("summary","summary",6,1,7);
         summary.setTitleX("sector");
         summary.setTitleY("DC hits");
@@ -73,6 +58,7 @@ public class HBTmonitor extends AnalysisMonitor {
         hi_vz_neg.setTitleY("Counts");
         F1D f1_vz_neg = new F1D("f1_vz_neg","[amp]*gaus(x,[mean],[sigma])", -4.0, 4.0);
         f1_vz_neg.setParameter(0, 0);
+        f1_vz_neg.setParameter(1, 0);
         f1_vz_neg.setParameter(2, 1.0);
         f1_vz_neg.setLineWidth(2);
         f1_vz_neg.setLineColor(2);
@@ -106,6 +92,7 @@ public class HBTmonitor extends AnalysisMonitor {
         hi_vz_pos.setTitleY("Counts");
         F1D f1_vz_pos = new F1D("f1_vz_pos","[amp]*gaus(x,[mean],[sigma])", -4.0, 4.0);
         f1_vz_pos.setParameter(0, 0);
+        f1_vz_pos.setParameter(1, 0);
         f1_vz_pos.setParameter(2, 1.0);
         f1_vz_pos.setLineWidth(2);
         f1_vz_pos.setLineColor(2);
@@ -168,54 +155,6 @@ public class HBTmonitor extends AnalysisMonitor {
         mc.addDataSet(hi_dphi_neg, 6);
         mc.addDataSet(hi_dvz_neg, 7);
         this.getDataGroup().add(mc, 3);
-        
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(0);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_p_neg);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(1);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_theta_neg);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(2);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_phi_neg);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(3);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_vz_neg);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(f1_vz_neg,"same");
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(4);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_theta_p_neg);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(5);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_theta_phi_neg);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(0);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_p_pos);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(1);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_theta_pos);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(2);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_phi_pos);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(3);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_vz_pos);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(f1_vz_pos);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(4);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_theta_p_pos);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(5);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_theta_phi_pos);        
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(0);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dp_pos);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(1);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dtheta_pos);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(2);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dphi_pos);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(3);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dvz_pos);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(4);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dp_neg);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(5);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dtheta_neg);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(6);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dphi_neg);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(7);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(hi_dvz_neg);
-
-        
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").update();
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").update();
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").update();
     }
 
     public void drawDetector() {
@@ -255,18 +194,66 @@ public class HBTmonitor extends AnalysisMonitor {
         this.getAnalysisView().setName("DC"); 
         //detectorViewDC.updateBox();
     }
-
-    @Override
-    public void init() {
-        this.getAnalysisPanel().setLayout(new BorderLayout());
-        this.drawDetector();
-        JSplitPane   splitPane = new JSplitPane();
-        splitPane.setLeftComponent(this.getAnalysisView());
-        splitPane.setRightComponent(this.getAnalysisCanvas());
-        this.getAnalysisPanel().add(this.getAnalysisCanvas(),BorderLayout.CENTER);  
-        this.createHistos();
-    }
         
+    @Override
+    public void plotHistos() {
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").divide(3,2);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").setGridX(false);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").setGridY(false);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").divide(3,2);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").setGridX(false);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").setGridY(false);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").divide(4, 2);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").setGridX(false);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").setGridY(false);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(0);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_p_neg"));
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(1);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_theta_neg"));
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(2);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_phi_neg"));
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(3);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_vz_neg"));
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getF1D("f1_vz_neg"),"same");
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(4);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH2F("hi_theta_p_neg"));
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(5);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH2F("hi_theta_phi_neg"));
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(0);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_p_pos"));
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(1);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_theta_pos"));
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(2);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_phi_pos"));
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(3);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_vz_pos"));
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getF1D("f1_vz_pos"));
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(4);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH2F("hi_theta_p_pos"));
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(5);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH2F("hi_theta_phi_pos"));        
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(0);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dp_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(1);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dtheta_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(2);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dphi_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(3);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dvz_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(4);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dp_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(5);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(6);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dphi_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(7);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dvz_neg"));
+        
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").update();
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").update();
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").update();
+    }
+    
     @Override
     public void processEvent(DataEvent event) {
         // process event info and save into data group
@@ -341,31 +328,21 @@ public class HBTmonitor extends AnalysisMonitor {
     }
 
     @Override
-    public void resetEventListener() {
-        System.out.println("Resetting HBT histogram");
-        this.createHistos();
-    }
-
-    @Override
     public void timerUpdate() {
 //        System.out.println("Updating HBT");
         H1F hi_vz = null;
         //fitting negative tracks vertex
         hi_vz = this.getDataGroup().getItem(1).getH1F("hi_vz_neg");
         this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(0, hi_vz.getBinContent(hi_vz.getMaximumBin()));
+//        System.out.println(this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(0) + " " + 
+//                           this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(1) + " " + 
+//                           this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(2));
         DataFitter.fit(this.getDataGroup().getItem(1).getF1D("f1_vz_neg"), hi_vz, "Q"); //No options uses error for sigma
         //fitting positive tracks vertex
-        this.getDataGroup().getItem(2).getH1F("hi_vz_pos");
-        this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(0, hi_vz.getBinContent(hi_vz.getLineWidth()));
+        hi_vz = this.getDataGroup().getItem(2).getH1F("hi_vz_pos");
+        this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(0, hi_vz.getBinContent(hi_vz.getMaximumBin()));
         DataFitter.fit(this.getDataGroup().getItem(2).getF1D("f1_vz_pos"), hi_vz, "Q"); //No options uses error for sigma
    }
-
-    @Override
-    public void setCanvasUpdate(int time) {
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").initTimer(time);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").initTimer(time);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").initTimer(time);
-    }
  
 
 }

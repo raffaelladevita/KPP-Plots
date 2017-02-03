@@ -5,9 +5,16 @@
  */
 package org.clas.viewer;
 
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import org.jlab.detector.view.DetectorPane2D;
 import org.jlab.groot.base.GStyle;
+import org.jlab.groot.data.IDataSet;
+import org.jlab.groot.data.TDirectory;
 import org.jlab.groot.graphics.EmbeddedCanvasTabbed;
 import org.jlab.groot.group.DataGroup;
 import org.jlab.io.base.DataEvent;
@@ -22,6 +29,7 @@ import org.jlab.utils.groups.IndexedList;
 public class AnalysisMonitor implements IDataEventListener {    
     
     private final String           analysisName;
+    private ArrayList<String>      analysisTabNames  = new ArrayList();
     private IndexedList<DataGroup> analysisData    = new IndexedList<DataGroup>(1);
     private DataGroup              analysisSummary = null;
     private JPanel                 analysisPanel   = null;
@@ -67,8 +75,16 @@ public class AnalysisMonitor implements IDataEventListener {
 	}
     }
 
+    public void drawDetector() {
+    
+    }
+    
     public EmbeddedCanvasTabbed getAnalysisCanvas() {
         return analysisCanvas;
+    }
+    
+    public ArrayList<String> getAnalysisTabNames() {
+        return analysisTabNames;
     }
     
     public IndexedList<DataGroup>  getDataGroup(){
@@ -95,8 +111,22 @@ public class AnalysisMonitor implements IDataEventListener {
         return numberOfEvents;
     }
 
-    public void init() {
+    public void init(boolean flagDetectorView) {
         // initialize monitoring application
+        // detector view is shown if flag is true
+        getAnalysisPanel().setLayout(new BorderLayout());
+        drawDetector();
+        JSplitPane   splitPane = new JSplitPane();
+        splitPane.setLeftComponent(getAnalysisView());
+        splitPane.setRightComponent(getAnalysisCanvas());
+        if(flagDetectorView) {
+            getAnalysisPanel().add(splitPane,BorderLayout.CENTER);  
+        }
+        else {
+            getAnalysisPanel().add(getAnalysisCanvas(),BorderLayout.CENTER);  
+        }
+        createHistos();
+        plotHistos();
     }
     
     public void processEvent(DataEvent event) {
@@ -107,9 +137,24 @@ public class AnalysisMonitor implements IDataEventListener {
         // process event
     }
     
+    public void plotHistos() {
+
+    }
+    
+    public void printCanvas(String dir) {
+        // print canvas to files
+        for(int tab=0; tab<this.analysisTabNames.size(); tab++) {
+            String fileName = dir + "/" + this.analysisName + "_canvas" + tab + ".png";
+            System.out.println(fileName);
+            this.analysisCanvas.getCanvas(this.analysisTabNames.get(tab)).save(fileName);
+        }
+    }
+    
     @Override
     public void resetEventListener() {
-        
+        System.out.println("Resetting " + this.getAnalysisName() + " histogram");
+        this.createHistos();
+        this.plotHistos();
     }
     
     public void setAnalysisCanvas(EmbeddedCanvasTabbed canvas) {
@@ -120,8 +165,18 @@ public class AnalysisMonitor implements IDataEventListener {
         this.analysisSummary = group;
     }
     
+    public void setAnalysisTabNames(String... names) {
+        for(String name : names) {
+            this.analysisTabNames.add(name);
+        }
+        EmbeddedCanvasTabbed canvas = new EmbeddedCanvasTabbed(names);
+        this.setAnalysisCanvas(canvas);
+    }
+
     public void setCanvasUpdate(int time) {
-        this.analysisCanvas.getCanvas().initTimer(time);
+        for(int tab=0; tab<this.analysisTabNames.size(); tab++) {
+            this.analysisCanvas.getCanvas(this.analysisTabNames.get(tab)).initTimer(time);
+        }
     }
     
     public void setNumberOfEvents(int numberOfEvents) {
@@ -132,6 +187,73 @@ public class AnalysisMonitor implements IDataEventListener {
     public void timerUpdate() {
         
     }
- 
+
+    public void readDataGroup(TDirectory dir) {
+        String folder = this.getAnalysisName() + "/";
+        System.out.println("Reading from: " + folder);
+        DataGroup sum = this.getAnalysisSummary();
+        int nrows = sum.getRows();
+        int ncols = sum.getColumns();
+        int nds   = nrows*ncols;
+        DataGroup newSum = new DataGroup(ncols,nrows);
+        for(int i = 0; i < nds; i++){
+            List<IDataSet> dsList = sum.getData(i);
+            for(IDataSet ds : dsList){
+                System.out.println("\t --> " + ds.getName());
+                newSum.addDataSet(dir.getObject(folder, ds.getName()),i);
+            }
+        }            
+        this.setAnalysisSummary(newSum);
+        Map<Long, DataGroup> map = this.getDataGroup().getMap();
+        for( Map.Entry<Long, DataGroup> entry : map.entrySet()) {
+            Long key = entry.getKey();
+            DataGroup group = entry.getValue();
+            nrows = group.getRows();
+            ncols = group.getColumns();
+            nds   = nrows*ncols;
+            DataGroup newGroup = new DataGroup(ncols,nrows);
+            for(int i = 0; i < nds; i++){
+                List<IDataSet> dsList = group.getData(i);
+                for(IDataSet ds : dsList){
+                    System.out.println("\t --> " + ds.getName());
+                    newGroup.addDataSet(dir.getObject(folder, ds.getName()),i);
+                }
+            }
+            map.replace(key, newGroup);
+        }
+        this.plotHistos();
+    }
+    
+    public void writeDataGroup(TDirectory dir) {
+        String folder = "/" + this.getAnalysisName();
+        dir.mkdir(folder);
+        dir.cd(folder);
+        DataGroup sum = this.getAnalysisSummary();
+        int nrows = sum.getRows();
+        int ncols = sum.getColumns();
+        int nds   = nrows*ncols;
+        for(int i = 0; i < nds; i++){
+            List<IDataSet> dsList = sum.getData(i);
+            for(IDataSet ds : dsList){
+                System.out.println("\t --> " + ds.getName());
+                dir.addDataSet(ds);
+            }
+        }            
+        Map<Long, DataGroup> map = this.getDataGroup().getMap();
+        for( Map.Entry<Long, DataGroup> entry : map.entrySet()) {
+            DataGroup group = entry.getValue();
+            nrows = group.getRows();
+            ncols = group.getColumns();
+            nds   = nrows*ncols;
+            for(int i = 0; i < nds; i++){
+                List<IDataSet> dsList = group.getData(i);
+                for(IDataSet ds : dsList){
+                    System.out.println("\t --> " + ds.getName());
+                    dir.addDataSet(ds);
+                }
+            }
+        }
+    }
+
     
 }
