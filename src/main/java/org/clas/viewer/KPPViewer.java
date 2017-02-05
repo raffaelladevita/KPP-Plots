@@ -283,7 +283,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
             if(this.runNumber != this.getRunNumber(event)) {
 //                this.saveToFile("mon12_histo_run_" + runNumber + ".hipo");
                 this.runNumber = this.getRunNumber(event);
-                resetEventListener();
+//                resetEventListener();
             }
             for(int k=0; k<this.monitors.length; k++) {
                 this.monitors[k].dataEventAction(event);
@@ -308,7 +308,11 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
 
     public void plotSummaries() {
         this.CLAS12Canvas.getCanvas("Summaries").cd(0);
-        if(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut"));
+        
+        if(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut")!=null) {
+            this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut"));
+            this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getF1D("f1_vz_neg"),"same");
+        }
         this.CLAS12Canvas.getCanvas("Summaries").cd(1);
         if(this.monitors[2].getDataGroup().getItem(1).getH2F("hi_Evsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getDataGroup().getItem(1).getH2F("hi_Evsp_EC"));
         this.CLAS12Canvas.getCanvas("Summaries").cd(3);

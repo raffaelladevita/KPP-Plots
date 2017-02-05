@@ -158,7 +158,7 @@ public class HTCCmonitor  extends AnalysisMonitor {
                             recParticle.setProperty("energy1",energy1);
                             recParticle.setProperty("energy4",energy4);
                             recParticle.setProperty("energy7",energy7);
-                            if(energy1>0 && energy4>0) {
+                            if(energy1>0 && energy4>0 && Math.toDegrees(recParticle.theta())>10.) {
                                 double energy=(energy1+energy4+energy7)/0.245;
                                 this.getDataGroup().getItem(2).getH1F("hi_nphe_ele").fill(nphe*1.0);
                                 this.getDataGroup().getItem(2).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(phi));
