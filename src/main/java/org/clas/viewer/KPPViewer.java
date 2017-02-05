@@ -78,6 +78,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
     private int canvasUpdateTime = 2000;
     private int analysisUpdateTime = 100;
     private int runNumber  = 0;
+    private String kppDir = "/data/kpp";
     
     // detector monitors
     AnalysisMonitor[] monitors = {
@@ -135,10 +136,10 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         mainPanel.add(processorPane,BorderLayout.PAGE_END);
         
     
-        GStyle.getAxisAttributesX().setTitleFontSize(18);
-        GStyle.getAxisAttributesX().setLabelFontSize(14);
-        GStyle.getAxisAttributesY().setTitleFontSize(18);
-        GStyle.getAxisAttributesY().setLabelFontSize(14);
+        GStyle.getAxisAttributesX().setTitleFontSize(24);
+        GStyle.getAxisAttributesX().setLabelFontSize(18);
+        GStyle.getAxisAttributesY().setTitleFontSize(24);
+        GStyle.getAxisAttributesY().setLabelFontSize(18);
         CLAS12Canvas    = new EmbeddedCanvasTabbed("Summaries");
         CLAS12Canvas.getCanvas("Summaries").divide(2,2);
         CLAS12Canvas.getCanvas("Summaries").setGridX(false);
@@ -185,7 +186,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
             String fileName = null;
             JFileChooser fc = new JFileChooser();
             fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            File workingDirectory = new File(System.getProperty("user.dir"));
+            File workingDirectory = new File(this.kppDir + "/kpp-histos");
             fc.setCurrentDirectory(workingDirectory);
             int option = fc.showOpenDialog(null);
             if (option == JFileChooser.APPROVE_OPTION) {
@@ -200,7 +201,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
             DateFormat df = new SimpleDateFormat("MM-dd-yyyy_hh.mm.ss_aa");
             String fileName = "clas12rec_run_" + this.runNumber + "_" + df.format(new Date()) + ".hipo";
             JFileChooser fc = new JFileChooser();
-            File workingDirectory = new File(System.getProperty("user.dir"));
+            File workingDirectory = new File(this.kppDir + "/kpp-histos");
             fc.setCurrentDirectory(workingDirectory);
             File file = new File(fileName);
             fc.setSelectedFile(file);
@@ -307,7 +308,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
 
     public void plotSummaries() {
         this.CLAS12Canvas.getCanvas("Summaries").cd(0);
-        if(this.monitors[0].getDataGroup().getItem(1).getH1F("hi_vz_neg")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[0].getDataGroup().getItem(1).getH1F("hi_vz_neg"));
+        if(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut"));
         this.CLAS12Canvas.getCanvas("Summaries").cd(1);
         if(this.monitors[2].getDataGroup().getItem(1).getH2F("hi_Evsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getDataGroup().getItem(1).getH2F("hi_Evsp_EC"));
         this.CLAS12Canvas.getCanvas("Summaries").cd(3);
@@ -318,7 +319,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
     
     public void printHistosToFile() {
         DateFormat df = new SimpleDateFormat("MM-dd-yyyy_hh.mm.ss_aa");
-        String data = "clas12rec_run_" + this.runNumber + "_" + df.format(new Date());        
+        String data = this.kppDir + "/kpp-pictures/clas12rec_run_" + this.runNumber + "_" + df.format(new Date());        
         File theDir = new File(data);
         // if the directory does not exist, create it
         if (!theDir.exists()) {
@@ -334,6 +335,9 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
             System.out.println("Created directory: " + data);
             }
         }
+        String fileName = data + "/clas12_canvas.png";
+        System.out.println(fileName);
+        this.CLAS12Canvas.getCanvas("Summaries").save(fileName);
         for(int k=0; k<this.monitors.length; k++) {
             this.monitors[k].printCanvas(data);
         }

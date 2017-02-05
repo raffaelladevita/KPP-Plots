@@ -43,7 +43,7 @@ public class HTCCmonitor  extends AnalysisMonitor {
         H1F hi_nhits     = new H1F("hi_nhits", "hi_nhits", 10, 0.0, 10.0);   
         hi_nhits.setTitleX("N.Hits in Rec. Clusters");
         hi_nhits.setTitleY("Counts");
-        H2F hi_nphe_phi = new H2F("hi_nphe_phi", "hi_nphe_phi", 100, 0.0, 60.0, 100, -180.0, 180.0);  
+        H2F hi_nphe_phi = new H2F("hi_nphe_phi", "hi_nphe_phi", 100, 0.0, 60.0, 24, -180.0, 180.0);  
         hi_nphe_phi.setTitleX("N.PhE"); 
         hi_nphe_phi.setTitleY("#phi_HTCC (deg)");
         H2F hi_nphe_theta = new H2F("hi_nphe_theta", "hi_nphe_theta", 100, 0.0, 60.0, 100, 0.0, 45.0);  
@@ -59,12 +59,12 @@ public class HTCCmonitor  extends AnalysisMonitor {
         H2F hi_nphe_EC  = new H2F("hi_nphe_EC", "hi_nphe_EC", 100, 0, 0.6, 60, 0, 60);  
         hi_nphe_EC.setTitleX("E/p"); 
         hi_nphe_EC.setTitleY("N. PhE");
-        H2F hi_phi_HBT = new H2F("hi_phi_HBT", "hi_phi_HBT", 100, -180.0, 180.0, 100, -180.0, 180.0);  
-        hi_phi_HBT.setTitleX("#phi_HBT (deg)"); 
-        hi_phi_HBT.setTitleY("#phi_HTCC (deg)");
-        H2F hi_theta_HBT = new H2F("hi_theta_HBT", "hi_theta_HBT", 100, 0.0, 45.0, 100, 0.0, 45.0);  
-        hi_theta_HBT.setTitleX("#theta_HBT (deg)"); 
-        hi_theta_HBT.setTitleY("#theta_HTCC (deg)");
+        H2F hi_phi_TBT = new H2F("hi_phi_TBT", "hi_phi_TBT", 100, -180.0, 180.0, 100, -180.0, 180.0);  
+        hi_phi_TBT.setTitleX("#phi_TBT (deg)"); 
+        hi_phi_TBT.setTitleY("#phi_HTCC (deg)");
+        H2F hi_theta_TBT = new H2F("hi_theta_TBT", "hi_theta_TBT", 100, 5.0, 45.0, 20, 5.0, 45.0);  
+        hi_theta_TBT.setTitleX("#theta_TBT (deg)"); 
+        hi_theta_TBT.setTitleY("#theta_HTCC (deg)");
            
         DataGroup dg_rec = new DataGroup(2,2);
         dg_rec.addDataSet(hi_nphe, 0);
@@ -76,8 +76,8 @@ public class HTCCmonitor  extends AnalysisMonitor {
         dg_elec.addDataSet(hi_nphe_ele, 0);
         dg_elec.addDataSet(hi_nphe_cut, 0);
         dg_elec.addDataSet(hi_nphe_EC, 1);
-        dg_elec.addDataSet(hi_phi_HBT, 2);
-        dg_elec.addDataSet(hi_theta_HBT, 3);
+        dg_elec.addDataSet(hi_phi_TBT, 2);
+        dg_elec.addDataSet(hi_theta_TBT, 3);
         this.getDataGroup().add(dg_elec,2);
     }
        
@@ -97,9 +97,9 @@ public class HTCCmonitor  extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Electrons").cd(1);
         this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH2F("hi_nphe_EC"));
         this.getAnalysisCanvas().getCanvas("Electrons").cd(2);
-        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH2F("hi_phi_HBT"));
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH2F("hi_phi_TBT"));
         this.getAnalysisCanvas().getCanvas("Electrons").cd(3);
-        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH2F("hi_theta_HBT"));
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH2F("hi_theta_TBT"));
         this.getAnalysisCanvas().getCanvas("Electrons").update();
         this.getAnalysisCanvas().getCanvas("Reconstructed Hits").cd(0);
         this.getAnalysisCanvas().getCanvas("Reconstructed Hits").draw(this.getDataGroup().getItem(1).getH1F("hi_nphe"));
@@ -115,8 +115,8 @@ public class HTCCmonitor  extends AnalysisMonitor {
     @Override
     public void processEvent(DataEvent event) {
         // process event info and save into data group
-        DataBank recBankEB = event.getBank("RECHB::Particle");
-        DataBank recDeteEB = event.getBank("RECHB::Detector");
+        DataBank recBankEB = event.getBank("REC::Particle");
+        DataBank recDeteEB = event.getBank("REC::Detector");
 
         if(event.hasBank("HTCC::rec")==true){
 	    DataBank bank = event.getBank("HTCC::rec");
@@ -159,11 +159,11 @@ public class HTCCmonitor  extends AnalysisMonitor {
                             recParticle.setProperty("energy4",energy4);
                             recParticle.setProperty("energy7",energy7);
                             if(energy1>0 && energy4>0) {
-                                double energy=(energy1+energy4+energy7)/0.24;
+                                double energy=(energy1+energy4+energy7)/0.245;
                                 this.getDataGroup().getItem(2).getH1F("hi_nphe_ele").fill(nphe*1.0);
-                                this.getDataGroup().getItem(2).getH2F("hi_phi_HBT").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(phi));
-                                this.getDataGroup().getItem(2).getH2F("hi_theta_HBT").fill(Math.toDegrees(recParticle.theta()),Math.toDegrees(theta));
-                                if(Math.abs(Math.toDegrees(recParticle.phi())-phi)<30.0) {
+                                this.getDataGroup().getItem(2).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(phi));
+                                this.getDataGroup().getItem(2).getH2F("hi_theta_TBT").fill(Math.toDegrees(recParticle.theta()),Math.toDegrees(theta));
+                                if(Math.abs(Math.toDegrees(recParticle.phi()-phi))<30.0) {
                                     this.getDataGroup().getItem(2).getH1F("hi_nphe_cut").fill(nphe*1.0);
                                     this.getDataGroup().getItem(2).getH2F("hi_nphe_EC").fill((energy1+energy4+energy7)/recParticle.p(),nphe*1.0);
                                 }

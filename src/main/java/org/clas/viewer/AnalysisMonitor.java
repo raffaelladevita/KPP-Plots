@@ -38,10 +38,10 @@ public class AnalysisMonitor implements IDataEventListener {
     private int                    numberOfEvents;
 
     public AnalysisMonitor(String name){
-        GStyle.getAxisAttributesX().setTitleFontSize(18);
-        GStyle.getAxisAttributesX().setLabelFontSize(14);
-        GStyle.getAxisAttributesY().setTitleFontSize(18);
-        GStyle.getAxisAttributesY().setLabelFontSize(14);
+      GStyle.getAxisAttributesX().setTitleFontSize(24);
+        GStyle.getAxisAttributesX().setLabelFontSize(18);
+        GStyle.getAxisAttributesY().setTitleFontSize(24);
+        GStyle.getAxisAttributesY().setLabelFontSize(18);
         this.analysisName = name;
         this.analysisPanel  = new JPanel();
         this.analysisCanvas = new EmbeddedCanvasTabbed();
