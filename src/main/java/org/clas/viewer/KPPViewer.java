@@ -39,6 +39,7 @@ import javax.swing.text.StyledDocument;
 import org.clas.analysis.ECmonitor;
 import org.clas.analysis.HTCCmonitor;
 import org.clas.analysis.TBTmonitor;
+import org.clas.analysis.TIMEmonitor;
 
 import org.jlab.detector.decode.CodaEventDecoder;
 import org.jlab.detector.decode.DetectorEventDecoder;
@@ -85,7 +86,8 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
     		new HBTmonitor("HBT"),
     		new TBTmonitor("TBT"),
                 new ECmonitor("EC"),
-        	new HTCCmonitor("HTCC")
+        	new HTCCmonitor("HTCC"),
+        	new TIMEmonitor("TIME")
     };
         
     public KPPViewer() {    	

@@ -308,18 +308,17 @@ public class HBTmonitor extends AnalysisMonitor {
         double amp   = 100;
         //fitting negative tracks vertex
         hi_vz = this.getDataGroup().getItem(1).getH1F("hi_vz_neg_cut");
-        if(this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(0)==0) { // first fit 
-            mean  = hi_vz.getDataX(hi_vz.getMaximumBin());
+        mean  = hi_vz.getDataX(hi_vz.getMaximumBin());
+        amp   = hi_vz.getBinContent(hi_vz.getMaximumBin());
+        if(hi_vz.getEntries()<500) { // first fits 
             sigma = hi_vz.getRMS()*0.8;
-            amp   = hi_vz.getBinContent(hi_vz.getMaximumBin());
-            this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(0, amp);
-            this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(1, mean);
-            this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(2, sigma);
         }
         else {
-            mean  = this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(1);
-            sigma = this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(2);       
+            sigma = Math.abs(this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(2));       
         }
+        this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(0, amp);
+        this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(1, mean);
+        this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(2, sigma);
         this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setRange(mean-2.*sigma,mean+2.*sigma);
 //        System.out.println(this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(0) + " " + 
 //                           this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(1) + " " + 
@@ -327,18 +326,17 @@ public class HBTmonitor extends AnalysisMonitor {
         DataFitter.fit(this.getDataGroup().getItem(1).getF1D("f1_vz_neg"), hi_vz, "Q"); //No options uses error for sigma
         //fitting positive tracks vertex
         hi_vz = this.getDataGroup().getItem(2).getH1F("hi_vz_pos_cut");
-        if(this.getDataGroup().getItem(2).getF1D("f1_vz_pos").getParameter(0)==0) { // first fit 
-            mean  = hi_vz.getDataX(hi_vz.getMaximumBin());
+        mean  = hi_vz.getDataX(hi_vz.getMaximumBin());
+        amp   = hi_vz.getBinContent(hi_vz.getMaximumBin());
+        if(hi_vz.getEntries()<500) { // first fits 
             sigma = hi_vz.getRMS()*0.8;
-            amp   = hi_vz.getBinContent(hi_vz.getMaximumBin());
-            this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(0, amp);
-            this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(1, mean);
-            this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(2, sigma);
         }
         else {
-            mean  = this.getDataGroup().getItem(2).getF1D("f1_vz_pos").getParameter(1);
-            sigma = this.getDataGroup().getItem(2).getF1D("f1_vz_pos").getParameter(2);       
+            sigma = Math.abs(this.getDataGroup().getItem(2).getF1D("f1_vz_pos").getParameter(2));       
         }
+        this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(0, amp);
+        this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(1, mean);
+        this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(2, sigma);
         this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setRange(mean-2.*sigma,mean+2.*sigma);
         DataFitter.fit(this.getDataGroup().getItem(2).getF1D("f1_vz_pos"), hi_vz, "Q"); //No options uses error for sigma
     }

@@ -287,7 +287,8 @@ public class ECmonitor extends AnalysisMonitor {
 //                    }
                 }
                 if(partGamma1!=null && partGamma2!=null) {
-                    if(partGamma1.getProperty("energy1")>0.0 && partGamma2.getProperty("energy1")>0.0 && partGamma1.getProperty("energy4")>0 && partGamma2.getProperty("energy4")>0) {
+                    if(partGamma1.getProperty("energy1")>0.0 && partGamma2.getProperty("energy1")>0.0 && partGamma1.getProperty("energy4")>=0 && partGamma2.getProperty("energy4")>=0) {
+//                    if(partGamma1.p()>0.05 && partGamma2.p()>0.05) {
                         partPi0 = partGamma1;
                         partPi0.combine(partGamma2, +1);
                         double   invmass = 1e3*Math.sqrt(partPi0.vector().mass2());

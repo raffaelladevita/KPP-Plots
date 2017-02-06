@@ -38,7 +38,7 @@ public class AnalysisMonitor implements IDataEventListener {
     private int                    numberOfEvents;
 
     public AnalysisMonitor(String name){
-      GStyle.getAxisAttributesX().setTitleFontSize(24);
+        GStyle.getAxisAttributesX().setTitleFontSize(24);
         GStyle.getAxisAttributesX().setLabelFontSize(18);
         GStyle.getAxisAttributesY().setTitleFontSize(24);
         GStyle.getAxisAttributesY().setLabelFontSize(18);
