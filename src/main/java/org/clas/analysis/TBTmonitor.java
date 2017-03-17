@@ -120,46 +120,110 @@ public class TBTmonitor extends AnalysisMonitor {
         this.getDataGroup().add(dg_pos, 2);
         // mc comparison
         H1F hi_dp_pos = new H1F("hi_dp_pos", "hi_dp_pos", 100, -0.8, 0.8); 
-        hi_dp_pos.setTitleX("#Delta P (GeV)");
+        hi_dp_pos.setTitleX("#Delta P/P");
         hi_dp_pos.setTitleY("Counts");
         hi_dp_pos.setTitle("Positive Tracks");
-        H1F hi_dtheta_pos = new H1F("hi_dtheta_pos","hi_dtheta_pos", 100, -4.0, 4.0); 
+        F1D f1_dp_pos = new F1D("f1_dp_pos","[amp]*gaus(x,[mean],[sigma])", -10.0, 10.0);
+        f1_dp_pos.setParameter(0, 0);
+        f1_dp_pos.setParameter(1, 0);
+        f1_dp_pos.setParameter(2, 1.0);
+        f1_dp_pos.setLineWidth(2);
+        f1_dp_pos.setLineColor(2);
+        f1_dp_pos.setOptStat("1111");
+           H1F hi_dtheta_pos = new H1F("hi_dtheta_pos","hi_dtheta_pos", 100, -4.0, 4.0); 
         hi_dtheta_pos.setTitleX("#Delta #theta (deg)");
         hi_dtheta_pos.setTitleY("Counts");
         hi_dtheta_pos.setTitle("Positive Tracks");
+        F1D f1_dtheta_pos = new F1D("f1_dtheta_pos","[amp]*gaus(x,[mean],[sigma])", -10.0, 10.0);
+        f1_dtheta_pos.setParameter(0, 0);
+        f1_dtheta_pos.setParameter(1, 0);
+        f1_dtheta_pos.setParameter(2, 1.0);
+        f1_dtheta_pos.setLineWidth(2);
+        f1_dtheta_pos.setLineColor(2);
+        f1_dtheta_pos.setOptStat("1111");        
         H1F hi_dphi_pos = new H1F("hi_dphi_pos", "hi_dphi_pos", 100, -8.0, 8.0); 
         hi_dphi_pos.setTitleX("#Delta #phi (deg)");
         hi_dphi_pos.setTitleY("Counts");
         hi_dphi_pos.setTitle("Positive Tracks");
+        F1D f1_dphi_pos = new F1D("f1_dphi_pos","[amp]*gaus(x,[mean],[sigma])", -10.0, 10.0);
+        f1_dphi_pos.setParameter(0, 0);
+        f1_dphi_pos.setParameter(1, 0);
+        f1_dphi_pos.setParameter(2, 1.0);
+        f1_dphi_pos.setLineWidth(2);
+        f1_dphi_pos.setLineColor(2);
+        f1_dphi_pos.setOptStat("1111");        
         H1F hi_dvz_pos = new H1F("hi_dvz_pos", "hi_dvz_pos", 100, -20.0, 20.0);   
         hi_dvz_pos.setTitleX("#Delta Vz (cm)");
         hi_dvz_pos.setTitleY("Counts");
         hi_dvz_pos.setTitle("Positive Tracks");
+        F1D f1_dvz_pos = new F1D("f1_dvz_pos","[amp]*gaus(x,[mean],[sigma])", -10.0, 10.0);
+        f1_dvz_pos.setParameter(0, 0);
+        f1_dvz_pos.setParameter(1, 0);
+        f1_dvz_pos.setParameter(2, 1.0);
+        f1_dvz_pos.setLineWidth(2);
+        f1_dvz_pos.setLineColor(2);
+        f1_dvz_pos.setOptStat("1111");        
         H1F hi_dp_neg = new H1F("hi_dp_neg", "hi_dp_neg", 100, -0.8, 0.8); 
-        hi_dp_neg.setTitleX("#Delta P (GeV)");
+        hi_dp_neg.setTitleX("#Delta P/P");
         hi_dp_neg.setTitleY("Counts");
         hi_dp_neg.setTitle("Negative Tracks");
+        F1D f1_dp_neg = new F1D("f1_dp_neg","[amp]*gaus(x,[mean],[sigma])", -10.0, 10.0);
+        f1_dp_neg.setParameter(0, 0);
+        f1_dp_neg.setParameter(1, 0);
+        f1_dp_neg.setParameter(2, 1.0);
+        f1_dp_neg.setLineWidth(2);
+        f1_dp_neg.setLineColor(2);
+        f1_dp_neg.setOptStat("1111");
         H1F hi_dtheta_neg = new H1F("hi_dtheta_neg","hi_dtheta_neg", 100, -4.0, 4.0); 
         hi_dtheta_neg.setTitleX("#Delta #theta (deg)");
         hi_dtheta_neg.setTitleY("Counts");
         hi_dtheta_neg.setTitle("Negative Tracks");
+        F1D f1_dtheta_neg = new F1D("f1_dtheta_neg","[amp]*gaus(x,[mean],[sigma])", -10.0, 10.0);
+        f1_dtheta_neg.setParameter(0, 0);
+        f1_dtheta_neg.setParameter(1, 0);
+        f1_dtheta_neg.setParameter(2, 1.0);
+        f1_dtheta_neg.setLineWidth(2);
+        f1_dtheta_neg.setLineColor(2);
+        f1_dtheta_neg.setOptStat("1111");
         H1F hi_dphi_neg = new H1F("hi_dphi_neg", "hi_dphi_neg", 100, -8.0, 8.0); 
         hi_dphi_neg.setTitleX("#Delta #phi (deg)");
         hi_dphi_neg.setTitleY("Counts");
         hi_dphi_neg.setTitle("Negative Tracks");
+        F1D f1_dphi_neg = new F1D("f1_dphi_neg","[amp]*gaus(x,[mean],[sigma])", -10.0, 10.0);
+        f1_dphi_neg.setParameter(0, 0);
+        f1_dphi_neg.setParameter(1, 0);
+        f1_dphi_neg.setParameter(2, 1.0);
+        f1_dphi_neg.setLineWidth(2);
+        f1_dphi_neg.setLineColor(2);
+        f1_dphi_neg.setOptStat("1111");
         H1F hi_dvz_neg = new H1F("hi_dvz_neg", "hi_dvz_neg", 100, -20.0, 20.0);   
         hi_dvz_neg.setTitleX("#Delta Vz (cm)");
         hi_dvz_neg.setTitleY("Counts");
         hi_dvz_neg.setTitle("Negative Tracks");
+        F1D f1_dvz_neg = new F1D("f1_dvz_neg","[amp]*gaus(x,[mean],[sigma])", -10.0, 10.0);
+        f1_dvz_neg.setParameter(0, 0);
+        f1_dvz_neg.setParameter(1, 0);
+        f1_dvz_neg.setParameter(2, 1.0);
+        f1_dvz_neg.setLineWidth(2);
+        f1_dvz_neg.setLineColor(2);
+        f1_dvz_neg.setOptStat("1111");
         DataGroup mc = new DataGroup(4,2);
         mc.addDataSet(hi_dp_pos, 0);
+        mc.addDataSet(f1_dp_pos, 0);
         mc.addDataSet(hi_dtheta_pos, 1);
+        mc.addDataSet(f1_dtheta_pos, 1);
         mc.addDataSet(hi_dphi_pos, 2);
+        mc.addDataSet(f1_dphi_pos, 2);
         mc.addDataSet(hi_dvz_pos, 3);
+        mc.addDataSet(f1_dvz_pos, 3);
         mc.addDataSet(hi_dp_neg, 4);
+        mc.addDataSet(f1_dp_neg, 4);
         mc.addDataSet(hi_dtheta_neg, 5);
+        mc.addDataSet(f1_dtheta_neg, 5);
         mc.addDataSet(hi_dphi_neg, 6);
+        mc.addDataSet(f1_dphi_neg, 6);
         mc.addDataSet(hi_dvz_neg, 7);
+        mc.addDataSet(f1_dvz_neg, 7);
         this.getDataGroup().add(mc, 3);
         // vertex
         H2F hi_vxy_pos = new H2F("hi_vxy_pos","hi_vxy_pos",100,-15.,15.,100,-15.,15);
@@ -226,20 +290,28 @@ public class TBTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH2F("hi_theta_phi_pos"));        
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(0);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dp_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dp_pos"),"same");
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(1);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dtheta_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dtheta_pos"),"same");
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(2);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dphi_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dphi_pos"),"same");
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(3);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dvz_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dvz_pos"),"same");
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(4);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dp_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dp_neg"),"same");
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(5);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dtheta_neg"),"same");
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(6);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dphi_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dphi_neg"),"same");
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(7);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dvz_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dvz_neg"),"same");
         this.getAnalysisCanvas().getCanvas("Vertex").cd(0);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(2).getH1F("hi_vz_pos"));
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(2).getH1F("hi_vz_pos_cut"),"same");
@@ -334,13 +406,13 @@ public class TBTmonitor extends AnalysisMonitor {
                 if(genPart.pid()==11  && partGenNeg==null) partGenNeg=genPart;
                 if(genPart.pid()==211 && partGenPos==null) partGenPos=genPart;
                 if(partGenNeg != null && partRecNeg != null) {
-                    this.getDataGroup().getItem(3).getH1F("hi_dp_neg").fill(partRecNeg.p()-partGenNeg.p());
+                    this.getDataGroup().getItem(3).getH1F("hi_dp_neg").fill((partRecNeg.p()-partGenNeg.p())/partGenNeg.p());
                     this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg").fill(Math.toDegrees(partRecNeg.theta()-partGenNeg.theta()));
                     this.getDataGroup().getItem(3).getH1F("hi_dphi_neg").fill(Math.toDegrees(partRecNeg.phi()-partGenNeg.phi()));
                     this.getDataGroup().getItem(3).getH1F("hi_dvz_neg").fill(partRecNeg.vz()-partGenNeg.vz());
                 }
                 if(partGenPos != null && partRecPos != null) {
-                    this.getDataGroup().getItem(3).getH1F("hi_dp_pos").fill(partRecPos.p()-partGenPos.p());
+                    this.getDataGroup().getItem(3).getH1F("hi_dp_pos").fill((partRecPos.p()-partGenPos.p())/partGenPos.p());
                     this.getDataGroup().getItem(3).getH1F("hi_dtheta_pos").fill(Math.toDegrees(partRecPos.theta()-partGenPos.theta()));
                     this.getDataGroup().getItem(3).getH1F("hi_dphi_pos").fill(Math.toDegrees(partRecPos.phi()-partGenPos.phi()));
                     this.getDataGroup().getItem(3).getH1F("hi_dvz_pos").fill(partRecPos.vz()-partGenPos.vz());
@@ -353,43 +425,46 @@ public class TBTmonitor extends AnalysisMonitor {
     @Override
     public void timerUpdate() {
 //        System.out.println("Updating TBT");
-        H1F hi_vz   = null;
-        double mean  = 0;
-        double sigma = 1.;
-        double amp   = 100;
-        //fitting negative tracks vertex
-        hi_vz = this.getDataGroup().getItem(1).getH1F("hi_vz_neg_cut");
-        mean  = hi_vz.getDataX(hi_vz.getMaximumBin());
-        amp   = hi_vz.getBinContent(hi_vz.getMaximumBin());
-        if(hi_vz.getEntries()<500) { // first fits 
-            sigma = 1.; //hi_vz.getRMS()*0.8;
-        }
-        else {
-            sigma = Math.abs(this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(2));       
-        }
-        this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(0, amp);
-        this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(1, mean);
-        this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setParameter(2, sigma);
-        this.getDataGroup().getItem(1).getF1D("f1_vz_neg").setRange(mean-2.*sigma,mean+2.*sigma);
-//        System.out.println(this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(0) + " " + 
-//                           this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(1) + " " + 
-//                           this.getDataGroup().getItem(1).getF1D("f1_vz_neg").getParameter(2));
-        DataFitter.fit(this.getDataGroup().getItem(1).getF1D("f1_vz_neg"), hi_vz, "Q"); //No options uses error for sigma
+//        //fitting negative tracks vertex
+        this.fitVertex(this.getDataGroup().getItem(1).getH1F("hi_vz_neg_cut"), this.getDataGroup().getItem(1).getF1D("f1_vz_neg"));
         //fitting positive tracks vertex
-        hi_vz = this.getDataGroup().getItem(2).getH1F("hi_vz_pos_cut");
-        mean  = hi_vz.getDataX(hi_vz.getMaximumBin());
-        amp   = hi_vz.getBinContent(hi_vz.getMaximumBin());
-        if(hi_vz.getEntries()<500) { // first fits 
-            sigma = 1.; //hi_vz.getRMS()*0.8;
-        }
-        else {
-            sigma = Math.abs(this.getDataGroup().getItem(2).getF1D("f1_vz_pos").getParameter(2));       
-        }
-        this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(0, amp);
-        this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(1, mean);
-        this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setParameter(2, sigma);
-        this.getDataGroup().getItem(2).getF1D("f1_vz_pos").setRange(mean-2.*sigma,mean+2.*sigma);
-        DataFitter.fit(this.getDataGroup().getItem(2).getF1D("f1_vz_pos"), hi_vz, "Q"); //No options uses error for sigma
+        this.fitVertex(this.getDataGroup().getItem(2).getH1F("hi_vz_pos_cut"), this.getDataGroup().getItem(2).getF1D("f1_vz_pos"));
+        // fitting MC comparisons
+        this.fitMC(this.getDataGroup().getItem(3).getH1F("hi_dp_pos"),     this.getDataGroup().getItem(3).getF1D("f1_dp_pos"));
+        this.fitMC(this.getDataGroup().getItem(3).getH1F("hi_dtheta_pos"), this.getDataGroup().getItem(3).getF1D("f1_dtheta_pos"));
+        this.fitMC(this.getDataGroup().getItem(3).getH1F("hi_dphi_pos"),   this.getDataGroup().getItem(3).getF1D("f1_dphi_pos"));
+        this.fitMC(this.getDataGroup().getItem(3).getH1F("hi_dvz_pos"),    this.getDataGroup().getItem(3).getF1D("f1_dvz_pos"));     
+        this.fitMC(this.getDataGroup().getItem(3).getH1F("hi_dp_neg"),     this.getDataGroup().getItem(3).getF1D("f1_dp_neg"));
+        this.fitMC(this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg"), this.getDataGroup().getItem(3).getF1D("f1_dtheta_neg"));
+        this.fitMC(this.getDataGroup().getItem(3).getH1F("hi_dphi_neg"),   this.getDataGroup().getItem(3).getF1D("f1_dphi_neg"));
+        this.fitMC(this.getDataGroup().getItem(3).getH1F("hi_dvz_neg"),    this.getDataGroup().getItem(3).getF1D("f1_dvz_neg"));     
     }
 
+        public void fitVertex(H1F hivz, F1D f1vz) {
+        double mean  = hivz.getDataX(hivz.getMaximumBin());
+        double amp   = hivz.getBinContent(hivz.getMaximumBin());
+        double sigma = 1.;
+        if(hivz.getEntries()>500) { // first fits 
+            sigma = Math.abs(f1vz.getParameter(2));       
+        }
+        f1vz.setParameter(0, amp);
+        f1vz.setParameter(1, mean);
+        f1vz.setParameter(2, sigma);
+        f1vz.setRange(mean-2.*sigma,mean+2.*sigma);
+        DataFitter.fit(f1vz, hivz, "Q"); //No options uses error for sigma        
+    }
+
+    public void fitMC(H1F himc, F1D f1mc) {
+        double mean  = himc.getDataX(himc.getMaximumBin());
+        double amp   = himc.getBinContent(himc.getMaximumBin());
+        double sigma = himc.getRMS();
+        f1mc.setParameter(0, amp);
+        f1mc.setParameter(1, mean);
+        f1mc.setParameter(2, sigma);
+        f1mc.setRange(mean-2.*sigma,mean+2.*sigma);
+        DataFitter.fit(f1mc, himc, "Q"); //No options uses error for sigma 
+        sigma = Math.abs(f1mc.getParameter(2));  
+        f1mc.setRange(mean-2.*sigma,mean+2.*sigma);
+        DataFitter.fit(f1mc, himc, "Q"); //No options uses error for sigma 
+    }
 }

@@ -175,7 +175,7 @@ public class ECmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getH1F("hi_angle"));
         this.getAnalysisCanvas().getCanvas("Pizeros").cd(3);
         this.getAnalysisCanvas().getCanvas("Pizeros").getPad(3).getAxisZ().setLog(true);
-        this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getH2F("hi_en_mom"));
+        this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getH2F("hi_angle_en"));
         
         this.getAnalysisCanvas().getCanvas("Clusters").cd(0);
         this.getAnalysisCanvas().getCanvas("Clusters").getPad(0).getAxisY().setLog(true);
@@ -187,7 +187,6 @@ public class ECmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Clusters").draw(this.getDataGroup().getItem(3).getH1F("hi_epcal_elec"),"same");
         this.getAnalysisCanvas().getCanvas("Clusters").cd(2);
         this.getAnalysisCanvas().getCanvas("Clusters").getPad(2).getAxisY().setLog(true);
-        this.getAnalysisCanvas().getCanvas("Clusters").draw(this.getDataGroup().getItem(3).getH1F("hi_eecin"));
         this.getAnalysisCanvas().getCanvas("Clusters").draw(this.getDataGroup().getItem(3).getH1F("hi_eecin"));
         this.getAnalysisCanvas().getCanvas("Clusters").draw(this.getDataGroup().getItem(3).getH1F("hi_eecin_elec"),"same");
         this.getAnalysisCanvas().getCanvas("Clusters").cd(3);

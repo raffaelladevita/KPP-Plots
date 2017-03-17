@@ -38,6 +38,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import org.clas.analysis.ECmonitor;
 import org.clas.analysis.ELmonitor;
+import org.clas.analysis.FTOFmonitor;
 import org.clas.analysis.HTCCmonitor;
 import org.clas.analysis.TBTmonitor;
 import org.clas.analysis.TIMEmonitor;
@@ -88,6 +89,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
     		new TBTmonitor("TBT"),
                 new ELmonitor("ELECTRONS"),
                 new ECmonitor("EC"),
+                new FTOFmonitor("FTOF"),
         	new HTCCmonitor("HTCC"),
         	new TIMEmonitor("TIME")
     };
@@ -314,8 +316,8 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         this.CLAS12Canvas.getCanvas("Summaries").cd(0);
         
         if(this.monitors[2].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut")!=null) {
-            this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut"));
-            this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[2].getDataGroup().getItem(1).getF1D("f1_vz_neg"),"same");
+            this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut"));
+            this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getF1D("f1_vz_neg"),"same");
         }
         this.CLAS12Canvas.getCanvas("Summaries").cd(1);
         if(this.monitors[3].getDataGroup().getItem(1).getH2F("hi_Evsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[3].getDataGroup().getItem(1).getH2F("hi_Evsp_EC"));
