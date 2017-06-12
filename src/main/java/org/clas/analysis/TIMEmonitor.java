@@ -112,9 +112,12 @@ public class TIMEmonitor extends AnalysisMonitor {
         Particle partRecEB = null;
 
         // event builder
-        DataBank ftof = event.getBank("FTOF::tdc");
-        DataBank ecal = event.getBank("ECAL::tdc");
-        DataBank dc   = event.getBank("DC::tdc");
+        DataBank ftof = null;
+        DataBank ecal = null;
+        DataBank dc   = null;
+        if(event.hasBank("FTOF::tdc")) ftof = event.getBank("FTOF::tdc");
+        if(event.hasBank("ECAL::tdc")) ecal = event.getBank("ECAL::tdc");
+        if(event.hasBank("DC::tdc"))   dc   = event.getBank("DC::tdc");
         if(ftof!=null) {
             int nrows = ftof.rows();
             int rows = ftof.rows();

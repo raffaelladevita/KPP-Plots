@@ -233,9 +233,13 @@ public class ECmonitor extends AnalysisMonitor {
             if(energy1+energy4+energy7>0) this.getDataGroup().getItem(3).getH1F("hi_etot").fill(energy1+energy4+energy7);
         }
         // event builder
-        DataBank recBankEB = event.getBank("REC::Particle");
-        DataBank recDeteEB = event.getBank("REC::Detector");
-        DataBank recBankTB = event.getBank("TimeBasedTrkg::TBTracks");
+        DataBank recBankEB = null;
+        DataBank recDeteEB = null;
+        DataBank recBankTB = null;
+        if(event.hasBank("REC::Particle")) recBankEB = event.getBank("REC::Particle");
+        if(event.hasBank("REC::Detector")) recDeteEB = event.getBank("REC::Detector");
+        else if(event.hasBank("REC::Calorimeter")) recDeteEB = event.getBank("REC::Calorimeter");
+        if(event.hasBank("TimeBasedTrkg::TBTracks")) recBankTB = event.getBank("TimeBasedTrkg::TBTracks");
         if(recBankEB!=null && recDeteEB!=null) {
             int nrows = recBankEB.rows();
             for(int loop = 0; loop < nrows; loop++){
@@ -266,7 +270,7 @@ public class ECmonitor extends AnalysisMonitor {
                         recParticle.setProperty("energy1",energy1);
                         recParticle.setProperty("energy4",energy4);
                         recParticle.setProperty("energy7",energy7);
-                        if(partRecEB==null && recBankEB.getByte("charge", loop)==-1) {
+                        if(partRecEB==null && recBankEB.getByte("charge", loop)==-1 && recBankTB!=null) {
                             recParticle.setProperty("sector",recBankTB.getByte("sector", loop)*1.0);
                             partRecEB=recParticle;
                         }

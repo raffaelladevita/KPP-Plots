@@ -115,9 +115,10 @@ public class HTCCmonitor  extends AnalysisMonitor {
     @Override
     public void processEvent(DataEvent event) {
         // process event info and save into data group
-        DataBank recBankEB = event.getBank("REC::Particle");
-        DataBank recDeteEB = event.getBank("REC::Detector");
-
+        DataBank recBankEB = null;
+        DataBank recDeteEB = null;
+        if(event.hasBank("REC::Particle")) recBankEB = event.getBank("REC::Particle");
+        if(event.hasBank("REC::Detector")) recDeteEB = event.getBank("REC::Detector");
         if(event.hasBank("HTCC::rec")==true){
 	    DataBank bank = event.getBank("HTCC::rec");
 	    int rows = bank.rows();

@@ -36,6 +36,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import org.clas.analysis.CVTmonitor;
 import org.clas.analysis.ECmonitor;
 import org.clas.analysis.ELmonitor;
 import org.clas.analysis.FTOFmonitor;
@@ -52,6 +53,7 @@ import org.jlab.groot.base.GStyle;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.data.TDirectory;
 import org.jlab.groot.graphics.EmbeddedCanvasTabbed;
+import org.jlab.groot.ui.TCanvas;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
 import org.jlab.io.base.DataEventType;
@@ -87,6 +89,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
     AnalysisMonitor[] monitors = {
     		new HBTmonitor("HBT"),
     		new TBTmonitor("TBT"),
+                new CVTmonitor("CVT"),
                 new ELmonitor("ELECTRONS"),
                 new ECmonitor("EC"),
                 new FTOFmonitor("FTOF"),
@@ -315,16 +318,16 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
     public void plotSummaries() {
         this.CLAS12Canvas.getCanvas("Summaries").cd(0);
         
-        if(this.monitors[2].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut")!=null) {
+        if(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut")!=null) {
             this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut"));
             this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getF1D("f1_vz_neg"),"same");
         }
         this.CLAS12Canvas.getCanvas("Summaries").cd(1);
-        if(this.monitors[3].getDataGroup().getItem(1).getH2F("hi_Evsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[3].getDataGroup().getItem(1).getH2F("hi_Evsp_EC"));
+        if(this.monitors[4].getDataGroup().getItem(1).getH2F("hi_Evsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[4].getDataGroup().getItem(1).getH2F("hi_Evsp_EC"));
         this.CLAS12Canvas.getCanvas("Summaries").cd(3);
-        if(this.monitors[3].getDataGroup().getItem(1).getH2F("hi_sfvsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[3].getDataGroup().getItem(1).getH2F("hi_sfvsp_EC"));
+        if(this.monitors[4].getDataGroup().getItem(1).getH2F("hi_sfvsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[4].getDataGroup().getItem(1).getH2F("hi_sfvsp_EC"));
         this.CLAS12Canvas.getCanvas("Summaries").cd(2);
-        if(this.monitors[3].getDataGroup().getItem(2).getH1F("hi_pi0_mass")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[3].getDataGroup().getItem(2).getH1F("hi_pi0_mass"));    
+        if(this.monitors[4].getDataGroup().getItem(2).getH1F("hi_pi0_mass")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[4].getDataGroup().getItem(2).getH1F("hi_pi0_mass"));    
     }
     
     public void printHistosToFile() {
