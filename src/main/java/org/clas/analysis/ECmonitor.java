@@ -237,8 +237,7 @@ public class ECmonitor extends AnalysisMonitor {
         DataBank recDeteEB = null;
         DataBank recBankTB = null;
         if(event.hasBank("REC::Particle")) recBankEB = event.getBank("REC::Particle");
-        if(event.hasBank("REC::Detector")) recDeteEB = event.getBank("REC::Detector");
-        else if(event.hasBank("REC::Calorimeter")) recDeteEB = event.getBank("REC::Calorimeter");
+        if(event.hasBank("REC::Calorimeter")) recDeteEB = event.getBank("REC::Calorimeter");
         if(event.hasBank("TimeBasedTrkg::TBTracks")) recBankTB = event.getBank("TimeBasedTrkg::TBTracks");
         if(recBankEB!=null && recDeteEB!=null) {
             int nrows = recBankEB.rows();
@@ -261,10 +260,10 @@ public class ECmonitor extends AnalysisMonitor {
                         double energy4=0;
                         double energy7=0;
                         for(int j=0; j<recDeteEB.rows(); j++) {
-                            if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getShort("detector",j)==16) {
-                                if(energy1 >= 0 && recDeteEB.getShort("layer",j) == 1) energy1 += recDeteEB.getFloat("energy",j);
-                                if(energy4 >= 0 && recDeteEB.getShort("layer",j) == 4) energy4 += recDeteEB.getFloat("energy",j);
-                                if(energy7 >= 0 && recDeteEB.getShort("layer",j) == 7) energy7 += recDeteEB.getFloat("energy",j);
+                            if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getByte("detector",j)==16) {
+                                if(energy1 >= 0 && recDeteEB.getByte("layer",j) == 1) energy1 += recDeteEB.getFloat("energy",j);
+                                if(energy4 >= 0 && recDeteEB.getByte("layer",j) == 4) energy4 += recDeteEB.getFloat("energy",j);
+                                if(energy7 >= 0 && recDeteEB.getByte("layer",j) == 7) energy7 += recDeteEB.getFloat("energy",j);
                             }
                         }
                         recParticle.setProperty("energy1",energy1);

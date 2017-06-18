@@ -148,7 +148,7 @@ public class TBTmonitor extends AnalysisMonitor {
         f1_dp_pos.setLineWidth(2);
         f1_dp_pos.setLineColor(2);
         f1_dp_pos.setOptStat("1111");
-           H1F hi_dtheta_pos = new H1F("hi_dtheta_pos","hi_dtheta_pos", 100, -4.0, 4.0); 
+        H1F hi_dtheta_pos = new H1F("hi_dtheta_pos","hi_dtheta_pos", 100, -4.0, 4.0); 
         hi_dtheta_pos.setTitleX("#Delta #theta (deg)");
         hi_dtheta_pos.setTitleY("Counts");
         hi_dtheta_pos.setTitle("Positive Tracks");
@@ -410,7 +410,7 @@ public class TBTmonitor extends AnalysisMonitor {
                     this.getDataGroup().getItem(1).getH1F("hi_chi2_neg").fill(recParticle.getProperty("chi2"));
                     this.getDataGroup().getItem(1).getH1F("hi_vz_neg").fill(recParticle.vz());
                     this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_neg").fill(Math.toDegrees(recParticle.theta()),recParticle.vz());
-                    if(recParticle.p()>2.&& Math.toDegrees(recParticle.theta())>10.) {
+                    if(recParticle.p()>2.&& Math.toDegrees(recParticle.theta())>15.) {
                         this.getDataGroup().getItem(1).getH1F("hi_vz_neg_cut").fill(recParticle.vz());
                         this.getDataGroup().getItem(4).getH2F("hi_vxy_neg").fill(recParticle.vx(),recParticle.vy());
                     }
