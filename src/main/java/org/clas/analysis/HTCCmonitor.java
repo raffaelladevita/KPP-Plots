@@ -22,7 +22,7 @@ public class HTCCmonitor  extends AnalysisMonitor {
     
     public HTCCmonitor(String name) {
         super(name);
-        this.setAnalysisTabNames("Electrons", "Reconstructed Hits");
+        this.setAnalysisTabNames("Reconstructed Hits", "Electrons");
         this.init(false);
     }
 
@@ -49,16 +49,16 @@ public class HTCCmonitor  extends AnalysisMonitor {
         H2F hi_nphe_theta = new H2F("hi_nphe_theta", "hi_nphe_theta", 100, 0.0, 60.0, 100, 0.0, 45.0);  
         hi_nphe_theta.setTitleX("N.PhE"); 
         hi_nphe_theta.setTitleY("#theta_HTCC (deg)");
+        H1F hi_nphe_all = new H1F("hi_nphe_all", "hi_nphe_all", 60, 0.0, 60.0);   
+        hi_nphe_all.setTitleX("N.PhE"); 
+        hi_nphe_all.setTitleY("Counts"); 
         H1F hi_nphe_ele = new H1F("hi_nphe_ele", "hi_nphe_ele", 60, 0.0, 60.0);   
         hi_nphe_ele.setTitleX("N.PhE"); 
         hi_nphe_ele.setTitleY("Counts"); 
-        H1F hi_nphe_cut = new H1F("hi_nphe_cut", "hi_nphe_cut", 60, 0.0, 60.0);   
-        hi_nphe_cut.setTitleX("N.PhE"); 
-        hi_nphe_cut.setTitleY("Counts"); 
-        hi_nphe_cut.setLineColor(2);
-        H2F hi_nphe_EC  = new H2F("hi_nphe_EC", "hi_nphe_EC", 100, 0, 0.6, 60, 0, 60);  
-        hi_nphe_EC.setTitleX("E/p"); 
-        hi_nphe_EC.setTitleY("N. PhE");
+        hi_nphe_ele.setLineColor(2);
+        H1F hi_time  = new H1F("hi_time", "hi_time", 100, -50., 50.);  
+        hi_time.setTitleX("dT (ns)"); 
+        hi_time.setTitleY("Counts");
         H2F hi_phi_TBT = new H2F("hi_phi_TBT", "hi_phi_TBT", 100, -180.0, 180.0, 100, -180.0, 180.0);  
         hi_phi_TBT.setTitleX("#phi_TBT (deg)"); 
         hi_phi_TBT.setTitleY("#phi_HTCC (deg)");
@@ -73,9 +73,9 @@ public class HTCCmonitor  extends AnalysisMonitor {
         dg_rec.addDataSet(hi_nphe_theta, 3);
         this.getDataGroup().add(dg_rec,1);           
         DataGroup dg_elec = new DataGroup(2,2);
+        dg_elec.addDataSet(hi_nphe_all, 0);
         dg_elec.addDataSet(hi_nphe_ele, 0);
-        dg_elec.addDataSet(hi_nphe_cut, 0);
-        dg_elec.addDataSet(hi_nphe_EC, 1);
+        dg_elec.addDataSet(hi_time, 1);
         dg_elec.addDataSet(hi_phi_TBT, 2);
         dg_elec.addDataSet(hi_theta_TBT, 3);
         this.getDataGroup().add(dg_elec,2);
@@ -92,10 +92,10 @@ public class HTCCmonitor  extends AnalysisMonitor {
          
         // plotting histos
         this.getAnalysisCanvas().getCanvas("Electrons").cd(0);
-        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH1F("hi_nphe_ele"));
-        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH1F("hi_nphe_cut"),"same");
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH1F("hi_nphe_all"));
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH1F("hi_nphe_ele"),"same");
         this.getAnalysisCanvas().getCanvas("Electrons").cd(1);
-        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH2F("hi_nphe_EC"));
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH1F("hi_time"));
         this.getAnalysisCanvas().getCanvas("Electrons").cd(2);
         this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(2).getH2F("hi_phi_TBT"));
         this.getAnalysisCanvas().getCanvas("Electrons").cd(3);
@@ -116,9 +116,11 @@ public class HTCCmonitor  extends AnalysisMonitor {
     public void processEvent(DataEvent event) {
         // process event info and save into data group
         DataBank recBankEB = null;
+        DataBank recEvenEB = null;
         DataBank recDeteEB = null;
-        if(event.hasBank("REC::Particle")) recBankEB = event.getBank("REC::Particle");
-        if(event.hasBank("REC::Detector")) recDeteEB = event.getBank("REC::Detector");
+        if(event.hasBank("REC::Particle"))  recBankEB = event.getBank("REC::Particle");
+        if(event.hasBank("REC::Event"))     recEvenEB = event.getBank("REC::Event");
+        if(event.hasBank("REC::Cherenkov")) recDeteEB = event.getBank("REC::Cherenkov");
         if(event.hasBank("HTCC::rec")==true){
 	    DataBank bank = event.getBank("HTCC::rec");
 	    int rows = bank.rows();
@@ -132,42 +134,32 @@ public class HTCCmonitor  extends AnalysisMonitor {
                 this.getDataGroup().getItem(1).getH2F("hi_nphe_phi").fill(nphe*1.0,Math.toDegrees(phi));
                 this.getDataGroup().getItem(1).getH2F("hi_nphe_theta").fill(nphe*1.0,Math.toDegrees(theta));
                 
-                if(recBankEB!=null && recDeteEB!=null) {
+                if(recBankEB!=null && recDeteEB!=null && recEvenEB!=null) {
+                    double startTime = recEvenEB.getFloat("STTime", 0);
                     int nrows = recBankEB.rows();
                     for(int part = 0; part < nrows; part++){
                         int pidCode = 0;
-                        if(recBankEB.getByte("charge", loop)==-1 && recBankEB.getByte("status", loop)==1) { // electron candidate
-                            pidCode = 11;
-                            Particle recParticle = new Particle(
-                                                    pidCode,
-                                                    recBankEB.getFloat("px", loop),
-                                                    recBankEB.getFloat("py", loop),
-                                                    recBankEB.getFloat("pz", loop),
-                                                    recBankEB.getFloat("vx", loop),
-                                                    recBankEB.getFloat("vy", loop),
-                                                    recBankEB.getFloat("vz", loop));
-                            double energy1=0;
-                            double energy4=0;
-                            double energy7=0;
-                            for(int j=0; j<recDeteEB.rows(); j++) {
-                                if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getShort("detector",j)==16) {
-                                    if(energy1 == 0 && recDeteEB.getShort("layer",j) == 1) energy1 = recDeteEB.getFloat("energy",j);
-                                    if(energy4 == 0 && recDeteEB.getShort("layer",j) == 4) energy4 = recDeteEB.getFloat("energy",j);
-                                    if(energy7 == 0 && recDeteEB.getShort("layer",j) == 7) energy7 = recDeteEB.getFloat("energy",j);
+                        if(recBankEB.getInt("pid", loop)!=0) pidCode = recBankEB.getInt("pid", loop);
+                        else if(recBankEB.getByte("charge", loop)==-1) pidCode = -211;
+                        else if(recBankEB.getByte("charge", loop)==1) pidCode = 211;
+                        else pidCode = 22;
+                        Particle recParticle = new Particle(
+                                                pidCode,
+                                                recBankEB.getFloat("px", loop),
+                                                recBankEB.getFloat("py", loop),
+                                                recBankEB.getFloat("pz", loop),
+                                                recBankEB.getFloat("vx", loop),
+                                                recBankEB.getFloat("vy", loop),
+                                                recBankEB.getFloat("vz", loop));
+                        for(int j=0; j<recDeteEB.rows(); j++) {
+                            if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getByte("detector",j)==15/*6*/) {
+                                this.getDataGroup().getItem(2).getH1F("hi_nphe_all").fill(recDeteEB.getShort("nphe", j)*1.0);
+                                if(recParticle.pid()==11) {
+                                    this.getDataGroup().getItem(2).getH1F("hi_nphe_ele").fill(recDeteEB.getShort("nphe", j)*1.0);
+                                    this.getDataGroup().getItem(2).getH1F("hi_time").fill(recDeteEB.getFloat("time", j)-recDeteEB.getFloat("path", j)/29.97-startTime);
                                 }
-                            }
-                            recParticle.setProperty("energy1",energy1);
-                            recParticle.setProperty("energy4",energy4);
-                            recParticle.setProperty("energy7",energy7);
-                            if(energy1>0 && energy4>0 && Math.toDegrees(recParticle.theta())>10.) {
-                                double energy=(energy1+energy4+energy7)/0.245;
-                                this.getDataGroup().getItem(2).getH1F("hi_nphe_ele").fill(nphe*1.0);
-                                this.getDataGroup().getItem(2).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(phi));
-                                this.getDataGroup().getItem(2).getH2F("hi_theta_TBT").fill(Math.toDegrees(recParticle.theta()),Math.toDegrees(theta));
-                                if(Math.abs(Math.toDegrees(recParticle.phi()-phi))<30.0) {
-                                    this.getDataGroup().getItem(2).getH1F("hi_nphe_cut").fill(nphe*1.0);
-                                    this.getDataGroup().getItem(2).getH2F("hi_nphe_EC").fill((energy1+energy4+energy7)/recParticle.p(),nphe*1.0);
-                                }
+                                this.getDataGroup().getItem(2).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recDeteEB.getFloat("phi", j)));
+                                this.getDataGroup().getItem(2).getH2F("hi_theta_TBT").fill(Math.toDegrees(recParticle.theta()),Math.toDegrees(recDeteEB.getFloat("theta", j)));
                             }
                         }
                     }

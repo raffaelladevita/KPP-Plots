@@ -246,7 +246,7 @@ public class ECmonitor extends AnalysisMonitor {
                     if(recBankEB.getInt("pid", loop)!=0) pidCode = recBankEB.getInt("pid", loop);
                     else if(recBankEB.getByte("charge", loop)==-1) pidCode = -211;
                     else if(recBankEB.getByte("charge", loop)==1) pidCode = 211;
-                    else pidCode = 2112;
+                    else pidCode = 22;
                     Particle recParticle = new Particle(
                                                 pidCode,
                                                 recBankEB.getFloat("px", loop),
@@ -260,7 +260,7 @@ public class ECmonitor extends AnalysisMonitor {
                         double energy4=0;
                         double energy7=0;
                         for(int j=0; j<recDeteEB.rows(); j++) {
-                            if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getByte("detector",j)==16) {
+                            if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getByte("detector",j)==7/*16*/) {
                                 if(energy1 >= 0 && recDeteEB.getByte("layer",j) == 1) energy1 += recDeteEB.getFloat("energy",j);
                                 if(energy4 >= 0 && recDeteEB.getByte("layer",j) == 4) energy4 += recDeteEB.getFloat("energy",j);
                                 if(energy7 >= 0 && recDeteEB.getByte("layer",j) == 7) energy7 += recDeteEB.getFloat("energy",j);
@@ -275,7 +275,7 @@ public class ECmonitor extends AnalysisMonitor {
                         }
 //                        else if(recBankEB.getByte("charge", loop)==0) {
                         else {
-                            if(recBankEB.getInt("pid", loop)==22 && recParticle.p()>0. /*&& energy1>0.03 && energy4>0.03*/) {
+                            if(recBankEB.getByte("charge", loop)==0 && recParticle.p()>0.5 /*&& energy1>0.03 && energy4>0.03*/) {
                                 partGamma.add(recParticle);
                                 double energy=(energy1+energy4+energy7)/0.245;
                                 this.getDataGroup().getItem(2).getH2F("hi_en_mom").fill(recParticle.p(),energy);
@@ -289,10 +289,10 @@ public class ECmonitor extends AnalysisMonitor {
 //                                else if(partGamma2==null) partGamma2=recParticle;
                             }                            
                         }
-                        if(partRecEB!= null && energy1>0.0 && energy4>0 && Math.abs(partRecEB.vz()-2)<2.) {
+                        if(partRecEB!= null && energy1>0.0 && energy4>0) {
                             double energy=(energy1+energy4+energy7)/0.245;
                             this.getDataGroup().getItem(1).getH2F("hi_ECin_vs_PCAL").fill(energy1,energy4+energy7);
-                            if(energy1>0.1 && energy4>0.0 && partRecEB.p()>0) {
+                            if(energy1>0.1 && energy4>0.1 && partRecEB.p()>0) {
                                 this.getDataGroup().getItem(1).getH2F("hi_Evsp_EC").fill(partRecEB.p(),energy);
                                 this.getDataGroup().getItem(1).getH2F("hi_sfvsp_EC").fill(partRecEB.p(),(energy1+energy4+energy7)/partRecEB.p());
                                 this.getDataGroup().getItem(1).getH1F("hi_dE_EC").fill(energy-partRecEB.p());
@@ -305,19 +305,20 @@ public class ECmonitor extends AnalysisMonitor {
                         }
 //                    }
                 }
-                if(partGamma.size()==2) {
+                if(partGamma.size()>=2) {
                     for(int i1=0; i1<partGamma.size(); i1++) {
                         for(int i2=i1+1; i2<partGamma.size(); i2++) {
                             partGamma1 = partGamma.get(i1);
                             partGamma2 = partGamma.get(i2);
         //                    if(partGamma1.p()>0.05 && partGamma2.p()>0.05) {
-                            partPi0 = partGamma1;
+                            partPi0 = new Particle();
+                            partPi0.copy(partGamma1);
                             partPi0.combine(partGamma2, +1);
                             double   invmass = 1e3*Math.sqrt(partPi0.mass2());
                             double   x       = (partGamma1.p()-partGamma2.p())/(partGamma1.p()+partGamma2.p());
                             double   angle   = Math.toDegrees(Math.acos(partGamma1.cosTheta(partGamma2)));
-                            if(angle>2.5) {
-//        if(partGamma1.p()<1.)   System.out.println(partGamma.size() + " " + i1 + " " + partGamma1.p() + " " + i2 + " " + partGamma2.p() + " " + Math.sqrt(partGamma1.p()*partGamma2.p()));
+                            if(angle>1.5) {
+//                                System.out.println(partGamma.size() + " " + i1 + " " + partGamma1.p() + " " + i2 + " " + partGamma2.p() + " " + invmass);
                                 this.getDataGroup().getItem(2).getH1F("hi_pi0_mass").fill(invmass);  //Two-photon invariant mass
                                 this.getDataGroup().getItem(2).getH1F("hi_en_asy").fill(x);
                                 this.getDataGroup().getItem(2).getH2F("hi_angle_mass").fill(angle,invmass);

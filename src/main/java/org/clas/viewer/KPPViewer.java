@@ -36,11 +36,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import org.clas.analysis.CTOFmonitor;
 import org.clas.analysis.CVTmonitor;
 import org.clas.analysis.ECmonitor;
 import org.clas.analysis.ELmonitor;
 import org.clas.analysis.FTOFmonitor;
 import org.clas.analysis.HTCCmonitor;
+import org.clas.analysis.LTCCmonitor;
 import org.clas.analysis.TBTmonitor;
 import org.clas.analysis.TIMEmonitor;
 
@@ -80,8 +82,8 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
     
     TreeMap<String, List<H2F>>  histos = new TreeMap<String,List<H2F>>();
     
-    private int canvasUpdateTime = 2000;
-    private int analysisUpdateTime = 100;
+    private int canvasUpdateTime = 10000;
+    private int analysisUpdateTime = 10000;
     private int runNumber  = 0;
     private String kppDir = "/data/kpp";
     
@@ -94,6 +96,8 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
                 new ECmonitor("EC"),
                 new FTOFmonitor("FTOF"),
         	new HTCCmonitor("HTCC"),
+        	new LTCCmonitor("LTCC"),
+                new CTOFmonitor("CTOF"),
         	new TIMEmonitor("TIME")
     };
         

@@ -1,0 +1,162 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.clas.analysis;
+
+import org.clas.viewer.AnalysisMonitor;
+import org.jlab.clas.physics.Particle;
+import org.jlab.groot.data.H1F;
+import org.jlab.groot.data.H2F;
+import org.jlab.groot.group.DataGroup;
+import org.jlab.io.base.DataBank;
+import org.jlab.io.base.DataEvent;
+
+/**
+ *
+ * @author devita
+ */
+public class LTCCmonitor  extends AnalysisMonitor {
+        
+    
+    public LTCCmonitor(String name) {
+        super(name);
+        this.setAnalysisTabNames("Electrons");
+        this.init(false);
+    }
+
+    @Override
+    public void createHistos() {
+        // initialize canvas and create histograms
+        this.setNumberOfEvents(0);
+        H1F summary = new H1F("summary","summary",6,1,7);
+        summary.setTitleX("sector");
+        summary.setTitleY("HTCC hits");
+        summary.setFillColor(36);
+        DataGroup sum = new DataGroup(1,1);
+        sum.addDataSet(summary, 0);
+        this.setAnalysisSummary(sum);
+        H1F hi_nphe_all = new H1F("hi_nphe_all", "hi_nphe_all", 60, 0.0, 60.0);   
+        hi_nphe_all.setTitleX("N.PhE"); 
+        hi_nphe_all.setTitleY("Counts"); 
+        H1F hi_nphe_ele = new H1F("hi_nphe_ele", "hi_nphe_ele", 60, 0.0, 60.0);   
+        hi_nphe_ele.setTitleX("N.PhE"); 
+        hi_nphe_ele.setTitleY("Counts"); 
+        hi_nphe_ele.setLineColor(2);
+        H1F hi_time  = new H1F("hi_time", "hi_time", 100, -50., 50.);  
+        hi_time.setTitleX("dT (ns)"); 
+        hi_time.setTitleY("Counts");
+        H2F hi_phi_TBT = new H2F("hi_phi_TBT", "hi_phi_TBT", 100, -180.0, 180.0, 100, -180.0, 180.0);  
+        hi_phi_TBT.setTitleX("#phi_TBT (deg)"); 
+        hi_phi_TBT.setTitleY("#phi_HTCC (deg)");
+        H2F hi_theta_TBT = new H2F("hi_theta_TBT", "hi_theta_TBT", 100, 5.0, 45.0, 20, 5.0, 45.0);  
+        hi_theta_TBT.setTitleX("#theta_TBT (deg)"); 
+        hi_theta_TBT.setTitleY("#theta_HTCC (deg)");
+           
+        DataGroup dg_elec = new DataGroup(2,2);
+        dg_elec.addDataSet(hi_nphe_all, 0);
+        dg_elec.addDataSet(hi_nphe_ele, 0);
+        dg_elec.addDataSet(hi_time, 1);
+        dg_elec.addDataSet(hi_phi_TBT, 2);
+        dg_elec.addDataSet(hi_theta_TBT, 3);
+        this.getDataGroup().add(dg_elec,1);
+    }
+       
+    @Override
+    public void plotHistos() {
+        this.getAnalysisCanvas().getCanvas("Electrons").divide(2, 2);
+        this.getAnalysisCanvas().getCanvas("Electrons").setGridX(false);
+        this.getAnalysisCanvas().getCanvas("Electrons").setGridY(false);
+         
+        // plotting histos
+        this.getAnalysisCanvas().getCanvas("Electrons").cd(0);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH1F("hi_nphe_all"));
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH1F("hi_nphe_ele"),"same");
+        this.getAnalysisCanvas().getCanvas("Electrons").cd(1);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH1F("hi_time"));
+        this.getAnalysisCanvas().getCanvas("Electrons").cd(2);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH2F("hi_phi_TBT"));
+        this.getAnalysisCanvas().getCanvas("Electrons").cd(3);
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH2F("hi_theta_TBT"));
+        this.getAnalysisCanvas().getCanvas("Electrons").update();
+    }
+    
+    @Override
+    public void processEvent(DataEvent event) {
+        // process event info and save into data group
+        DataBank recBankEB   = null;
+        DataBank recEvenEB   = null;
+        DataBank recDeteEB   = null;
+        DataBank recTBTTrack = null;
+        if(event.hasBank("REC::Particle"))  recBankEB = event.getBank("REC::Particle");
+        if(event.hasBank("REC::Event"))     recEvenEB = event.getBank("REC::Event");
+        if(event.hasBank("REC::Cherenkov")) recDeteEB = event.getBank("REC::Cherenkov");
+        if(event.hasBank("TimeBasedTrkg::TBTracks")) recTBTTrack = event.getBank("TimeBasedTrkg::TBTracks");
+        if(event.hasBank("LTCC::clusters")==true){
+	    DataBank bank = event.getBank("LTCC::clusters");
+	    int rows = bank.rows();
+	    for(int loop = 0; loop < rows; loop++){
+                float nphe   = bank.getFloat("nphe", loop);
+                float time  = bank.getFloat("time",  loop);
+                float x     = bank.getFloat("x",     loop);
+                float y     = bank.getFloat("y",     loop);
+                float z     = bank.getFloat("z",     loop);
+                float phi   = (bank.getFloat("minPhi",   loop)+bank.getFloat("maxPhi",   loop))/2;
+                float theta = (bank.getFloat("minTheta", loop)+bank.getFloat("maxTheta", loop))/2;
+                this.getDataGroup().getItem(1).getH1F("hi_nphe_all").fill(nphe);
+
+                if(recBankEB!=null && recEvenEB!=null) {
+                    double startTime = recEvenEB.getFloat("STTime", 0);
+                    int nrows = recBankEB.rows();
+                    int nFill=0;
+                    for(int part = 0; part < nrows; part++){
+                        int pidCode = 0;
+                        if(recBankEB.getInt("pid", loop)!=0) pidCode = recBankEB.getInt("pid", loop);
+                        else if(recBankEB.getByte("charge", loop)==-1) pidCode = -211;
+                        else if(recBankEB.getByte("charge", loop)==1) pidCode = 211;
+                        else pidCode = 22;
+                        Particle recParticle = new Particle(
+                                                pidCode,
+                                                recBankEB.getFloat("px", loop),
+                                                recBankEB.getFloat("py", loop),
+                                                recBankEB.getFloat("pz", loop),
+                                                recBankEB.getFloat("vx", loop),
+                                                recBankEB.getFloat("vy", loop),
+                                                recBankEB.getFloat("vz", loop));
+                        if(recParticle.pid()==11) {
+                            // find corresponding track
+                            double path = 0;
+                            for(int j=0; j<recTBTTrack.rows(); j++) {
+                                if(Math.abs(recParticle.px()-recTBTTrack.getFloat("p0_x", j))<0.1 &&
+                                   Math.abs(recParticle.px()-recTBTTrack.getFloat("p0_x", j))<0.1 &&
+                                   Math.abs(recParticle.px()-recTBTTrack.getFloat("p0_x", j))<0.1) {
+                                    double c3x  = recTBTTrack.getFloat("c3_x",j);
+                                    double c3y  = recTBTTrack.getFloat("c3_y",j);
+                                    double c3z  = recTBTTrack.getFloat("c3_z",j);
+                                    path = recTBTTrack.getFloat("pathlength",j) + Math.sqrt((x-c3x)*(x-c3x)+(y-c3y)*(y-c3y)+(z-c3z)*(z-c3z));
+                    
+                                }
+                            }                    
+                            if(Math.abs(phi-Math.toDegrees(recParticle.phi()))<60 && nFill==0) {
+                                this.getDataGroup().getItem(1).getH1F("hi_nphe_ele").fill(nphe);
+                                this.getDataGroup().getItem(1).getH1F("hi_time").fill(time-path/29.97-startTime);
+                                nFill++;
+                            }
+    //                        System.out.println(recParticle.phi() + " " + phi);
+                            this.getDataGroup().getItem(1).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),phi);
+                            this.getDataGroup().getItem(1).getH2F("hi_theta_TBT").fill(Math.toDegrees(recParticle.theta()),theta);
+                        }
+                    }
+                }
+            }
+    	}       
+    }
+
+    @Override
+    public void timerUpdate() {
+
+    }
+
+
+}
