@@ -125,7 +125,7 @@ public class HTCCmonitor  extends AnalysisMonitor {
 	    DataBank bank = event.getBank("HTCC::rec");
 	    int rows = bank.rows();
 	    for(int loop = 0; loop < rows; loop++){
-                int  nphe   = bank.getInt("nphe", loop);
+                float nphe  = bank.getFloat("nphe", loop);
                 int  nhits  = bank.getInt("nhits", loop);
                 float phi   = bank.getFloat("phi", loop);
                 float theta = bank.getFloat("theta", loop);
@@ -153,9 +153,9 @@ public class HTCCmonitor  extends AnalysisMonitor {
                                                 recBankEB.getFloat("vz", loop));
                         for(int j=0; j<recDeteEB.rows(); j++) {
                             if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getByte("detector",j)==15/*6*/) {
-                                this.getDataGroup().getItem(2).getH1F("hi_nphe_all").fill(recDeteEB.getShort("nphe", j)*1.0);
+                                this.getDataGroup().getItem(2).getH1F("hi_nphe_all").fill(recDeteEB.getFloat("nphe", j)*1.0);
                                 if(recParticle.pid()==11) {
-                                    this.getDataGroup().getItem(2).getH1F("hi_nphe_ele").fill(recDeteEB.getShort("nphe", j)*1.0);
+                                    this.getDataGroup().getItem(2).getH1F("hi_nphe_ele").fill(recDeteEB.getFloat("nphe", j)*1.0);
                                     this.getDataGroup().getItem(2).getH1F("hi_time").fill(recDeteEB.getFloat("time", j)-recDeteEB.getFloat("path", j)/29.97-startTime);
                                 }
                                 this.getDataGroup().getItem(2).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recDeteEB.getFloat("phi", j)));

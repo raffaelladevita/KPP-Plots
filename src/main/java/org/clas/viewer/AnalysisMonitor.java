@@ -42,6 +42,16 @@ public class AnalysisMonitor implements IDataEventListener {
         GStyle.getAxisAttributesX().setLabelFontSize(18);
         GStyle.getAxisAttributesY().setTitleFontSize(24);
         GStyle.getAxisAttributesY().setLabelFontSize(18);
+        GStyle.getAxisAttributesZ().setLabelFontSize(14);
+        GStyle.getAxisAttributesX().setLabelFontName("Avenir");
+        GStyle.getAxisAttributesY().setLabelFontName("Avenir");
+        GStyle.getAxisAttributesZ().setLabelFontName("Avenir");
+        GStyle.getAxisAttributesX().setTitleFontName("Avenir");
+        GStyle.getAxisAttributesY().setTitleFontName("Avenir");
+        GStyle.getAxisAttributesZ().setTitleFontName("Avenir");
+        GStyle.setGraphicsFrameLineWidth(1);
+        GStyle.getH1FAttributes().setLineWidth(1);
+                               
         this.analysisName = name;
         this.analysisPanel  = new JPanel();
         this.analysisCanvas = new EmbeddedCanvasTabbed();

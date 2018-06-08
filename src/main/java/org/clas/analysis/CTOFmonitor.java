@@ -213,12 +213,12 @@ public class CTOFmonitor extends AnalysisMonitor {
         int ev = recRun.getInt("event",0);
 //        System.out.println(ev); 
 //            if(ev==134 || ev==370) {System.out.println(ev); recBankEB.show(); recDeteEB.show();}
-
+        if(ev==93364) recCtofHits.show();
         if(recCtofHits!=null) {
             int nrows = recCtofHits.rows();
             for(int loop = 0; loop < nrows; loop++){
                 int paddle    = recCtofHits.getShort("component", loop);
-                int trk_id    = recCtofHits.getShort("trkID", loop)+1;
+                int trk_id    = recCtofHits.getShort("trkID", loop);
                 double energy = recCtofHits.getFloat("energy", loop);
                 double time   = recCtofHits.getFloat("time",loop);
            	double tx     = recCtofHits.getFloat("tx", loop);
@@ -237,7 +237,7 @@ public class CTOFmonitor extends AnalysisMonitor {
 //                double tdc1   = (double) ctofTDC.getInt("TDC",tdcId1);
 //                double tdc2   = (double) ctofTDC.getInt("TDC",tdcId2);
                 this.getDataGroup().getItem(2).getH2F("hi_en_paddle").fill(paddle*1.,energy);
-                if(trk_id!=-1 && energy>1.5 && recRunRF!=null) {
+                if(trk_id!=-1 && energy>0 && recRunRF!=null) {
         	    int    q    = recHBTTrack.getInt("q",trk_id-1);
                     double p    = recHBTTrack.getFloat("p",trk_id-1);
                     double pt   = recHBTTrack.getFloat("pt",trk_id-1);

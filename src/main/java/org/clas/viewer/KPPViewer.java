@@ -38,6 +38,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import org.clas.analysis.CTOFmonitor;
 import org.clas.analysis.CVTmonitor;
+import org.clas.analysis.EBmonitor;
 import org.clas.analysis.ECmonitor;
 import org.clas.analysis.ELmonitor;
 import org.clas.analysis.FTOFmonitor;
@@ -55,7 +56,6 @@ import org.jlab.groot.base.GStyle;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.data.TDirectory;
 import org.jlab.groot.graphics.EmbeddedCanvasTabbed;
-import org.jlab.groot.ui.TCanvas;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
 import org.jlab.io.base.DataEventType;
@@ -98,6 +98,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         	new HTCCmonitor("HTCC"),
         	new LTCCmonitor("LTCC"),
                 new CTOFmonitor("CTOF"),
+        	new EBmonitor("EB"),
         	new TIMEmonitor("TIME")
     };
         

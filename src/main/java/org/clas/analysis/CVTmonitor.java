@@ -55,7 +55,7 @@ public class CVTmonitor extends AnalysisMonitor {
         hi_theta_neg.setTitleY("Counts");
         H1F hi_phi_neg = new H1F("hi_phi_neg", "hi_phi_neg", 100, -180.0, 180.0);   
         hi_phi_neg.setTitleX("#phi (deg)");
-        H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 100, -2.0, 2.0);   
+        H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 100, -10.0, 10.0);   
         hi_vz_neg.setTitleX("Vz (cm)");
         hi_vz_neg.setTitleY("Counts");
         H2F hi_theta_p_neg = new H2F("hi_theta_p_neg", "hi_theta_p_neg", 100, 0.0, 3.0, 100, 50.0, 120.0); 
@@ -81,7 +81,7 @@ public class CVTmonitor extends AnalysisMonitor {
         hi_theta_pos.setTitleY("Counts");
         H1F hi_phi_pos = new H1F("hi_phi_pos", "hi_phi_pos", 100, -180.0, 180.0);   
         hi_phi_pos.setTitleX("#phi (deg)");
-        H1F hi_vz_pos = new H1F("hi_vz_pos", "hi_vz_pos", 100, -2.0, 2.0);   
+        H1F hi_vz_pos = new H1F("hi_vz_pos", "hi_vz_pos", 100, -10.0, 10.0);   
         hi_vz_pos.setTitleX("Vz (cm)");
         hi_vz_pos.setTitleY("Counts");
         H2F hi_theta_p_pos = new H2F("hi_theta_p_pos", "hi_theta_p_pos", 100, 0.0, 3.0, 100, 50.0, 120.0); 
@@ -196,14 +196,14 @@ public class CVTmonitor extends AnalysisMonitor {
         Particle partGenPos = null;
         Particle partRecNeg = null;
         Particle partRecPos = null;
-        if(event.hasBank("CVTRec::Tracks")==true){
+        if(event.hasBank("CVTRec::Tracks")){
             DataBank  bank = event.getBank("CVTRec::Tracks");
             int rows = bank.rows();
             for(int loop = 0; loop < rows; loop++){
             	
                 int pidCode=0;
-                if(bank.getInt("q", loop)==-1) pidCode = 11;
-                else if(bank.getInt("q", loop)==1) pidCode = 211;
+                if(bank.getByte("q", loop)==-1) pidCode = 11;
+                else if(bank.getByte("q", loop)==1) pidCode = 211;
                 
                 else pidCode = 22;
                 Particle recParticle = new Particle(
@@ -236,38 +236,41 @@ public class CVTmonitor extends AnalysisMonitor {
 //                System.out.println(" q = "+recParticle.charge());
             }
         }
-        if(event.hasBank("CVTRec::Tracks")==true){
-            DataBank genBank = event.getBank("MC::Particle");
-//            System.out.println(" Getting Truth info...."); 
-            int nrows = genBank.rows();
-            for(int loop = 0; loop < nrows; loop++) {   
-                Particle genPart = new Particle(
-                                              genBank.getInt("pid", loop),
-                                              genBank.getFloat("px", loop),
-                                              genBank.getFloat("py", loop),
-                                              genBank.getFloat("pz", loop),
-                                              genBank.getFloat("vx", loop),
-                                              genBank.getFloat("vy", loop),
-                                              genBank.getFloat("vz", loop));
-                //
-                //if(genPart.pid()==11  && partGenNeg==null) partGenNeg=genPart;
-                //if(genPart.pid()!=211 && partGenPos==null) partGenPos=genPart;
-                partGenPos=genPart;
-               // System.out.println(" --> q+ = "+partRecPos.charge()+" "+((partRecPos != null)) +" "+partRecPos.p() );
-               // System.out.println(" --> q- = "+partRecNeg.charge()+" "+((partRecNeg != null)) );
-                if(partRecNeg != null) { 
-                    //System.out.println(" Filling negative track info ...");
-                    this.getDataGroup().getItem(3).getH1F("hi_dp_neg").fill((partRecNeg.p()-genPart.p())/genPart.p());
-                    this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg").fill(Math.toDegrees(partRecNeg.theta()-genPart.theta()));
-                    this.getDataGroup().getItem(3).getH1F("hi_dphi_neg").fill(Math.toDegrees(partRecNeg.phi()-genPart.phi()));
-                    this.getDataGroup().getItem(3).getH1F("hi_dvz_neg").fill(partRecNeg.vz()-genPart.vz());
-                }
-                if(partRecPos != null) { 
-                    //System.out.println(" Filling positive track info ...");
-                    this.getDataGroup().getItem(3).getH1F("hi_dp_pos").fill((partRecPos.p()-genPart.p())/genPart.p());
-                    this.getDataGroup().getItem(3).getH1F("hi_dtheta_pos").fill(Math.toDegrees(partRecPos.theta()-genPart.theta()));
-                    this.getDataGroup().getItem(3).getH1F("hi_dphi_pos").fill(Math.toDegrees(partRecPos.phi()-genPart.phi()));
-                    this.getDataGroup().getItem(3).getH1F("hi_dvz_pos").fill(partRecPos.vz()-genPart.vz());
+        if(event.hasBank("CVTRec::Tracks")){
+            DataBank genBank = null;
+            if(event.hasBank("MC::Particle")) {
+                genBank = event.getBank("MC::Particle");           
+    //            System.out.println(" Getting Truth info....");             
+                int nrows = genBank.rows();
+                for(int loop = 0; loop < nrows; loop++) {   
+                    Particle genPart = new Particle(
+                                                  genBank.getInt("pid", loop),
+                                                  genBank.getFloat("px", loop),
+                                                  genBank.getFloat("py", loop),
+                                                  genBank.getFloat("pz", loop),
+                                                  genBank.getFloat("vx", loop),
+                                                  genBank.getFloat("vy", loop),
+                                                  genBank.getFloat("vz", loop));
+                    //
+                    //if(genPart.pid()==11  && partGenNeg==null) partGenNeg=genPart;
+                    //if(genPart.pid()!=211 && partGenPos==null) partGenPos=genPart;
+                    partGenPos=genPart;
+                    System.out.println(" --> q+ = "+partRecPos.charge()+" "+((partRecPos != null)) +" "+partRecPos.p() );
+                    System.out.println(" --> q- = "+partRecNeg.charge()+" "+((partRecNeg != null)) );
+                    if(partRecNeg != null) { 
+                        //System.out.println(" Filling negative track info ...");
+                        this.getDataGroup().getItem(3).getH1F("hi_dp_neg").fill((partRecNeg.p()-genPart.p())/genPart.p());
+                        this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg").fill(Math.toDegrees(partRecNeg.theta()-genPart.theta()));
+                        this.getDataGroup().getItem(3).getH1F("hi_dphi_neg").fill(Math.toDegrees(partRecNeg.phi()-genPart.phi()));
+                        this.getDataGroup().getItem(3).getH1F("hi_dvz_neg").fill(partRecNeg.vz()-genPart.vz());
+                    }
+                    if(partRecPos != null) { 
+                        //System.out.println(" Filling positive track info ...");
+                        this.getDataGroup().getItem(3).getH1F("hi_dp_pos").fill((partRecPos.p()-genPart.p())/genPart.p());
+                        this.getDataGroup().getItem(3).getH1F("hi_dtheta_pos").fill(Math.toDegrees(partRecPos.theta()-genPart.theta()));
+                        this.getDataGroup().getItem(3).getH1F("hi_dphi_pos").fill(Math.toDegrees(partRecPos.phi()-genPart.phi()));
+                        this.getDataGroup().getItem(3).getH1F("hi_dvz_pos").fill(partRecPos.vz()-genPart.vz());
+                    }
                 }
             }
         }

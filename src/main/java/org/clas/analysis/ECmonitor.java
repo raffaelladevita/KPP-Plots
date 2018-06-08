@@ -55,10 +55,10 @@ public class ECmonitor extends AnalysisMonitor {
         f1_sf.setLineWidth(3);
         f1_sf.setLineColor(4);
         f1_sf.setOptStat("1111");
-        H2F hi_Evsp_EC = new H2F("hi_Evsp_EC", "hi_Evsp_EC", 100, 0, 6, 100, 0, 6);  
+        H2F hi_Evsp_EC = new H2F("hi_Evsp_EC", "hi_Evsp_EC", 100, 0, 12, 100, 0, 12);  
         hi_Evsp_EC.setTitleX("p (GeV)"); 
         hi_Evsp_EC.setTitleY("E (GeV)");
-        H2F hi_sfvsp_EC = new H2F("hi_sfvsp_EC", "hi_sfvsp_EC", 100, 0, 6, 100, 0, 0.6);  
+        H2F hi_sfvsp_EC = new H2F("hi_sfvsp_EC", "hi_sfvsp_EC", 100, 0, 12, 100, 0, 0.6);  
         hi_sfvsp_EC.setTitleX("p (GeV)"); 
         hi_sfvsp_EC.setTitleY("E/p");       
         H2F hi_ECin_vs_PCAL = new H2F("hi_ECin_vs_PCAL", "hi_ECin_vs_PCAL", 100, 0, 1, 100, 0, 0.8);  

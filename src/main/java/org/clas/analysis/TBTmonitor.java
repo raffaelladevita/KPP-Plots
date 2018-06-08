@@ -387,6 +387,7 @@ public class TBTmonitor extends AnalysisMonitor {
                                           bank.getFloat("Vtx0_x", loop),
                                           bank.getFloat("Vtx0_y", loop),
                                           bank.getFloat("Vtx0_z", loop));
+                int sector = bank.getByte("sector", loop);
                 if(bank.getShort("ndf", loop)>0) recParticle.setProperty("chi2", bank.getFloat("chi2", loop)/bank.getShort("ndf", loop));
                 if(recParticle.charge()>0) {
                     this.getDataGroup().getItem(2).getH1F("hi_p_pos").fill(recParticle.p());
@@ -402,8 +403,8 @@ public class TBTmonitor extends AnalysisMonitor {
                     this.getDataGroup().getItem(2).getH2F("hi_theta_p_pos").fill(recParticle.p(),Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(2).getH2F("hi_theta_phi_pos").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(2).getH2F("hi_chi2_vz_pos").fill(recParticle.vz(),recParticle.getProperty("chi2"));
-              }
-                else {
+                }
+                else if(recParticle.charge()<0) {
                     this.getDataGroup().getItem(1).getH1F("hi_p_neg").fill(recParticle.p());
                     this.getDataGroup().getItem(1).getH1F("hi_theta_neg").fill(Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(1).getH1F("hi_phi_neg").fill(Math.toDegrees(recParticle.phi()));
