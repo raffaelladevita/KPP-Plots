@@ -7,6 +7,7 @@ package org.clas.analysis;
 
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.base.DetectorType;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.group.DataGroup;
@@ -44,7 +45,7 @@ public class LTCCmonitor  extends AnalysisMonitor {
         hi_nphe_ele.setTitleX("N.PhE"); 
         hi_nphe_ele.setTitleY("Counts"); 
         hi_nphe_ele.setLineColor(2);
-        H1F hi_time  = new H1F("hi_time", "hi_time", 100, -50., 50.);  
+        H1F hi_time  = new H1F("hi_time", "hi_time", 200, -150., 50.);  
         hi_time.setTitleX("dT (ns)"); 
         hi_time.setTitleY("Counts");
         H2F hi_phi_TBT = new H2F("hi_phi_TBT", "hi_phi_TBT", 100, -180.0, 180.0, 100, -180.0, 180.0);  
@@ -71,6 +72,7 @@ public class LTCCmonitor  extends AnalysisMonitor {
          
         // plotting histos
         this.getAnalysisCanvas().getCanvas("Electrons").cd(0);
+        this.getAnalysisCanvas().getCanvas("Electrons").getPad(0).getAxisY().setLog(true);
         this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH1F("hi_nphe_all"));
         this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH1F("hi_nphe_ele"),"same");
         this.getAnalysisCanvas().getCanvas("Electrons").cd(1);
@@ -88,65 +90,86 @@ public class LTCCmonitor  extends AnalysisMonitor {
         DataBank recBankEB   = null;
         DataBank recEvenEB   = null;
         DataBank recDeteEB   = null;
+        DataBank recTrajEB   = null;
+        DataBank recLTCC     = null;
         DataBank recTBTTrack = null;
         if(event.hasBank("REC::Particle"))  recBankEB = event.getBank("REC::Particle");
         if(event.hasBank("REC::Event"))     recEvenEB = event.getBank("REC::Event");
         if(event.hasBank("REC::Cherenkov")) recDeteEB = event.getBank("REC::Cherenkov");
+        if(event.hasBank("REC::Traj"))      recTrajEB = event.getBank("REC::Traj");
+        if(event.hasBank("LTCC::clusters"))   recLTCC = event.getBank("LTCC::clusters");
         if(event.hasBank("TimeBasedTrkg::TBTracks")) recTBTTrack = event.getBank("TimeBasedTrkg::TBTracks");
-        if(event.hasBank("LTCC::clusters")==true){
-	    DataBank bank = event.getBank("LTCC::clusters");
-	    int rows = bank.rows();
+        
+        if(recLTCC!=null){
+	    int rows = recLTCC.rows();
 	    for(int loop = 0; loop < rows; loop++){
-                float nphe   = bank.getFloat("nphe", loop);
-                float time  = bank.getFloat("time",  loop);
-                float x     = bank.getFloat("x",     loop);
-                float y     = bank.getFloat("y",     loop);
-                float z     = bank.getFloat("z",     loop);
-                float phi   = (bank.getFloat("minPhi",   loop)+bank.getFloat("maxPhi",   loop))/2;
-                float theta = (bank.getFloat("minTheta", loop)+bank.getFloat("maxTheta", loop))/2;
+                float nphe  = recLTCC.getFloat("nphe",  loop);
+                float time  = recLTCC.getFloat("time",  loop);
+                float x     = recLTCC.getFloat("x",     loop);
+                float y     = recLTCC.getFloat("y",     loop);
+                float z     = recLTCC.getFloat("z",     loop);
+                float phi   = (recLTCC.getFloat("minPhi",   loop)+recLTCC.getFloat("maxPhi",   loop))/2;
+                float theta = (recLTCC.getFloat("minTheta", loop)+recLTCC.getFloat("maxTheta", loop))/2;
                 this.getDataGroup().getItem(1).getH1F("hi_nphe_all").fill(nphe);
+            }
+        }
 
-                if(recBankEB!=null && recEvenEB!=null) {
-                    double startTime = recEvenEB.getFloat("STTime", 0);
-                    int nrows = recBankEB.rows();
-                    int nFill=0;
-                    for(int part = 0; part < nrows; part++){
-                        int pidCode = 0;
-                        if(recBankEB.getInt("pid", loop)!=0) pidCode = recBankEB.getInt("pid", loop);
-                        else if(recBankEB.getByte("charge", loop)==-1) pidCode = -211;
-                        else if(recBankEB.getByte("charge", loop)==1) pidCode = 211;
-                        else pidCode = 22;
-                        Particle recParticle = new Particle(
-                                                pidCode,
-                                                recBankEB.getFloat("px", loop),
-                                                recBankEB.getFloat("py", loop),
-                                                recBankEB.getFloat("pz", loop),
-                                                recBankEB.getFloat("vx", loop),
-                                                recBankEB.getFloat("vy", loop),
-                                                recBankEB.getFloat("vz", loop));
-                        if(recParticle.pid()==11) {
-                            // find corresponding track
-                            double path = 0;
-                            for(int j=0; j<recTBTTrack.rows(); j++) {
-                                if(Math.abs(recParticle.px()-recTBTTrack.getFloat("p0_x", j))<0.1 &&
-                                   Math.abs(recParticle.px()-recTBTTrack.getFloat("p0_x", j))<0.1 &&
-                                   Math.abs(recParticle.px()-recTBTTrack.getFloat("p0_x", j))<0.1) {
-                                    double c3x  = recTBTTrack.getFloat("c3_x",j);
-                                    double c3y  = recTBTTrack.getFloat("c3_y",j);
-                                    double c3z  = recTBTTrack.getFloat("c3_z",j);
-                                    path = recTBTTrack.getFloat("pathlength",j) + Math.sqrt((x-c3x)*(x-c3x)+(y-c3y)*(y-c3y)+(z-c3z)*(z-c3z));
-                    
-                                }
-                            }                    
-                            if(Math.abs(phi-Math.toDegrees(recParticle.phi()))<60 && nFill==0) {
-                                this.getDataGroup().getItem(1).getH1F("hi_nphe_ele").fill(nphe);
-                                this.getDataGroup().getItem(1).getH1F("hi_time").fill(time-path/29.97-startTime);
-                                nFill++;
-                            }
-    //                        System.out.println(recParticle.phi() + " " + phi);
+        if(recBankEB!=null && recEvenEB!=null && recDeteEB!=null && recLTCC!=null) {
+//                    recDeteEB.show(); bank.show();
+            double startTime = recEvenEB.getFloat("STTime", 0);
+            int nrows = recDeteEB.rows();
+	    for(int loop = 0; loop < nrows; loop++){
+                int    index = recDeteEB.getShort("index", loop);
+                int   pindex = recDeteEB.getShort("pindex", loop);
+                int detector = recDeteEB.getByte("detector", loop);
+                int pidCode = 0;
+                if(recBankEB.getInt("pid", pindex)!=0) pidCode = recBankEB.getInt("pid", pindex);
+                else if(recBankEB.getByte("charge", pindex)==-1) pidCode = -211;
+                else if(recBankEB.getByte("charge", pindex)==1) pidCode = 211;
+                else pidCode = 22;
+                Particle recParticle = new Particle(
+                                        pidCode,
+                                        recBankEB.getFloat("px", pindex),
+                                        recBankEB.getFloat("py", pindex),
+                                        recBankEB.getFloat("pz", pindex),
+                                        recBankEB.getFloat("vx", pindex),
+                                        recBankEB.getFloat("vy", pindex),
+                                        recBankEB.getFloat("vz", pindex));
+                if(recParticle.pid()==11 && detector == DetectorType.LTCC.getDetectorId()) {
+                    float nphe  = recLTCC.getFloat("nphe",  index);
+                    float time  = recLTCC.getFloat("time",  index);
+                    float x     = recLTCC.getFloat("x",     index);
+                    float y     = recLTCC.getFloat("y",     index);
+                    float z     = recLTCC.getFloat("z",     index);
+                    float phi   = (recLTCC.getFloat("minPhi",   index)+recLTCC.getFloat("maxPhi",   index))/2;
+                    float theta = (recLTCC.getFloat("minTheta", index)+recLTCC.getFloat("maxTheta", index))/2;
+                    double path = 0;
+                    for(int j=0; j<recTrajEB.rows(); j++) {
+                        if(pindex==recTrajEB.getShort("pindex", j) && recTrajEB.getShort("detId", j)==43) {
+                            path = recTrajEB.getFloat("pathlength", j);                        
+                            this.getDataGroup().getItem(1).getH1F("hi_nphe_ele").fill(nphe);
+                            this.getDataGroup().getItem(1).getH1F("hi_time").fill(time-path/29.97-startTime);
                             this.getDataGroup().getItem(1).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),phi);
                             this.getDataGroup().getItem(1).getH2F("hi_theta_TBT").fill(Math.toDegrees(recParticle.theta()),theta);
                         }
+//                            // find corresponding track
+//                            double path = 0;
+//                            for(int j=0; j<recTBTTrack.rows(); j++) {
+//                                if(Math.abs(recParticle.px()-recTBTTrack.getFloat("p0_x", j))<0.1 &&
+//                                   Math.abs(recParticle.px()-recTBTTrack.getFloat("p0_x", j))<0.1 &&
+//                                   Math.abs(recParticle.px()-recTBTTrack.getFloat("p0_x", j))<0.1) {
+//                                    double c3x  = recTBTTrack.getFloat("c3_x",j);
+//                                    double c3y  = recTBTTrack.getFloat("c3_y",j);
+//                                    double c3z  = recTBTTrack.getFloat("c3_z",j);
+//                                    path = recTBTTrack.getFloat("pathlength",j) + Math.sqrt((x-c3x)*(x-c3x)+(y-c3y)*(y-c3y)+(z-c3z)*(z-c3z));
+//                    
+//                                }
+//                            }                    
+//                            if(Math.abs(phi-Math.toDegrees(recParticle.phi()))<60 && nFill==0) {
+//                                nFill++;
+//                            }
+    //                        System.out.println(recParticle.phi() + " " + phi);
+                        
                     }
                 }
             }

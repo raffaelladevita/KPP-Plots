@@ -13,7 +13,6 @@ import org.jlab.groot.data.GraphErrors;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
-import org.jlab.groot.fitter.ParallelSliceFitter;
 import org.jlab.groot.group.DataGroup;
 import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
@@ -28,7 +27,7 @@ public class FTOFmonitor extends AnalysisMonitor {
 
     public FTOFmonitor(String name) {
         super(name);
-        this.setAnalysisTabNames("MIPs", "dE/dx positive", "dE/dx negative","RF positive","RF negative", "Beta", "Mass", "Mass2");
+        this.setAnalysisTabNames("MIPs", "dE/dx positive", "dE/dx negative","Residuals", "RF positive","RF negative", "Beta", "Mass", "Mass2");
         this.init(false);
     }
 
@@ -101,6 +100,21 @@ public class FTOFmonitor extends AnalysisMonitor {
             dc_mips.addDataSet(hi_time_paddle, 2+layer);
         }
         this.getDataGroup().add(dc_mips, 3);  
+        // Space residuals
+        DataGroup dc_residuals = new DataGroup(3,2);
+        for(int layer=1; layer <= 3; layer++) {
+            H2F hi_x_residual_pos = new H2F("hi_x_residual_pos_" + layer, "hi_x_residual_pos_" + layer, 200, -30., 30., nPaddle[layer-1], 1, nPaddle[layer-1]+1.);  
+            hi_x_residual_pos.setTitleX("FTOF -Track x (cm)");
+            hi_x_residual_pos.setTitleY("Paddle"); 
+            hi_x_residual_pos.setTitle("Panel " + panels[layer-1]);
+            H2F hi_x_residual_neg = new H2F("hi_x_residual_neg_" + layer, "hi_x_residual_neg_" + layer, 200, -30., 30., nPaddle[layer-1], 1, nPaddle[layer-1]+1.);  
+            hi_x_residual_neg.setTitleX("FTOF -Track x (cm)");
+            hi_x_residual_neg.setTitleY("Paddle"); 
+            hi_x_residual_neg.setTitle("Panel " + panels[layer-1]);
+            dc_residuals.addDataSet(hi_x_residual_pos,  -1+layer);   
+            dc_residuals.addDataSet(hi_x_residual_neg,   2+layer);   
+        }
+        this.getDataGroup().add(dc_residuals, 4);          
         // RF offsets
         DataGroup dc_rf = new DataGroup(3,2);
         for(int layer=1; layer <= 3; layer++) {
@@ -116,7 +130,7 @@ public class FTOFmonitor extends AnalysisMonitor {
             dc_rf.addDataSet(hi_rf_paddle, -1+layer);
             dc_rf.addDataSet(g_rf_paddle,   2+layer);
         }
-        this.getDataGroup().add(dc_rf, 4);  
+        this.getDataGroup().add(dc_rf, 5);  
         // RF offsets hadrons
         DataGroup dc_rf_had = new DataGroup(3,2);
         for(int layer=1; layer <= 3; layer++) {
@@ -132,7 +146,7 @@ public class FTOFmonitor extends AnalysisMonitor {
             dc_rf_had.addDataSet(hi_rf_paddle, -1+layer);
             dc_rf_had.addDataSet(g_rf_paddle,   2+layer);
         }
-        this.getDataGroup().add(dc_rf_had, 5);  
+        this.getDataGroup().add(dc_rf_had, 6);  
         // beta
         DataGroup dc_beta = new DataGroup(3,2);
         for(int layer=1; layer <= 3; layer++) {
@@ -147,7 +161,7 @@ public class FTOFmonitor extends AnalysisMonitor {
             dc_beta.addDataSet(hi_beta_pos,  -1+layer);
             dc_beta.addDataSet(hi_beta_neg,   2+layer);
         }
-        this.getDataGroup().add(dc_beta, 6);  
+        this.getDataGroup().add(dc_beta, 7);  
         // beta
         DataGroup dc_mass = new DataGroup(3,2);
         for(int layer=1; layer <= 3; layer++) {
@@ -164,7 +178,7 @@ public class FTOFmonitor extends AnalysisMonitor {
             dc_beta.addDataSet(hi_mass_pos,  -1+layer);
             dc_beta.addDataSet(hi_mass_neg,   2+layer);
         }
-        this.getDataGroup().add(dc_beta, 7);  
+        this.getDataGroup().add(dc_beta, 8);  
         // beta
         DataGroup dc_mass2 = new DataGroup(3,2);
         for(int layer=1; layer <= 3; layer++) {
@@ -179,7 +193,7 @@ public class FTOFmonitor extends AnalysisMonitor {
             dc_mass2.addDataSet(hi_mass2_pos,  -1+layer);
             dc_mass2.addDataSet(hi_mass2_neg,   2+layer);
         }
-        this.getDataGroup().add(dc_mass2, 8);  
+        this.getDataGroup().add(dc_mass2, 9);  
     }
     
     @Override
@@ -208,6 +222,10 @@ public class FTOFmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Mass2").divide(3, 2);
         this.getAnalysisCanvas().getCanvas("Mass2").setGridX(false);
         this.getAnalysisCanvas().getCanvas("Mass2").setGridY(false);
+        this.getAnalysisCanvas().getCanvas("Residuals").divide(3, 2);
+        this.getAnalysisCanvas().getCanvas("Residuals").setGridX(false);
+        this.getAnalysisCanvas().getCanvas("Residuals").setGridY(false);
+
         
         for(int layer=1; layer <= 3; layer++) {
             this.getAnalysisCanvas().getCanvas("MIPs").cd(0+layer-1);
@@ -219,18 +237,18 @@ public class FTOFmonitor extends AnalysisMonitor {
         }
         for(int layer=1; layer <= 3; layer++) {
             this.getAnalysisCanvas().getCanvas("RF positive").cd(0+layer-1);
-            this.getAnalysisCanvas().getCanvas("RF positive").draw(this.getDataGroup().getItem(5).getH2F("hi_rf_pos_paddle_"+layer));
+            this.getAnalysisCanvas().getCanvas("RF positive").draw(this.getDataGroup().getItem(6).getH2F("hi_rf_pos_paddle_"+layer));
             this.getAnalysisCanvas().getCanvas("RF positive").cd(3+layer-1);
             this.getAnalysisCanvas().getCanvas("RF positive").getPad(3+layer-1).getAxisY().setRange(0, 0.3);
-            this.getAnalysisCanvas().getCanvas("RF positive").draw(this.getDataGroup().getItem(5).getGraph("g_rf_pos_paddle_"+layer));
+            this.getAnalysisCanvas().getCanvas("RF positive").draw(this.getDataGroup().getItem(6).getGraph("g_rf_pos_paddle_"+layer));
         }
         for(int layer=1; layer <= 3; layer++) {
             this.getAnalysisCanvas().getCanvas("RF negative").cd(0+layer-1);
             this.getAnalysisCanvas().getCanvas("RF negative").getPad(0+layer-1).getAxisZ().setLog(true);
-            this.getAnalysisCanvas().getCanvas("RF negative").draw(this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle_"+layer));
+            this.getAnalysisCanvas().getCanvas("RF negative").draw(this.getDataGroup().getItem(5).getH2F("hi_rf_neg_paddle_"+layer));
             this.getAnalysisCanvas().getCanvas("RF negative").cd(3+layer-1);
             this.getAnalysisCanvas().getCanvas("RF negative").getPad(3+layer-1).getAxisY().setRange(0, 0.3);
-            this.getAnalysisCanvas().getCanvas("RF negative").draw(this.getDataGroup().getItem(4).getGraph("g_rf_neg_paddle_"+layer));
+            this.getAnalysisCanvas().getCanvas("RF negative").draw(this.getDataGroup().getItem(5).getGraph("g_rf_neg_paddle_"+layer));
         }
         for(int layer=1; layer <= 3; layer++) {
             this.getAnalysisCanvas().getCanvas("dE/dx positive").cd(0+layer-1);
@@ -247,28 +265,36 @@ public class FTOFmonitor extends AnalysisMonitor {
             this.getAnalysisCanvas().getCanvas("dE/dx negative").draw(this.getDataGroup().getItem(2).getH2F("hi_neg_en_p_"+layer));
         }
         for(int layer=1; layer <= 3; layer++) {
+            this.getAnalysisCanvas().getCanvas("Residuals").cd(0+layer-1);
+            this.getAnalysisCanvas().getCanvas("Residuals").getPad(0+layer-1).getAxisZ().setLog(true);
+            this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(4).getH2F("hi_x_residual_pos_"+layer));
+            this.getAnalysisCanvas().getCanvas("Residuals").cd(3+layer-1);
+            this.getAnalysisCanvas().getCanvas("Residuals").getPad(3+layer-1).getAxisZ().setLog(true);
+            this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(4).getH2F("hi_x_residual_neg_"+layer));
+        }
+        for(int layer=1; layer <= 3; layer++) {
             this.getAnalysisCanvas().getCanvas("Beta").cd(0+layer-1);
             this.getAnalysisCanvas().getCanvas("Beta").getPad(0+layer-1).getAxisZ().setLog(true);
-            this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(6).getH2F("hi_beta_pos_"+layer));
+            this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(7).getH2F("hi_beta_pos_"+layer));
             this.getAnalysisCanvas().getCanvas("Beta").cd(3+layer-1);
             this.getAnalysisCanvas().getCanvas("Beta").getPad(3+layer-1).getAxisZ().setLog(true);
-            this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(6).getH2F("hi_beta_neg_"+layer));
+            this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(7).getH2F("hi_beta_neg_"+layer));
         }
         for(int layer=1; layer <= 3; layer++) {
             this.getAnalysisCanvas().getCanvas("Mass").cd(0+layer-1);
             this.getAnalysisCanvas().getCanvas("Mass").getPad(0+layer-1).getAxisY().setLog(true);
-            this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(7).getH1F("hi_mass_pos_"+layer));
+            this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(8).getH1F("hi_mass_pos_"+layer));
             this.getAnalysisCanvas().getCanvas("Mass").cd(3+layer-1);
             this.getAnalysisCanvas().getCanvas("Mass").getPad(3+layer-1).getAxisY().setLog(true);
-            this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(7).getH1F("hi_mass_neg_"+layer));
+            this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(8).getH1F("hi_mass_neg_"+layer));
         }
         for(int layer=1; layer <= 3; layer++) {
             this.getAnalysisCanvas().getCanvas("Mass2").cd(0+layer-1);
             this.getAnalysisCanvas().getCanvas("Mass2").getPad(0+layer-1).getAxisZ().setLog(true);
-            this.getAnalysisCanvas().getCanvas("Mass2").draw(this.getDataGroup().getItem(8).getH2F("hi_mass2_pos_"+layer));
+            this.getAnalysisCanvas().getCanvas("Mass2").draw(this.getDataGroup().getItem(9).getH2F("hi_mass2_pos_"+layer));
             this.getAnalysisCanvas().getCanvas("Mass2").cd(3+layer-1);
             this.getAnalysisCanvas().getCanvas("Mass2").getPad(3+layer-1).getAxisZ().setLog(true);
-            this.getAnalysisCanvas().getCanvas("Mass2").draw(this.getDataGroup().getItem(8).getH2F("hi_mass2_neg_"+layer));
+            this.getAnalysisCanvas().getCanvas("Mass2").draw(this.getDataGroup().getItem(9).getH2F("hi_mass2_neg_"+layer));
         }
 
         this.getAnalysisCanvas().getCanvas("MIPs").update();    
@@ -359,6 +385,9 @@ public class FTOFmonitor extends AnalysisMonitor {
                 int trk_id    = recFtofHits.getShort("trackid", loop);
                 double energy = recFtofHits.getFloat("energy", loop);
                 double time   = recFtofHits.getFloat("time",loop);
+           	double x      = recFtofHits.getFloat("x", loop);
+                double y      = recFtofHits.getFloat("y", loop);
+                double z      = recFtofHits.getFloat("z", loop);
            	double tx     = recFtofHits.getFloat("tx", loop);
                 double ty     = recFtofHits.getFloat("ty", loop);
                 double tz     = recFtofHits.getFloat("tz", loop);
@@ -383,10 +412,15 @@ public class FTOFmonitor extends AnalysisMonitor {
                     tdc1   = (double) ftofTDC.getInt("TDC",tdcId1);
                     tdc2   = (double) ftofTDC.getInt("TDC",tdcId2);                    
                 }
+                Vector3D hit = new Vector3D(x,y,z);
                 Vector3D trk = new Vector3D(tx,ty,tz);
                 double angle = Math.toRadians(90-60*(sector-1));
+        	hit.rotateZ(angle);
         	trk.rotateZ(angle);
+                if(layer==3) angle = Math.toRadians(58.11);
+                else         angle = Math.toRadians(25);
         	angle = Math.toRadians(25);
+        	hit.rotateX(angle);
         	trk.rotateX(angle);
                 this.getDataGroup().getItem(3).getH2F("hi_en_paddle_"+layer).fill(paddle*1.,energy);
                 if(trk_id!=-1 && energy>3.0 && recHBTTrack!=null && recRunRF!=null) {
@@ -410,8 +444,14 @@ public class FTOFmonitor extends AnalysisMonitor {
                         if(recRunRF.getInt("id", k)==1) trf = recRunRF.getFloat("time",k);
                     }
                     double dt = (time - path/(beta*29.97) - trf + 120.5*2.004)%2.004-1.002;
-                    if(/*Math.abs(trk.x())<10. && Math.abs(vz)<15.0 && adc1>1200 && adc2>1200 && */q==-1 && recParticle.p()>1.5 && Math.abs(vz)<10 && chi2<75) this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle_"+layer).fill(paddle*1.,dt);
-                    if(/*Math.abs(trk.x())<20. && Math.abs(vz)<15.0 && adc1>1200 && adc2>1200 && */q==1  && recParticle.p()>1.5 && Math.abs(vz)<10 && chi2<75) this.getDataGroup().getItem(5).getH2F("hi_rf_pos_paddle_"+layer).fill(paddle*1.,dt);
+                    if(q==-1 && recParticle.p()>1.5 && Math.abs(vz)<10 && chi2<75) {
+                        this.getDataGroup().getItem(4).getH2F("hi_x_residual_neg_"+layer).fill(hit.x()-trk.x(),paddle*1.0);                        
+                        this.getDataGroup().getItem(5).getH2F("hi_rf_neg_paddle_"+layer).fill(paddle*1.,dt);
+                    }
+                    if(q==1  && recParticle.p()>1.5 && Math.abs(vz)<10 && chi2<75) {
+                        this.getDataGroup().getItem(4).getH2F("hi_x_residual_pos_"+layer).fill(hit.x()-trk.x(),paddle*1.0);                        
+                        this.getDataGroup().getItem(6).getH2F("hi_rf_pos_paddle_"+layer).fill(paddle*1.,dt);
+                    }
                     if(recEvenEB!=null && recBankEB!=null) {
                         double startTime = recEvenEB.getFloat("STTime", 0);
                         int    trigger   = recBankEB.getInt("pid", 0);
@@ -422,17 +462,17 @@ public class FTOFmonitor extends AnalysisMonitor {
                                 this.getDataGroup().getItem(1).getH1F("hi_pos_en_"+layer).fill(energy/dx);
                                 this.getDataGroup().getItem(1).getH2F("hi_pos_en_p_"+layer).fill(recParticle.p(),energy/dx);
                                 this.getDataGroup().getItem(1).getH2F("hi_pos_en_paddle_"+layer).fill(paddle*1.,energy/dx);
-                                this.getDataGroup().getItem(6).getH2F("hi_beta_pos_"+layer).fill(recParticle.p(),betaTof);
-                                this.getDataGroup().getItem(7).getH1F("hi_mass_pos_"+layer).fill(mass2);
-                                this.getDataGroup().getItem(8).getH2F("hi_mass2_pos_"+layer).fill(recParticle.p(),mass2);
+                                this.getDataGroup().getItem(7).getH2F("hi_beta_pos_"+layer).fill(recParticle.p(),betaTof);
+                                this.getDataGroup().getItem(8).getH1F("hi_mass_pos_"+layer).fill(mass2);
+                                this.getDataGroup().getItem(9).getH2F("hi_mass2_pos_"+layer).fill(recParticle.p(),mass2);
                             }
                             if(q==-1) {
                                 this.getDataGroup().getItem(2).getH1F("hi_neg_en_"+layer).fill(energy/dx);
                                 this.getDataGroup().getItem(2).getH2F("hi_neg_en_p_"+layer).fill(recParticle.p(),energy/dx);
                                 this.getDataGroup().getItem(2).getH2F("hi_neg_en_paddle_"+layer).fill(paddle*1.,energy/dx);
-                                this.getDataGroup().getItem(6).getH2F("hi_beta_neg_"+layer).fill(recParticle.p(),betaTof);
-                                this.getDataGroup().getItem(7).getH1F("hi_mass_neg_"+layer).fill(mass2);
-                                this.getDataGroup().getItem(8).getH2F("hi_mass2_neg_"+layer).fill(recParticle.p(),mass2);
+                                this.getDataGroup().getItem(7).getH2F("hi_beta_neg_"+layer).fill(recParticle.p(),betaTof);
+                                this.getDataGroup().getItem(8).getH1F("hi_mass_neg_"+layer).fill(mass2);
+                                this.getDataGroup().getItem(9).getH2F("hi_mass2_neg_"+layer).fill(recParticle.p(),mass2);
                             }
                         }
                     }
@@ -456,20 +496,20 @@ public class FTOFmonitor extends AnalysisMonitor {
 //        System.out.println("Updating FTOF");
         this.analyze();
         //fitting negative tracks vertex
-//        ParallelSliceFitter fitter = new ParallelSliceFitter(this.getDataGroup().getItem(4).getH2F("hi_rf_paddle_2"));
+//        ParallelSliceFitter fitter = new ParallelSliceFitter(this.getDataGroup().getItem(5).getH2F("hi_rf_paddle_2"));
 //        fitter.fitSlicesX();
 //        GraphErrors meanY = fitter.getMeanSlices();
-//        this.getDataGroup().getItem(4).getGraph("hi_rf_offsets_2").copy(meanY);       
+//        this.getDataGroup().getItem(5).getGraph("hi_rf_offsets_2").copy(meanY);       
     }
     
     @Override
     public void analyze() {
-//        ParallelSliceFitter fitter = new ParallelSliceFitter(this.getDataGroup().getItem(4).getH2F("hi_rf_paddle_2"));
+//        ParallelSliceFitter fitter = new ParallelSliceFitter(this.getDataGroup().getItem(5).getH2F("hi_rf_paddle_2"));
 //        fitter.fitSlicesY();
 //        GraphErrors meanY = fitter.getMeanSlices();
         for(int layer=1; layer <= 3; layer++) {
-            H2F         h2    = this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle_" + layer);
-            GraphErrors meanX = this.getDataGroup().getItem(4).getGraph("g_rf_neg_paddle_" + layer);
+            H2F         h2    = this.getDataGroup().getItem(5).getH2F("hi_rf_neg_paddle_" + layer);
+            GraphErrors meanX = this.getDataGroup().getItem(5).getGraph("g_rf_neg_paddle_" + layer);
             meanX.reset();
             ArrayList<H1F> hslice = h2.getSlicesX();
             for(int i=0; i<hslice.size(); i++) {
@@ -493,8 +533,8 @@ public class FTOFmonitor extends AnalysisMonitor {
 //            this.getAnalysisCanvas().getCanvas("RF negative").update();
         }
         for(int layer=1; layer <= 3; layer++) {
-            H2F         h2    = this.getDataGroup().getItem(5).getH2F("hi_rf_pos_paddle_" + layer);
-            GraphErrors meanX = this.getDataGroup().getItem(5).getGraph("g_rf_pos_paddle_" + layer);
+            H2F         h2    = this.getDataGroup().getItem(6).getH2F("hi_rf_pos_paddle_" + layer);
+            GraphErrors meanX = this.getDataGroup().getItem(6).getGraph("g_rf_pos_paddle_" + layer);
             meanX.reset();
             ArrayList<H1F> hslice = h2.getSlicesX();
             for(int i=0; i<hslice.size(); i++) {

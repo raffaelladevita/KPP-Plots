@@ -50,33 +50,36 @@ public class TIMEmonitor extends AnalysisMonitor {
         hi_dc_3.setTitleX("Time (ns)");
         hi_dc_3.setTitleY("Counts");
         hi_dc_3.setTitle("DC region 3 ");
-        H1F hi_ftof_1 = new H1F("hi_ftof_1","hi_ftof_1",200,400,1000);
+        H1F hi_ftof_1 = new H1F("hi_ftof_1","hi_ftof_1",200,0,600);
         hi_ftof_1.setTitleX("Time (ns)");
         hi_ftof_1.setTitleY("Counts");
         hi_ftof_1.setTitle("FTOF panel 1A ");
         hi_ftof_1.setFillColor(23);
-        H1F hi_ftof_2 = new H1F("hi_ftof_2","hi_ftof_2",200,400,1000);
+        H1F hi_ftof_2 = new H1F("hi_ftof_2","hi_ftof_2",200,0,600);
         hi_ftof_2.setTitleX("Time (ns)");
         hi_ftof_2.setTitleY("Counts");
         hi_ftof_2.setTitle("FTOF panel 1B ");
         hi_ftof_2.setFillColor(23);
-        H1F hi_ftof_3 = new H1F("hi_ftof_3","hi_ftof_3",200,400,1000);
+        H1F hi_ftof_3 = new H1F("hi_ftof_3","hi_ftof_3",200,0,600);
         hi_ftof_3.setTitleX("Time (ns)");
         hi_ftof_3.setTitleY("Counts");
         hi_ftof_3.setTitle("FTOF panel 2 ");
         hi_ftof_3.setFillColor(23);
-        H1F hi_ecal_1 = new H1F("hi_ecal_1","hi_ecal_1",200,400,1000);
+        H1F hi_ecal_1 = new H1F("hi_ecal_1","hi_ecal_1",200,0,600);
         hi_ecal_1.setTitleX("Time (ns)");
         hi_ecal_1.setTitleY("Counts");
         hi_ecal_1.setTitle("PCAL ");
-        H1F hi_ecal_2 = new H1F("hi_ecal_2","hi_ecal_2",200,400,1000);
+        H1F hi_ecal_2 = new H1F("hi_ecal_2","hi_ecal_2",200,0,600);
         hi_ecal_2.setTitleX("Time (ns)");
         hi_ecal_2.setTitleY("Counts");
         hi_ecal_2.setTitle("EC inner ");
-        H1F hi_ecal_3 = new H1F("hi_ecal_3","hi_ecal_3",200,400,1000);
+        H1F hi_ecal_3 = new H1F("hi_ecal_3","hi_ecal_3",200,0,600);
         hi_ecal_3.setTitleX("Time (ns)");
         hi_ecal_3.setTitleY("Counts");
         hi_ecal_3.setTitle("EC outer ");
+        H1F hi_test = new H1F("hi_test","hi_test",3,0,3);
+        hi_test.setOptStat("1111");
+        hi_test.setTitleY("Counts");
         DataGroup dg_time = new DataGroup(3,3);
         dg_time.addDataSet(hi_dc_1, 0);
         dg_time.addDataSet(hi_dc_2, 3);
@@ -87,12 +90,13 @@ public class TIMEmonitor extends AnalysisMonitor {
         dg_time.addDataSet(hi_ecal_1, 2);
         dg_time.addDataSet(hi_ecal_2, 5);
         dg_time.addDataSet(hi_ecal_3, 8);
+        dg_time.addDataSet(hi_test,   8);
         this.getDataGroup().add(dg_time, 1);       
     }
     
     @Override
     public void plotHistos() {
-        this.getAnalysisCanvas().getCanvas("Timing Correlations").divide(1, 3);
+        this.getAnalysisCanvas().getCanvas("Timing Correlations").divide(1, 4);
         this.getAnalysisCanvas().getCanvas("Timing Correlations").setGridX(false);
         this.getAnalysisCanvas().getCanvas("Timing Correlations").setGridY(false);
         
@@ -102,7 +106,8 @@ public class TIMEmonitor extends AnalysisMonitor {
             this.getAnalysisCanvas().getCanvas("Timing Correlations").getPad(i).setTitleFontSize(24);
             this.getAnalysisCanvas().getCanvas("Timing Correlations").draw(this.getDataGroup().getItem(1).getH1F(hname));
         }
-
+        this.getAnalysisCanvas().getCanvas("Timing Correlations").cd(3);
+        this.getAnalysisCanvas().getCanvas("Timing Correlations").draw(this.getDataGroup().getItem(1).getH1F("hi_test"));
         this.getAnalysisCanvas().getCanvas("Timing Correlations").update();
     }
         
@@ -156,6 +161,7 @@ public class TIMEmonitor extends AnalysisMonitor {
                 this.getDataGroup().getItem(1).getH1F("hi_dc_" + region).fill(TDC*0.1);
             }
         }
+        this.getDataGroup().getItem(1).getH1F("hi_test").fill(1);
     }
     
     @Override

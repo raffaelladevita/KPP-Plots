@@ -41,7 +41,9 @@ import org.clas.analysis.CVTmonitor;
 import org.clas.analysis.EBmonitor;
 import org.clas.analysis.ECmonitor;
 import org.clas.analysis.ELmonitor;
+import org.clas.analysis.FMTmonitor;
 import org.clas.analysis.FTOFmonitor;
+import org.clas.analysis.FTmonitor;
 import org.clas.analysis.HTCCmonitor;
 import org.clas.analysis.LTCCmonitor;
 import org.clas.analysis.TBTmonitor;
@@ -85,7 +87,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
     private int canvasUpdateTime = 10000;
     private int analysisUpdateTime = 10000;
     private int runNumber  = 0;
-    private String kppDir = "/data/kpp";
+    private String kppDir = "/Users/devita";
     
     // detector monitors
     AnalysisMonitor[] monitors = {
@@ -98,6 +100,8 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         	new HTCCmonitor("HTCC"),
         	new LTCCmonitor("LTCC"),
                 new CTOFmonitor("CTOF"),
+                new FTmonitor("FT"),
+                new FMTmonitor("FMT"),
         	new EBmonitor("EB"),
         	new TIMEmonitor("TIME")
     };
@@ -302,6 +306,11 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
             for(int k=0; k<this.monitors.length; k++) {
                 this.monitors[k].dataEventAction(event);
             }      
+            if (event.getType() == DataEventType.EVENT_STOP) {
+                for(int k=0; k<this.monitors.length; k++) {
+                    this.monitors[k].timerUpdate();
+                }                
+            }
 	}
    }
 
@@ -332,12 +341,15 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         this.CLAS12Canvas.getCanvas("Summaries").cd(3);
         if(this.monitors[4].getDataGroup().getItem(1).getH2F("hi_sfvsp_EC")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[4].getDataGroup().getItem(1).getH2F("hi_sfvsp_EC"));
         this.CLAS12Canvas.getCanvas("Summaries").cd(2);
-        if(this.monitors[4].getDataGroup().getItem(2).getH1F("hi_pi0_mass")!=null) this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[4].getDataGroup().getItem(2).getH1F("hi_pi0_mass"));    
+        if(this.monitors[4].getDataGroup().getItem(2).getH1F("hi_pi0_mass")!=null) {
+                this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[4].getDataGroup().getItem(2).getH1F("hi_pi0_mass"));
+                this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[4].getDataGroup().getItem(2).getF1D("fpi0"),"same");
+        }    
     }
     
     public void printHistosToFile() {
         DateFormat df = new SimpleDateFormat("MM-dd-yyyy_hh.mm.ss_aa");
-        String data = this.kppDir + "/kpp-pictures/clas12rec_run_" + this.runNumber + "_" + df.format(new Date());        
+        String data = this.kppDir + "/clas12rec_run_" + this.runNumber + "_" + df.format(new Date());        
         File theDir = new File(data);
         // if the directory does not exist, create it
         if (!theDir.exists()) {

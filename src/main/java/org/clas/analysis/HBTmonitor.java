@@ -433,22 +433,22 @@ public class HBTmonitor extends AnalysisMonitor {
                                               genBank.getFloat("vx", loop),
                                               genBank.getFloat("vy", loop),
                                               genBank.getFloat("vz", loop));
-                if(genPart.pid()==11  && partGenNeg==null) partGenNeg=genPart;
-                if(genPart.pid()==211 && partGenPos==null) partGenPos=genPart;
-                if(partGenNeg != null && partRecNeg != null) {
-                    this.getDataGroup().getItem(3).getH1F("hi_dp_neg").fill((partRecNeg.p()-partGenNeg.p())/partGenNeg.p());
-                    this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg").fill(Math.toDegrees(partRecNeg.theta()-partGenNeg.theta()));
-                    this.getDataGroup().getItem(3).getH1F("hi_dphi_neg").fill(Math.toDegrees(partRecNeg.phi()-partGenNeg.phi()));
-                    this.getDataGroup().getItem(3).getH1F("hi_dvz_neg").fill(partRecNeg.vz()-partGenNeg.vz());
-                }
-                if(partGenPos != null && partRecPos != null) {
-                    this.getDataGroup().getItem(3).getH1F("hi_dp_pos").fill((partRecPos.p()-partGenPos.p())/partGenPos.p());
-                    this.getDataGroup().getItem(3).getH1F("hi_dtheta_pos").fill(Math.toDegrees(partRecPos.theta()-partGenPos.theta()));
-                    this.getDataGroup().getItem(3).getH1F("hi_dphi_pos").fill(Math.toDegrees(partRecPos.phi()-partGenPos.phi()));
-                    this.getDataGroup().getItem(3).getH1F("hi_dvz_pos").fill(partRecPos.vz()-partGenPos.vz());
-                }
+                if(genPart.charge()==-1  && partGenNeg==null && genPart.theta()!=0) partGenNeg=genPart;
+                if(genPart.charge()==1   && partGenPos==null) partGenPos=genPart;
             }
-        }
+            if(partGenNeg != null && partRecNeg != null) {
+                this.getDataGroup().getItem(3).getH1F("hi_dp_neg").fill((partRecNeg.p()-partGenNeg.p())/partGenNeg.p());
+                this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg").fill(Math.toDegrees(partRecNeg.theta()-partGenNeg.theta()));
+                this.getDataGroup().getItem(3).getH1F("hi_dphi_neg").fill(Math.toDegrees(partRecNeg.phi()-partGenNeg.phi()));
+                this.getDataGroup().getItem(3).getH1F("hi_dvz_neg").fill(partRecNeg.vz()-partGenNeg.vz());
+            }
+            if(partGenPos != null && partRecPos != null) {
+                this.getDataGroup().getItem(3).getH1F("hi_dp_pos").fill((partRecPos.p()-partGenPos.p())/partGenPos.p());
+                this.getDataGroup().getItem(3).getH1F("hi_dtheta_pos").fill(Math.toDegrees(partRecPos.theta()-partGenPos.theta()));
+                this.getDataGroup().getItem(3).getH1F("hi_dphi_pos").fill(Math.toDegrees(partRecPos.phi()-partGenPos.phi()));
+                this.getDataGroup().getItem(3).getH1F("hi_dvz_pos").fill(partRecPos.vz()-partGenPos.vz());
+            }
+        }    
     }
 
     @Override

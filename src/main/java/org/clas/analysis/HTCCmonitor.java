@@ -7,6 +7,7 @@ package org.clas.analysis;
 
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.base.DetectorType;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.group.DataGroup;
@@ -133,39 +134,38 @@ public class HTCCmonitor  extends AnalysisMonitor {
                 this.getDataGroup().getItem(1).getH1F("hi_nhits").fill(nhits*1.0);
                 this.getDataGroup().getItem(1).getH2F("hi_nphe_phi").fill(nphe*1.0,Math.toDegrees(phi));
                 this.getDataGroup().getItem(1).getH2F("hi_nphe_theta").fill(nphe*1.0,Math.toDegrees(theta));
-                
-                if(recBankEB!=null && recDeteEB!=null && recEvenEB!=null) {
-                    double startTime = recEvenEB.getFloat("STTime", 0);
-                    int nrows = recBankEB.rows();
-                    for(int part = 0; part < nrows; part++){
-                        int pidCode = 0;
-                        if(recBankEB.getInt("pid", loop)!=0) pidCode = recBankEB.getInt("pid", loop);
-                        else if(recBankEB.getByte("charge", loop)==-1) pidCode = -211;
-                        else if(recBankEB.getByte("charge", loop)==1) pidCode = 211;
-                        else pidCode = 22;
-                        Particle recParticle = new Particle(
-                                                pidCode,
-                                                recBankEB.getFloat("px", loop),
-                                                recBankEB.getFloat("py", loop),
-                                                recBankEB.getFloat("pz", loop),
-                                                recBankEB.getFloat("vx", loop),
-                                                recBankEB.getFloat("vy", loop),
-                                                recBankEB.getFloat("vz", loop));
-                        for(int j=0; j<recDeteEB.rows(); j++) {
-                            if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getByte("detector",j)==15/*6*/) {
-                                this.getDataGroup().getItem(2).getH1F("hi_nphe_all").fill(recDeteEB.getFloat("nphe", j)*1.0);
-                                if(recParticle.pid()==11) {
-                                    this.getDataGroup().getItem(2).getH1F("hi_nphe_ele").fill(recDeteEB.getFloat("nphe", j)*1.0);
-                                    this.getDataGroup().getItem(2).getH1F("hi_time").fill(recDeteEB.getFloat("time", j)-recDeteEB.getFloat("path", j)/29.97-startTime);
-                                }
-                                this.getDataGroup().getItem(2).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recDeteEB.getFloat("phi", j)));
-                                this.getDataGroup().getItem(2).getH2F("hi_theta_TBT").fill(Math.toDegrees(recParticle.theta()),Math.toDegrees(recDeteEB.getFloat("theta", j)));
-                            }
+            }
+        }
+        if(recBankEB!=null && recDeteEB!=null && recEvenEB!=null) {
+            double startTime = recEvenEB.getFloat("STTime", 0);
+            int nrows = recBankEB.rows();
+            for(int loop = 0; loop < nrows; loop++){
+                int pidCode = 0;
+                if(recBankEB.getInt("pid", loop)!=0) pidCode = recBankEB.getInt("pid", loop);
+                else if(recBankEB.getByte("charge", loop)==-1) pidCode = -211;
+                else if(recBankEB.getByte("charge", loop)==1) pidCode = 211;
+                else pidCode = 22;
+                Particle recParticle = new Particle(
+                                        pidCode,
+                                        recBankEB.getFloat("px", loop),
+                                        recBankEB.getFloat("py", loop),
+                                        recBankEB.getFloat("pz", loop),
+                                        recBankEB.getFloat("vx", loop),
+                                        recBankEB.getFloat("vy", loop),
+                                        recBankEB.getFloat("vz", loop));
+                for(int j=0; j<recDeteEB.rows(); j++) {
+                    if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getByte("detector",j)==DetectorType.HTCC.getDetectorId()) {
+                        this.getDataGroup().getItem(2).getH1F("hi_nphe_all").fill(recDeteEB.getFloat("nphe", j)*1.0);
+                        if(recParticle.pid()==11) {
+                            this.getDataGroup().getItem(2).getH1F("hi_nphe_ele").fill(recDeteEB.getFloat("nphe", j)*1.0);
+                            this.getDataGroup().getItem(2).getH1F("hi_time").fill(recDeteEB.getFloat("time", j)-recDeteEB.getFloat("path", j)/29.97-startTime);
                         }
+                        this.getDataGroup().getItem(2).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recDeteEB.getFloat("phi", j)));
+                        this.getDataGroup().getItem(2).getH2F("hi_theta_TBT").fill(Math.toDegrees(recParticle.theta()),Math.toDegrees(recDeteEB.getFloat("theta", j)));
                     }
                 }
             }
-    	}       
+        }      
     }
 
     @Override

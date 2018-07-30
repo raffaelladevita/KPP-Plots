@@ -51,6 +51,7 @@ public class AnalysisMonitor implements IDataEventListener {
         GStyle.getAxisAttributesZ().setTitleFontName("Avenir");
         GStyle.setGraphicsFrameLineWidth(1);
         GStyle.getH1FAttributes().setLineWidth(1);
+        GStyle.getH1FAttributes().setOptStat("11111111");
                                
         this.analysisName = name;
         this.analysisPanel  = new JPanel();

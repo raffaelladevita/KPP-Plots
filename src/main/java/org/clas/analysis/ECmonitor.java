@@ -8,6 +8,7 @@ package org.clas.analysis;
 import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.base.DetectorType;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
@@ -74,16 +75,25 @@ public class ECmonitor extends AnalysisMonitor {
         dg_electron.addDataSet(hi_ECin_vs_PCAL, 3);
         this.getDataGroup().add(dg_electron, 1);
         // pizero
-        H1F hi_pi0_mass = new H1F("hi_pi0_mass","hi_pi0_mass",100,0.0,300.0);         
+        H1F hi_pi0_mass = new H1F("hi_pi0_mass","hi_pi0_mass",100,0.0,400.0);         
         hi_pi0_mass.setTitleX("Pizero Invariant Mass (MeV)");
         hi_pi0_mass.setTitleY("Counts");
+        F1D fpi0 = new F1D("fpi0", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x+[p2]*x*x", 50.,200.);
+        fpi0.setParameter(0, 0.0);
+        fpi0.setParameter(1, 140.0);
+        fpi0.setParameter(2, 2.0);
+        fpi0.setParameter(3, 0.0);
+        fpi0.setParameter(4, 0.0);
+        fpi0.setLineWidth(2);
+        fpi0.setLineColor(2);
+        fpi0.setOptStat("1111111");
         H1F hi_en_asy = new H1F("hi_en_asy","hi_en_asy",50,-1.0,1.0);      
         hi_en_asy.setTitleX("X:(E1-E2)/(E1+E2)");
         hi_en_asy.setTitleY("Counts");
         H1F hi_angle = new H1F("hi_angle","hi_angle",50, 0., 20.); 
         hi_angle.setTitleX("Two Photon Opening Angle (deg)");
         hi_angle.setTitleY("Counts");
-        H2F hi_angle_en = new H2F("hi_angle_en","hi_angle_en",100, 0., 50., 100, 0, 5); 
+        H2F hi_angle_en = new H2F("hi_angle_en","hi_angle_en",100, 0., 30., 100, 0, 3); 
         hi_angle_en.setTitleX("Two Photon Opening Angle (deg)");
         hi_angle_en.setTitleY("E1*E1 (GeV2)");
         H2F hi_angle_mass = new H2F("hi_angle_mass","hi_angle_mass",50, 0., 20., 100, 10, 250.); 
@@ -94,6 +104,7 @@ public class ECmonitor extends AnalysisMonitor {
         hi_en_mom.setTitleY("Etot (GeV)");
         DataGroup dg_pion = new DataGroup(1,6);
         dg_pion.addDataSet(hi_pi0_mass, 0);
+        dg_pion.addDataSet(fpi0, 0);
         dg_pion.addDataSet(hi_en_asy, 1);
         dg_pion.addDataSet(hi_angle, 2);
         dg_pion.addDataSet(hi_angle_en, 3);
@@ -169,6 +180,7 @@ public class ECmonitor extends AnalysisMonitor {
         
         this.getAnalysisCanvas().getCanvas("Pizeros").cd(0);
         this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass"));
+        this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getF1D("fpi0"),"same");
         this.getAnalysisCanvas().getCanvas("Pizeros").cd(1);
         this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getH1F("hi_en_asy"));
         this.getAnalysisCanvas().getCanvas("Pizeros").cd(2);
@@ -202,11 +214,7 @@ public class ECmonitor extends AnalysisMonitor {
     @Override
     public void processEvent(DataEvent event) {
         // process event info and save into data group        
-        Particle partRecEB = null;
-        Particle partGamma1 = null;
-        Particle partGamma2 = null;
         ArrayList<Particle> partGamma = new ArrayList();
-        Particle partPi0    = null;
         // EC clusters
         if(event.hasBank("ECAL::clusters")==true){
             DataBank  bank = event.getBank("ECAL::clusters");
@@ -256,68 +264,64 @@ public class ECmonitor extends AnalysisMonitor {
                                                 recBankEB.getFloat("vy", loop),
                                                 recBankEB.getFloat("vz", loop));
 //                   if(recBankEB.getByte("status", loop)==1) {
-                        double energy1=0;
-                        double energy4=0;
-                        double energy7=0;
-                        for(int j=0; j<recDeteEB.rows(); j++) {
-                            if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getByte("detector",j)==7/*16*/) {
-                                if(energy1 >= 0 && recDeteEB.getByte("layer",j) == 1) energy1 += recDeteEB.getFloat("energy",j);
-                                if(energy4 >= 0 && recDeteEB.getByte("layer",j) == 4) energy4 += recDeteEB.getFloat("energy",j);
-                                if(energy7 >= 0 && recDeteEB.getByte("layer",j) == 7) energy7 += recDeteEB.getFloat("energy",j);
+                    double energy1=0;
+                    double energy4=0;
+                    double energy7=0;
+                    int    sector =0;
+                    int  detector =0;
+                    for(int j=0; j<recDeteEB.rows(); j++) {
+                        if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getByte("detector",j)==DetectorType.ECAL.getDetectorId()) {
+                            detector = recDeteEB.getByte("detector",j);
+                            if(energy1 >= 0 && recDeteEB.getByte("layer",j) == 1) {
+                                energy1 += recDeteEB.getFloat("energy",j);
+                                sector = recDeteEB.getByte("sector",j);
                             }
+                            if(energy4 >= 0 && recDeteEB.getByte("layer",j) == 4) energy4 += recDeteEB.getFloat("energy",j);
+                            if(energy7 >= 0 && recDeteEB.getByte("layer",j) == 7) energy7 += recDeteEB.getFloat("energy",j);
                         }
-                        recParticle.setProperty("energy1",energy1);
-                        recParticle.setProperty("energy4",energy4);
-                        recParticle.setProperty("energy7",energy7);
-                        if(partRecEB==null && recBankEB.getByte("charge", loop)==-1 && recBankTB!=null) {
-                            recParticle.setProperty("sector",recBankTB.getByte("sector", loop)*1.0);
-                            partRecEB=recParticle;
-                        }
-//                        else if(recBankEB.getByte("charge", loop)==0) {
-                        else {
-                            if(recBankEB.getByte("charge", loop)==0 && recParticle.p()>0.5 /*&& energy1>0.03 && energy4>0.03*/) {
-                                partGamma.add(recParticle);
-                                double energy=(energy1+energy4+energy7)/0.245;
-                                this.getDataGroup().getItem(2).getH2F("hi_en_mom").fill(recParticle.p(),energy);
-//                                if(Math.abs(recParticle.p()-energy)>0.01) {
-//                                    System.out.println(loop + " " + recParticle.p() + " " + energy);
-//                                    recBankEB.show();
-//                                    recDeteEB.show();
-//                                }
-//                                System.out.println(recParticle.p() + " " + (energy1+energy4+energy7)/0.245);
-//                                if(partGamma1==null)      partGamma1=recParticle;
-//                                else if(partGamma2==null) partGamma2=recParticle;
-                            }                            
-                        }
-                        if(partRecEB!= null && energy1>0.0 && energy4>0) {
+                    }
+                    recParticle.setProperty("energy1",energy1);
+                    recParticle.setProperty("energy4",energy4);
+                    recParticle.setProperty("energy7",energy7);
+                    recParticle.setProperty("sector",sector*1.0);
+                    recParticle.setProperty("detector",detector*1.0);
+                    if(recParticle.charge()==0 && recParticle.getProperty("detector")==DetectorType.ECAL.getDetectorId()) {
+                        if(energy1>0.05 && energy4>0.0) {
+                            partGamma.add(recParticle);
+//                            System.out.println(recBankEB.getShort("status",loop));
                             double energy=(energy1+energy4+energy7)/0.245;
-                            this.getDataGroup().getItem(1).getH2F("hi_ECin_vs_PCAL").fill(energy1,energy4+energy7);
-                            if(energy1>0.1 && energy4>0.1 && partRecEB.p()>0) {
-                                this.getDataGroup().getItem(1).getH2F("hi_Evsp_EC").fill(partRecEB.p(),energy);
-                                this.getDataGroup().getItem(1).getH2F("hi_sfvsp_EC").fill(partRecEB.p(),(energy1+energy4+energy7)/partRecEB.p());
-                                this.getDataGroup().getItem(1).getH1F("hi_dE_EC").fill(energy-partRecEB.p());
-                                this.getDataGroup().getItem(1).getH1F("hi_sf_EC").fill((energy1+energy4+energy7)/partRecEB.p());
-                            }
-                            this.getDataGroup().getItem(3).getH1F("hi_etot_elec").fill(energy1+energy4+energy7);
-                            this.getDataGroup().getItem(3).getH1F("hi_epcal_elec").fill(energy1);
-                            this.getDataGroup().getItem(3).getH1F("hi_eecin_elec").fill(energy4);
-                            this.getDataGroup().getItem(3).getH1F("hi_eecou_elec").fill(energy7);
+                            this.getDataGroup().getItem(2).getH2F("hi_en_mom").fill(recParticle.p(),energy);
+                        }                            
+                    }
+                    if(recParticle.charge()==-1 && energy1>0.0 && energy4>0) {
+                        double energy=(energy1+energy4+energy7)/0.245;
+                        this.getDataGroup().getItem(1).getH2F("hi_ECin_vs_PCAL").fill(energy1,energy4+energy7);
+                        if(energy1>0.1 && energy4>0.1 && recParticle.p()>0) {
+                            this.getDataGroup().getItem(1).getH2F("hi_Evsp_EC").fill(recParticle.p(),energy);
+                            this.getDataGroup().getItem(1).getH2F("hi_sfvsp_EC").fill(recParticle.p(),(energy1+energy4+energy7)/recParticle.p());
+                            this.getDataGroup().getItem(1).getH1F("hi_dE_EC").fill(energy-recParticle.p());
+                            this.getDataGroup().getItem(1).getH1F("hi_sf_EC").fill((energy1+energy4+energy7)/recParticle.p());
                         }
-//                    }
+                        this.getDataGroup().getItem(3).getH1F("hi_etot_elec").fill(energy1+energy4+energy7);
+                        this.getDataGroup().getItem(3).getH1F("hi_epcal_elec").fill(energy1);
+                        this.getDataGroup().getItem(3).getH1F("hi_eecin_elec").fill(energy4);
+                        this.getDataGroup().getItem(3).getH1F("hi_eecou_elec").fill(energy7);
+                    }
                 }
                 if(partGamma.size()>=2) {
                     for(int i1=0; i1<partGamma.size(); i1++) {
                         for(int i2=i1+1; i2<partGamma.size(); i2++) {
-                            partGamma1 = partGamma.get(i1);
-                            partGamma2 = partGamma.get(i2);
+                            Particle partGamma1 = partGamma.get(i1);
+                            Particle partGamma2 = partGamma.get(i2);
         //                    if(partGamma1.p()>0.05 && partGamma2.p()>0.05) {
-                            partPi0 = new Particle();
+                            Particle partPi0 = new Particle();
                             partPi0.copy(partGamma1);
                             partPi0.combine(partGamma2, +1);
+                            if(partGamma1.p()*partGamma2.p()==1) recBankEB.show();
                             double   invmass = 1e3*Math.sqrt(partPi0.mass2());
                             double   x       = (partGamma1.p()-partGamma2.p())/(partGamma1.p()+partGamma2.p());
                             double   angle   = Math.toDegrees(Math.acos(partGamma1.cosTheta(partGamma2)));
-                            if(angle>1.5) {
+                            if(angle>3 && angle<17) {
 //                                System.out.println(partGamma.size() + " " + i1 + " " + partGamma1.p() + " " + i2 + " " + partGamma2.p() + " " + invmass);
                                 this.getDataGroup().getItem(2).getH1F("hi_pi0_mass").fill(invmass);  //Two-photon invariant mass
                                 this.getDataGroup().getItem(2).getH1F("hi_en_asy").fill(x);
@@ -328,21 +332,6 @@ public class ECmonitor extends AnalysisMonitor {
                         }
                     }
                 }
-//                if(partGamma1!=null && partGamma2!=null) {
-//                    if(partGamma1.getProperty("energy1")>0.0 && partGamma2.getProperty("energy1")>0.0 && partGamma1.getProperty("energy4")>=0 && partGamma2.getProperty("energy4")>=0) {
-////                    if(partGamma1.p()>0.05 && partGamma2.p()>0.05) {
-//                        partPi0 = partGamma1;
-//                        partPi0.combine(partGamma2, +1);
-//                        double   invmass = 1e3*Math.sqrt(partPi0.vector().mass2());
-//                        double   x       = (partGamma1.p()-partGamma2.p())/(partGamma1.p()+partGamma2.p());
-//                        double   angle   = Math.toDegrees(Math.acos(partGamma1.cosTheta(partGamma2)));
-//                        this.getDataGroup().getItem(2).getH1F("hi_pi0_mass").fill(invmass);  //Two-photon invariant mass
-//                        this.getDataGroup().getItem(2).getH1F("hi_en_asy").fill(x);
-//                        this.getDataGroup().getItem(2).getH1F("hi_angle").fill(angle);
-//                        this.getDataGroup().getItem(2).getH2F("hi_angle_en").fill(angle,partGamma1.p()*partGamma2.p());
-//                        this.getDataGroup().getItem(2).getH2F("hi_angle_mass").fill(angle,invmass);
-//                    }
-//                }
         }
    }
 
@@ -354,5 +343,17 @@ public class ECmonitor extends AnalysisMonitor {
         this.getDataGroup().getItem(1).getF1D("f1_sf").setParameter(0, hi_sf.getBinContent(hi_sf.getMaximumBin()));
         this.getDataGroup().getItem(1).getF1D("f1_sf").setParameter(1, hi_sf.getDataX(hi_sf.getMaximumBin()));
         DataFitter.fit(this.getDataGroup().getItem(1).getF1D("f1_sf"), hi_sf, "Q"); //No options uses error for sigma
+        // fit pi0 mass
+        H1F h1p = this.getDataGroup().getItem(2).getH1F("hi_pi0_mass");
+        F1D f1p = this.getDataGroup().getItem(2).getF1D("fpi0");
+        double hAmp  = h1p.getBinContent(h1p.getMaximumBin());
+        double hMean = h1p.getAxis().getBinCenter(h1p.getMaximumBin());
+        double hRMS  = 10; //ns
+        f1p.setParameter(0, hAmp);
+        f1p.setParLimits(0, hAmp*0.8, hAmp*1.2);
+        f1p.setParameter(1, hMean);
+        f1p.setParLimits(1, hMean-hRMS, hMean+hRMS);
+        DataFitter.fit(f1p,h1p,"LQ");
+        h1p.setFunction(null);        
     }
 }
