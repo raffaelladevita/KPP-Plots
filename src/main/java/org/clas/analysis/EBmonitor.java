@@ -252,7 +252,7 @@ public class EBmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Start time").setGridX(false);
         this.getAnalysisCanvas().getCanvas("Start time").setGridY(false);
         
-        System.out.println("plots");
+        
         this.getAnalysisCanvas().getCanvas("Beta").cd(0);
         this.getAnalysisCanvas().getCanvas("Beta").getPad(0).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getH2F("hi_beta_pos_ftof"));
