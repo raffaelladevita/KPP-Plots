@@ -62,6 +62,20 @@ public class ECmonitor extends AnalysisMonitor {
         H2F hi_sfvsp_EC = new H2F("hi_sfvsp_EC", "hi_sfvsp_EC", 100, 0, 12, 100, 0, 0.6);  
         hi_sfvsp_EC.setTitleX("p (GeV)"); 
         hi_sfvsp_EC.setTitleY("E/p");       
+        F1D sfLow  = new F1D("sfLow",  "[p0]*([p1] + [p2]/0.236/x + [p3]*pow(0.236*x,-2))-5.3*([s0]*([s1]))",1., 10.);
+        sfLow.setParameter(0, 0.263);
+        sfLow.setParameter(1, 0.985);
+        sfLow.setParameter(2,-0.036);
+        sfLow.setParameter(3, 0.002);
+        sfLow.setParameter(4, 0.0166);
+        sfLow.setParameter(5, 1);
+        F1D sfHigh = new F1D("sfHigh", "[p0]*([p1] + [p2]/0.236/x + [p3]*pow(0.236*x,-2))+5*([s0]*([s1]))",1., 10.);
+        sfHigh.setParameter(0, 0.263);
+        sfHigh.setParameter(1, 0.985);
+        sfHigh.setParameter(2,-0.036);
+        sfHigh.setParameter(3, 0.002);
+        sfHigh.setParameter(4, 0.0166);
+        sfHigh.setParameter(5, 1);       
         H2F hi_ECin_vs_PCAL = new H2F("hi_ECin_vs_PCAL", "hi_ECin_vs_PCAL", 100, 0, 1, 100, 0, 0.8);  
         hi_ECin_vs_PCAL.setTitleX("PCAL energy (GeV)"); 
         hi_ECin_vs_PCAL.setTitleY("EC energy (GeV)");
@@ -72,13 +86,15 @@ public class ECmonitor extends AnalysisMonitor {
         dg_electron.addDataSet(hi_sf_EC, 2);
         dg_electron.addDataSet(f1_sf, 2);
         dg_electron.addDataSet(hi_sfvsp_EC, 3);
+        dg_electron.addDataSet(sfLow,  3);
+        dg_electron.addDataSet(sfHigh, 3);
         dg_electron.addDataSet(hi_ECin_vs_PCAL, 3);
         this.getDataGroup().add(dg_electron, 1);
         // pizero
-        H1F hi_pi0_mass = new H1F("hi_pi0_mass","hi_pi0_mass",100,0.0,400.0);         
+        H1F hi_pi0_mass = new H1F("hi_pi0_mass","hi_pi0_mass",200,0.0,400.0);         
         hi_pi0_mass.setTitleX("Pizero Invariant Mass (MeV)");
         hi_pi0_mass.setTitleY("Counts");
-        F1D fpi0 = new F1D("fpi0", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x+[p2]*x*x", 50.,200.);
+        F1D fpi0 = new F1D("fpi0", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x+[p2]*x*x", 50.,220.);
         fpi0.setParameter(0, 0.0);
         fpi0.setParameter(1, 140.0);
         fpi0.setParameter(2, 2.0);
@@ -177,6 +193,8 @@ public class ECmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Electrons").cd(3);
         this.getAnalysisCanvas().getCanvas("Electrons").getPad(3).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH2F("hi_sfvsp_EC"));
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getF1D("sfLow"),"same");
+        this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getF1D("sfHigh"),"same");
         
         this.getAnalysisCanvas().getCanvas("Pizeros").cd(0);
         this.getAnalysisCanvas().getCanvas("Pizeros").draw(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass"));
@@ -296,11 +314,13 @@ public class ECmonitor extends AnalysisMonitor {
                     if(recParticle.charge()==-1 && energy1>0.0 && energy4>0) {
                         double energy=(energy1+energy4+energy7)/0.245;
                         this.getDataGroup().getItem(1).getH2F("hi_ECin_vs_PCAL").fill(energy1,energy4+energy7);
-                        if(energy1>0.1 && energy4>0.1 && recParticle.p()>0) {
+                        if(energy1>0.1 && energy4>0.0 && recParticle.p()>0 && sector==5) {
                             this.getDataGroup().getItem(1).getH2F("hi_Evsp_EC").fill(recParticle.p(),energy);
                             this.getDataGroup().getItem(1).getH2F("hi_sfvsp_EC").fill(recParticle.p(),(energy1+energy4+energy7)/recParticle.p());
                             this.getDataGroup().getItem(1).getH1F("hi_dE_EC").fill(energy-recParticle.p());
                             this.getDataGroup().getItem(1).getH1F("hi_sf_EC").fill((energy1+energy4+energy7)/recParticle.p());
+//                            System.out.println(energy1 + " " + energy4 + " " + energy7);
+//                            recDeteEB.show();
                         }
                         this.getDataGroup().getItem(3).getH1F("hi_etot_elec").fill(energy1+energy4+energy7);
                         this.getDataGroup().getItem(3).getH1F("hi_epcal_elec").fill(energy1);

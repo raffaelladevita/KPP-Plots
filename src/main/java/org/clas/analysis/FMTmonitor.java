@@ -182,7 +182,8 @@ public class FMTmonitor extends AnalysisMonitor {
         if (event.hasBank("FMTRec::Clusters")) {
             fmtClusters = event.getBank("FMTRec::Clusters");
         }
-        int ev = recRun.getInt("event", 0);
+        int ev = 0;
+        if(recRun != null) ev=recRun.getInt("event",0);
 //        System.out.println(ev); 
 
         // Decoding Trigger Bits

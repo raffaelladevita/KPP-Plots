@@ -36,15 +36,21 @@ import javax.swing.event.ChangeListener;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import org.clas.analysis.CNDmonitor;
 import org.clas.analysis.CTOFmonitor;
 import org.clas.analysis.CVTmonitor;
+import org.clas.analysis.EBHBmonitor;
 import org.clas.analysis.EBmonitor;
 import org.clas.analysis.ECmonitor;
+import org.clas.analysis.ELASTICmonitor;
 import org.clas.analysis.ELmonitor;
+import org.clas.analysis.EPI0monitor;
+import org.clas.analysis.EPIPLUSmonitor;
 import org.clas.analysis.FMTmonitor;
 import org.clas.analysis.FTOFmonitor;
 import org.clas.analysis.FTmonitor;
 import org.clas.analysis.HTCCmonitor;
+import org.clas.analysis.KINEmonitor;
 import org.clas.analysis.LTCCmonitor;
 import org.clas.analysis.TBTmonitor;
 import org.clas.analysis.TIMEmonitor;
@@ -100,9 +106,15 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         	new HTCCmonitor("HTCC"),
         	new LTCCmonitor("LTCC"),
                 new CTOFmonitor("CTOF"),
+                new CNDmonitor("CND"),
                 new FTmonitor("FT"),
                 new FMTmonitor("FMT"),
+        	new EBHBmonitor("EBHB"),
         	new EBmonitor("EB"),
+        	new KINEmonitor("KINEMATICS"),
+           	new ELASTICmonitor("ELASTIC"),
+        	new EPIPLUSmonitor("EPIPLUS"),
+        	new EPI0monitor("EPI0"),
         	new TIMEmonitor("TIME")
     };
         
@@ -112,30 +124,32 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         menuBar = new JMenuBar();
         JMenuItem menuItem;
         JMenu file = new JMenu("File");
-        file.setMnemonic(KeyEvent.VK_A);
         file.getAccessibleContext().setAccessibleDescription("File options");
-        menuItem = new JMenuItem("Open histograms file...", KeyEvent.VK_O);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+        menuItem = new JMenuItem("Open histograms file...");
         menuItem.getAccessibleContext().setAccessibleDescription("Open histograms file");
         menuItem.addActionListener(this);
         file.add(menuItem);
-         menuItem = new JMenuItem("Print histograms to file...", KeyEvent.VK_P);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
+         menuItem = new JMenuItem("Print histograms to file...");
         menuItem.getAccessibleContext().setAccessibleDescription("Print histograms to file");
         menuItem.addActionListener(this);
         file.add(menuItem);
-        menuItem = new JMenuItem("Save histograms to file...", KeyEvent.VK_S);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        menuItem = new JMenuItem("Save histograms to file...");
         menuItem.getAccessibleContext().setAccessibleDescription("Save histograms to file");
         menuItem.addActionListener(this);
         file.add(menuItem);
-         menuBar.add(file);
+        menuBar.add(file);
         JMenu settings = new JMenu("Settings");
-        settings.setMnemonic(KeyEvent.VK_A);
         settings.getAccessibleContext().setAccessibleDescription("Choose monitoring parameters");
-        menuItem = new JMenuItem("Set GUI update interval...", KeyEvent.VK_T);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
+        menuItem = new JMenuItem("Set GUI update interval...");
         menuItem.getAccessibleContext().setAccessibleDescription("Set GUI update interval");
+        menuItem.addActionListener(this);
+        settings.add(menuItem);
+        menuItem = new JMenuItem("Set Style to default");
+        menuItem.getAccessibleContext().setAccessibleDescription("Set GROOT style to default");
+        menuItem.addActionListener(this);
+        settings.add(menuItem);
+        menuItem = new JMenuItem("Set Style for performance plots");
+        menuItem.getAccessibleContext().setAccessibleDescription("Set GROOT style for performance plots");
         menuItem.addActionListener(this);
         settings.add(menuItem);
         menuBar.add(settings);
@@ -199,6 +213,12 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         System.out.println(e.getActionCommand());
         if(e.getActionCommand()=="Set GUI update interval...") {
             this.chooseUpdateInterval();
+        }
+        if(e.getActionCommand()=="Set Style to default") {
+            this.setStyle(0);
+        }
+        if(e.getActionCommand()=="Set Style for performance plots") {
+            this.setStyle(1);
         }
         if(e.getActionCommand()=="Open histograms file...") {
             String fileName = null;
@@ -407,7 +427,15 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         }
     }
 
-     public void stateChanged(ChangeEvent e) {
+    public void setStyle(int mode) {
+        for(int k=0; k<this.monitors.length; k++) {
+            this.monitors[k].setStyle(mode);
+            this.plotSummaries();
+            this.monitors[k].plotHistos();
+        }    
+    }
+    
+    public void stateChanged(ChangeEvent e) {
         this.timerUpdate();
     }
     

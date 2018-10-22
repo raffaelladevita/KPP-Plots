@@ -38,20 +38,9 @@ public class AnalysisMonitor implements IDataEventListener {
     private int                    numberOfEvents;
 
     public AnalysisMonitor(String name){
-        GStyle.getAxisAttributesX().setTitleFontSize(24);
-        GStyle.getAxisAttributesX().setLabelFontSize(18);
-        GStyle.getAxisAttributesY().setTitleFontSize(24);
-        GStyle.getAxisAttributesY().setLabelFontSize(18);
-        GStyle.getAxisAttributesZ().setLabelFontSize(14);
-        GStyle.getAxisAttributesX().setLabelFontName("Avenir");
-        GStyle.getAxisAttributesY().setLabelFontName("Avenir");
-        GStyle.getAxisAttributesZ().setLabelFontName("Avenir");
-        GStyle.getAxisAttributesX().setTitleFontName("Avenir");
-        GStyle.getAxisAttributesY().setTitleFontName("Avenir");
-        GStyle.getAxisAttributesZ().setTitleFontName("Avenir");
-        GStyle.setGraphicsFrameLineWidth(1);
-        GStyle.getH1FAttributes().setLineWidth(1);
-        GStyle.getH1FAttributes().setOptStat("11111111");
+        this.setStyle(0);
+//        GStyle.getH1FAttributes().setOptStat("11111111");
+
                                
         this.analysisName = name;
         this.analysisPanel  = new JPanel();
@@ -192,6 +181,38 @@ public class AnalysisMonitor implements IDataEventListener {
     
     public void setNumberOfEvents(int numberOfEvents) {
         this.numberOfEvents = numberOfEvents;
+    }
+
+    public void setStyle(int mode) {
+        if(mode==1) {
+            GStyle.getAxisAttributesX().setTitleFontSize(32);
+            GStyle.getAxisAttributesX().setLabelFontSize(24);
+            GStyle.getAxisAttributesY().setTitleFontSize(32);
+            GStyle.getAxisAttributesY().setLabelFontSize(24);
+            GStyle.getAxisAttributesZ().setLabelFontSize(14);
+            GStyle.getH1FAttributes().setLineWidth(2);
+            GStyle.getAxisAttributesX().setLabelFontName("Arial");
+            GStyle.getAxisAttributesY().setLabelFontName("Arial");
+            GStyle.getAxisAttributesZ().setLabelFontName("Arial");
+            GStyle.getAxisAttributesX().setTitleFontName("Arial");
+            GStyle.getAxisAttributesY().setTitleFontName("Arial");
+            GStyle.getAxisAttributesZ().setTitleFontName("Arial");           
+        }
+        else {
+            GStyle.getAxisAttributesX().setTitleFontSize(24);
+            GStyle.getAxisAttributesX().setLabelFontSize(18);
+            GStyle.getAxisAttributesY().setTitleFontSize(24);
+            GStyle.getAxisAttributesY().setLabelFontSize(18);
+            GStyle.getAxisAttributesZ().setLabelFontSize(14);
+            GStyle.getAxisAttributesX().setLabelFontName("Avenir");
+            GStyle.getAxisAttributesY().setLabelFontName("Avenir");
+            GStyle.getAxisAttributesZ().setLabelFontName("Avenir");
+            GStyle.getAxisAttributesX().setTitleFontName("Avenir");
+            GStyle.getAxisAttributesY().setTitleFontName("Avenir");
+            GStyle.getAxisAttributesZ().setTitleFontName("Avenir");
+            GStyle.setGraphicsFrameLineWidth(1);
+            GStyle.getH1FAttributes().setLineWidth(1);            
+        }
     }
 
     @Override

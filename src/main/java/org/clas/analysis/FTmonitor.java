@@ -87,11 +87,11 @@ public class FTmonitor extends AnalysisMonitor {
         H2F hi_cal_clsize_en = new H2F("hi_cal_clsize_en", " ", 25, 0, 25, 100, 0, 12); 
         hi_cal_clsize_en.setTitleX("Cluster size"); 
         hi_cal_clsize_en.setTitleY("E (GeV)");
-        H1F hi_cal_e_all = new H1F("hi_cal_e_all", "E (GeV)", "Counts", 100, 0, 12); 
+        H1F hi_cal_e_all = new H1F("hi_cal_e_all", "E (GeV)", "Counts", 200, 0, 12); 
         hi_cal_e_all.setFillColor(4);
-        H1F hi_cal_e_ch = new H1F("hi_cal_e_ch", "E (GeV)", "Counts", 100, 0, 12); 
+        H1F hi_cal_e_ch = new H1F("hi_cal_e_ch", "E (GeV)", "Counts", 200, 0, 12); 
         hi_cal_e_ch.setFillColor(2);
-        H1F hi_cal_e_neu = new H1F("hi_cal_e_neu", "E (GeV)", "Counts", 100, 0, 12); 
+        H1F hi_cal_e_neu = new H1F("hi_cal_e_neu", "E (GeV)", "Counts", 200, 0, 12); 
         hi_cal_e_neu.setFillColor(3);
         H1F hi_cal_theta_ch = new H1F("hi_cal_theta_ch","#theta (deg)", "Counts", 100, 2,  6); 
         hi_cal_theta_ch.setFillColor(2);
@@ -269,7 +269,8 @@ public class FTmonitor extends AnalysisMonitor {
         if(event.hasBank("FTCAL::clusters"))      ftCalClusters = event.getBank("FTCAL::clusters");
         if(event.hasBank("FTHODO::clusters"))    ftHodoClusters = event.getBank("FTHODO::clusters");
         if(event.hasBank("FTHODO::hits"))            ftHodoHits = event.getBank("FTHODO::hits");
-        int ev = recRun.getInt("event",0);
+        int ev = 0;
+        if(recRun != null) ev=recRun.getInt("event",0);
 //        System.out.println(ev); 
 
         // Decoding Trigger Bits
@@ -292,7 +293,7 @@ public class FTmonitor extends AnalysisMonitor {
         int trigger=0;
         if(recBankEB!=null) trigger = recBankEB.getInt("pid", 0);
      
-        if (ftParticles != null) {
+        if (ftParticles != null /*&& trigger_bits[25]*/) {
             Particle p1 = null;
             Particle p2 = null;
             ArrayList<Particle> gammas = new ArrayList();

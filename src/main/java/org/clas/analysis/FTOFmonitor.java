@@ -331,7 +331,8 @@ public class FTOFmonitor extends AnalysisMonitor {
         if(event.hasBank("FTOF::adc"))              ftofADC     = event.getBank("FTOF::adc");
         if(event.hasBank("FTOF::tdc"))               ftofTDC     = event.getBank("FTOF::tdc");
         if(event.hasBank("TimeBasedTrkg::TBTracks")) recHBTTrack = event.getBank("TimeBasedTrkg::TBTracks");
-        int ev = recRun.getInt("event",0);
+        int ev = 0;
+        if(recRun != null) ev=recRun.getInt("event",0);
 //        System.out.println(ev); 
 //            if(ev==134 || ev==370) {System.out.println(ev); recBankEB.show(); recDeteEB.show();}
 //        if(recBankEB!=null && recDeteEB!=null) {

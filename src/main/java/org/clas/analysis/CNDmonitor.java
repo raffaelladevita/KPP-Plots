@@ -23,10 +23,13 @@ import org.jlab.io.base.DataEvent;
  *
  * @author devita
  */
-public class CTOFmonitor extends AnalysisMonitor {
+public class CNDmonitor extends AnalysisMonitor {
     
-
-    public CTOFmonitor(String name) {
+    private double rfPeriod = 4.008;
+    private int    nPaddle = 144;
+    private double tdcConv = 0.023456;
+        
+    public CNDmonitor(String name) {
         super(name);
         this.setAnalysisTabNames("MIPs", "ADC-TDC", "dE/dx", "Residuals", "RF","Beta and Mass");
         this.init(false);
@@ -46,7 +49,6 @@ public class CTOFmonitor extends AnalysisMonitor {
         this.setAnalysisSummary(sum);
         // dE/dx
         DataGroup dc_energy = new DataGroup(3,2);
-        Integer nPaddle = 48;
         H1F hi_pos_en = new H1F("hi_pos_en" , "hi_pos_en", 100, 0., 25.);   
         hi_pos_en.setTitleX("dE/dx (MeV/cm)");
         hi_pos_en.setTitleY("Counts");
@@ -86,20 +88,20 @@ public class CTOFmonitor extends AnalysisMonitor {
         // Space residuals
         DataGroup dc_residuals = new DataGroup(3,2);
         H1F hi_z_hit = new H1F("hi_z_hit", "hi_z_hit", 100, -60., 40.);  
-        hi_z_hit.setTitleX("CTOF hit z (cm)");
+        hi_z_hit.setTitleX("CND hit z (cm)");
         hi_z_hit.setTitleY("Counts"); 
         H1F hi_z_track = new H1F("hi_z_track", "hi_z_track", 100, -60., 40.);  
-        hi_z_track.setTitleX("CTOF track z (cm)");
+        hi_z_track.setTitleX("CND track z (cm)");
         hi_z_track.setTitleY("Counts"); 
         H2F hi_z_hit_track = new H2F("hi_z_hit_track", "hi_z_hit_track", 100, -60., 40., 100, -60., 40.);  
-        hi_z_hit_track.setTitleX("CTOF hit z (cm)");
+        hi_z_hit_track.setTitleX("CND hit z (cm)");
         hi_z_hit_track.setTitleY("Track intersect z (cm)"); 
         H2F hi_z_residual = new H2F("hi_z_residual", "hi_z_residual", 200, -30., 30., nPaddle, 1, nPaddle+1.);  
-        hi_z_residual.setTitleX("CTOF -Track z (cm)");
+        hi_z_residual.setTitleX("CND -Track z (cm)");
         hi_z_residual.setTitleY("Paddle"); 
         H2F hi_rz_hit = new H2F("hi_rz_hit", "hi_rz_hit", 100, -60., 40., 100, 20., 40.);  
-        hi_rz_hit.setTitleX("CTOF hit z (cm)");
-        hi_rz_hit.setTitleY("CTOF hit r (cm)"); 
+        hi_rz_hit.setTitleX("CND hit z (cm)");
+        hi_rz_hit.setTitleY("CND hit r (cm)"); 
         H2F hi_rz_track = new H2F("hi_rz_track", "hi_rz_track", 100, -60., 40., 100, 20., 40.);  
         hi_rz_track.setTitleX("Track z (cm)");
         hi_rz_track.setTitleY("Tracl r (cm)"); 
@@ -112,10 +114,10 @@ public class CTOFmonitor extends AnalysisMonitor {
         this.getDataGroup().add(dc_residuals, 3);   
         // RF offsets
         DataGroup dc_rf = new DataGroup(2,2);
-        H2F hi_rf_neg_paddle = new H2F("hi_rf_neg_paddle", "hi_rf_neg_paddle", nPaddle, 1, nPaddle+1., 100, -1., 1.);  
+        H2F hi_rf_neg_paddle = new H2F("hi_rf_neg_paddle", "hi_rf_neg_paddle", nPaddle, 1, nPaddle+1., 100, -rfPeriod*2.0, rfPeriod*2.0);
         hi_rf_neg_paddle.setTitleX("Counter");
         hi_rf_neg_paddle.setTitleY("Vertex Time (ns)"); 
-        H2F hi_rf_pos_paddle = new H2F("hi_rf_pos_paddle", "hi_rf_pos_paddle", nPaddle, 1, nPaddle+1., 100, -1., 1.);  
+        H2F hi_rf_pos_paddle = new H2F("hi_rf_pos_paddle", "hi_rf_pos_paddle", nPaddle, 1, nPaddle+1., 100, -rfPeriod*2.0, rfPeriod*2.0);
         hi_rf_pos_paddle.setTitleX("Counter");
         hi_rf_pos_paddle.setTitleY("Vertex Time (ns)"); 
         GraphErrors g_rf_neg_paddle = new GraphErrors("g_rf_neg_paddle");
@@ -152,31 +154,31 @@ public class CTOFmonitor extends AnalysisMonitor {
         dc_beta.addDataSet(hi_beta_neg,  3);
         this.getDataGroup().add(dc_beta, 5);  
         // adc-tdc matching
-        H2F hi_adctdc_upstream= new H2F("hi_adctdc_upstream", "hi_adctdc_upstream", 100, 0., 400, 100, 100., 500.);  
-        hi_adctdc_upstream.setTitleX("ADC time (ns)"); 
-        hi_adctdc_upstream.setTitleY("TDC time (ns)");
-        H1F hi_adc_tdc_upstream= new H1F("hi_adc_tdc_upstream", "hi_adc_tdc_upstream", 100, 0., 200);  
-        hi_adc_tdc_upstream.setTitleX("TDC - ADC time (ns)"); 
-        hi_adc_tdc_upstream.setTitleY("Counts");
-        H2F hi_adc_tdc_paddle_upstream= new H2F("hi_adc_tdc_paddle_upstream", "hi_adc_tdc_paddle_upstream", 100, 0., 200, nPaddle, 1, nPaddle+1.);  
-        hi_adc_tdc_paddle_upstream.setTitleX("TDC - ADC time (ns)"); 
-        hi_adc_tdc_paddle_upstream.setTitleY("Paddle");
-        H2F hi_adctdc_downstream= new H2F("hi_adctdc_downstream", "hi_adctdc_downstream", 100, 0., 400, 100, 100., 500.);  
-        hi_adctdc_downstream.setTitleX("ADC time (ns)"); 
-        hi_adctdc_downstream.setTitleY("TDC time (ns)");
-        H1F hi_adc_tdc_downstream= new H1F("hi_adc_tdc_downstream", "hi_adc_tdc_downstream", 100, 0., 200);  
-        hi_adc_tdc_downstream.setTitleX("TDC - ADC time (ns)"); 
-        hi_adc_tdc_downstream.setTitleY("Counts");
-        H2F hi_adc_tdc_paddle_downstream= new H2F("hi_adc_tdc_paddle_downstream", "hi_adc_tdc_paddle_downstream", 100, 0., 200, nPaddle, 1, nPaddle+1.);  
-        hi_adc_tdc_paddle_downstream.setTitleX("TDC - ADC time (ns)"); 
-        hi_adc_tdc_paddle_downstream.setTitleY("Paddle");
+        H2F hi_adctdc_left= new H2F("hi_adctdc_left", "hi_adctdc_left", 100, 0., 400, 100, 100., 500.);  
+        hi_adctdc_left.setTitleX("ADC time (ns)"); 
+        hi_adctdc_left.setTitleY("TDC time (ns)");
+        H1F hi_adc_tdc_left= new H1F("hi_adc_tdc_left", "hi_adc_tdc_left", 100, 0., 200);  
+        hi_adc_tdc_left.setTitleX("TDC - ADC time (ns)"); 
+        hi_adc_tdc_left.setTitleY("Counts");
+        H2F hi_adc_tdc_paddle_left= new H2F("hi_adc_tdc_paddle_left", "hi_adc_tdc_paddle_left", 100, 0., 200, nPaddle, 1, nPaddle+1.);  
+        hi_adc_tdc_paddle_left.setTitleX("TDC - ADC time (ns)"); 
+        hi_adc_tdc_paddle_left.setTitleY("Paddle");
+        H2F hi_adctdc_right= new H2F("hi_adctdc_right", "hi_adctdc_right", 100, 0., 400, 100, 100., 500.);  
+        hi_adctdc_right.setTitleX("ADC time (ns)"); 
+        hi_adctdc_right.setTitleY("TDC time (ns)");
+        H1F hi_adc_tdc_right= new H1F("hi_adc_tdc_right", "hi_adc_tdc_right", 100, 0., 200);  
+        hi_adc_tdc_right.setTitleX("TDC - ADC time (ns)"); 
+        hi_adc_tdc_right.setTitleY("Counts");
+        H2F hi_adc_tdc_paddle_right= new H2F("hi_adc_tdc_paddle_right", "hi_adc_tdc_paddle_right", 100, 0., 200, nPaddle, 1, nPaddle+1.);  
+        hi_adc_tdc_paddle_right.setTitleX("TDC - ADC time (ns)"); 
+        hi_adc_tdc_paddle_right.setTitleY("Paddle");
         DataGroup dc_adctdc = new DataGroup(2,3);
-        dc_adctdc.addDataSet(hi_adctdc_upstream,0);        
-        dc_adctdc.addDataSet(hi_adc_tdc_upstream,1);        
-        dc_adctdc.addDataSet(hi_adc_tdc_paddle_upstream,2);        
-        dc_adctdc.addDataSet(hi_adctdc_downstream,3);        
-        dc_adctdc.addDataSet(hi_adc_tdc_downstream,4);        
-        dc_adctdc.addDataSet(hi_adc_tdc_paddle_downstream,5);        
+        dc_adctdc.addDataSet(hi_adctdc_left,0);        
+        dc_adctdc.addDataSet(hi_adc_tdc_left,1);        
+        dc_adctdc.addDataSet(hi_adc_tdc_paddle_left,2);        
+        dc_adctdc.addDataSet(hi_adctdc_right,3);        
+        dc_adctdc.addDataSet(hi_adc_tdc_right,4);        
+        dc_adctdc.addDataSet(hi_adc_tdc_paddle_right,5);        
         this.getDataGroup().add(dc_adctdc, 6);  
     }
     
@@ -209,22 +211,22 @@ public class CTOFmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("MIPs").draw(this.getDataGroup().getItem(2).getH2F("hi_time_paddle"));
         this.getAnalysisCanvas().getCanvas("ADC-TDC").cd(0);
         this.getAnalysisCanvas().getCanvas("ADC-TDC").getPad(0).getAxisZ().setLog(true);
-        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH2F("hi_adctdc_upstream"));
+        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH2F("hi_adctdc_left"));
         this.getAnalysisCanvas().getCanvas("ADC-TDC").cd(1);
         this.getAnalysisCanvas().getCanvas("ADC-TDC").getPad(1).getAxisY().setLog(true);
-        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH1F("hi_adc_tdc_upstream"));
+        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH1F("hi_adc_tdc_left"));
         this.getAnalysisCanvas().getCanvas("ADC-TDC").cd(2);
         this.getAnalysisCanvas().getCanvas("ADC-TDC").getPad(2).getAxisZ().setLog(true);
-        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH2F("hi_adc_tdc_paddle_upstream"));
+        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH2F("hi_adc_tdc_paddle_left"));
         this.getAnalysisCanvas().getCanvas("ADC-TDC").cd(3);
         this.getAnalysisCanvas().getCanvas("ADC-TDC").getPad(3).getAxisZ().setLog(true);
-        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH2F("hi_adctdc_downstream"));
+        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH2F("hi_adctdc_right"));
         this.getAnalysisCanvas().getCanvas("ADC-TDC").cd(4);
         this.getAnalysisCanvas().getCanvas("ADC-TDC").getPad(4).getAxisY().setLog(true);
-        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH1F("hi_adc_tdc_downstream"));
+        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH1F("hi_adc_tdc_right"));
         this.getAnalysisCanvas().getCanvas("ADC-TDC").cd(5);
         this.getAnalysisCanvas().getCanvas("ADC-TDC").getPad(5).getAxisZ().setLog(true);
-        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH2F("hi_adc_tdc_paddle_downstream"));
+        this.getAnalysisCanvas().getCanvas("ADC-TDC").draw(this.getDataGroup().getItem(6).getH2F("hi_adc_tdc_paddle_right"));
         this.getAnalysisCanvas().getCanvas("RF").cd(0);
         this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getH2F("hi_rf_pos_paddle"));
         this.getAnalysisCanvas().getCanvas("RF").cd(1);
@@ -288,54 +290,75 @@ public class CTOFmonitor extends AnalysisMonitor {
         DataBank recDeteEB = null;
         DataBank recEvenEB = null;
         DataBank recRunRF  = null;
-        DataBank recCtofHits = null;
-        DataBank recCtofRaws = null;
+        DataBank recCndHits = null;
         DataBank recHBTTrack = null;
-        DataBank ctofADC = null;
-        DataBank ctofTDC = null;
+        DataBank cndADC = null;
+        DataBank cndTDC = null;
         if(event.hasBank("RUN::config"))            recRun      = event.getBank("RUN::config");
         if(event.hasBank("REC::Particle"))          recBankEB   = event.getBank("REC::Particle");
         if(event.hasBank("REC::Scintillator"))      recDeteEB   = event.getBank("REC::Scintillator");
         if(event.hasBank("REC::Event"))             recEvenEB   = event.getBank("REC::Event");
         if(event.hasBank("RUN::rf"))                recRunRF    = event.getBank("RUN::rf");
-        if(event.hasBank("CTOF::hits"))             recCtofHits = event.getBank("CTOF::hits");
-        if(event.hasBank("CTOF::rawhits"))          recCtofRaws = event.getBank("CTOF::rawhits");
-        if(event.hasBank("CTOF::adc"))              ctofADC     = event.getBank("CTOF::adc");
-        if(event.hasBank("CTOF::tdc"))              ctofTDC     = event.getBank("CTOF::tdc");
+        if(event.hasBank("CND::hits"))              recCndHits = event.getBank("CND::hits");
+        if(event.hasBank("CND::adc"))               cndADC     = event.getBank("CND::adc");
+        if(event.hasBank("CND::tdc"))               cndTDC     = event.getBank("CND::tdc");
         if(event.hasBank("CVTRec::Tracks"))         recHBTTrack = event.getBank("CVTRec::Tracks");
         int ev = 0;
         if(recRun != null) ev=recRun.getInt("event",0);
 //        System.out.println(ev); 
 //        if(ev==134 || ev==370) {System.out.println(ev); recBankEB.show(); recDeteEB.show();}
-//        if(ev==93364) recCtofHits.show();
-        if(recCtofHits!=null) {
-            int nrows = recCtofHits.rows();
+//        if(ev==93364) recCndHits.show();
+        if(recCndHits!=null) {
+            int nrows = recCndHits.rows();
             for(int loop = 0; loop < nrows; loop++){
-                int status    = recCtofHits.getShort("status", loop);
-                int paddle    = recCtofHits.getShort("component", loop);
-                int trk_id    = recCtofHits.getShort("trkID", loop);
-                double energy = recCtofHits.getFloat("energy", loop);
-                double time   = recCtofHits.getFloat("time",loop);
-           	double x      = recCtofHits.getFloat("x", loop);
-                double y      = recCtofHits.getFloat("y", loop);
-                double z      = recCtofHits.getFloat("z", loop);
-           	double tx     = recCtofHits.getFloat("tx", loop);
-                double ty     = recCtofHits.getFloat("ty", loop);
-                double tz     = recCtofHits.getFloat("tz", loop);
-                double path   = recCtofHits.getFloat("pathLength", loop);
-                double dx     = recCtofHits.getFloat("pathLengthThruBar", loop);
-//        	int adcId1    = recCtofHits.getShort("adc_idx1", loop);
-//                int adcId2    = recCtofHits.getShort("adc_idx2", loop);
-//                int tdcId1    = recCtofHits.getShort("tdc_idx1", loop);
-//                int tdcId2    = recCtofHits.getShort("tdc_idx2", loop);
-//                double adc1   = (double) ctofADC.getInt("ADC",adcId1);
-//                double adc2   = (double) ctofADC.getInt("ADC",adcId2);
-//                double adct1  = (double) ctofADC.getFloat("time",adcId1);
-//                double adct2  = (double) ctofADC.getFloat("time",adcId2);
-//                double tdc1   = (double) ctofTDC.getInt("TDC",tdcId1);
-//                double tdc2   = (double) ctofTDC.getInt("TDC",tdcId2);
-                if(status>0) {
+                int status    = recCndHits.getShort("status", loop);
+                int sector    = recCndHits.getByte("sector", loop);
+                int layer     = recCndHits.getByte("layer", loop);
+                int comp      = recCndHits.getShort("component", loop);
+                int paddle    = (layer-1)*48+(sector-1)*2+comp;
+                int trk_id    = recCndHits.getShort("trkID", loop);
+                double energy = recCndHits.getFloat("energy", loop);
+                double time   = recCndHits.getFloat("time",loop);
+           	double x      = recCndHits.getFloat("x", loop);
+                double y      = recCndHits.getFloat("y", loop);
+                double z      = recCndHits.getFloat("z", loop);
+           	double tx     = recCndHits.getFloat("tx", loop);
+                double ty     = recCndHits.getFloat("ty", loop);
+                double tz     = recCndHits.getFloat("tz", loop);
+                double path   = recCndHits.getFloat("pathlength", loop);
+                double dx     = recCndHits.getFloat("tlength", loop);
+        	int adcId1    = recCndHits.getShort("indexLadc", loop);
+                int adcId2    = recCndHits.getShort("indexRadc", loop);
+                int tdcId1    = recCndHits.getShort("indexLtdc", loop);
+                int tdcId2    = recCndHits.getShort("indexRtdc", loop);
+                double adc1   = 0;
+                double adc2   = 0;
+                double adct1  = 0;
+                double adct2  = 0;
+                double tdc1   = 0;
+                double tdc2   = 0;
+                if(cndADC!=null) {
+                    adc1   = (double) cndADC.getInt("ADC",adcId1);
+                    adc2   = (double) cndADC.getInt("ADC",adcId2);
+                    adct1  = (double) cndADC.getFloat("time",adcId1);
+                    adct2  = (double) cndADC.getFloat("time",adcId2);                    
+                }
+                if(cndTDC!=null) {
+                    tdc1   = (double) cndTDC.getInt("TDC",tdcId1);
+                    tdc2   = (double) cndTDC.getInt("TDC",tdcId2);                    
+                }
+                if(adc1>0 && adct1>0 && adc2>0 && adct2>0 ) {
+                    this.getDataGroup().getItem(6).getH2F("hi_adctdc_left").fill(adct1,tdc1*tdcConv);
+                    this.getDataGroup().getItem(6).getH2F("hi_adctdc_right").fill(adct2,tdc2*tdcConv);                
+                    this.getDataGroup().getItem(6).getH1F("hi_adc_tdc_left").fill(tdc1*tdcConv-adct1);
+                    this.getDataGroup().getItem(6).getH1F("hi_adc_tdc_right").fill(tdc2*tdcConv-adct2);                
+                    this.getDataGroup().getItem(6).getH2F("hi_adc_tdc_paddle_left").fill(tdc1*tdcConv-adct1,paddle);
+                    this.getDataGroup().getItem(6).getH2F("hi_adc_tdc_paddle_right").fill(tdc2*tdcConv-adct2,paddle); 
+                }
+
+                if(status>=0) {
                     this.getDataGroup().getItem(2).getH2F("hi_en_paddle").fill(paddle*1.,energy);
+                    this.getDataGroup().getItem(2).getH2F("hi_time_paddle").fill(paddle*1.,(tdc1-tdc2)*tdcConv);
                     if(trk_id!=-1 && energy>0 /*&& recRunRF!=null*/) {
                         int    q    = recHBTTrack.getInt("q",trk_id-1);
                         double p    = recHBTTrack.getFloat("p",trk_id-1);
@@ -344,77 +367,44 @@ public class CTOFmonitor extends AnalysisMonitor {
                         Particle recParticle = new Particle(211,pt*Math.cos(phi0),pt*Math.sin(phi0),Math.sqrt(p*p-pt*pt),0,0,0);
                         double beta = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+recParticle.mass2());
                         double trf = 0;
-//                        for(int k = 0; k < recRunRF.rows(); k++){
-//                            if(recRunRF.getInt("id", k)==1) trf = recRunRF.getFloat("time",k);
-//                        }
+                        for(int k = 0; k < recRunRF.rows(); k++){
+                            if(recRunRF.getInt("id", k)==1) trf = recRunRF.getFloat("time",k);
+                        }
                         this.getDataGroup().getItem(3).getH1F("hi_z_hit").fill(z);
                         this.getDataGroup().getItem(3).getH1F("hi_z_track").fill(tz);
                         this.getDataGroup().getItem(3).getH2F("hi_rz_hit").fill(z,Math.sqrt(x*x+y*y));
                         this.getDataGroup().getItem(3).getH2F("hi_rz_track").fill(tz,Math.sqrt(tx*tx+ty*ty));
                         this.getDataGroup().getItem(3).getH2F("hi_z_hit_track").fill(z,tz);
                         this.getDataGroup().getItem(3).getH2F("hi_z_residual").fill(z-tz,paddle*1.);
+                        double dt      = -100;
+                        double betaTof = -100;
+                        double mass2   = -100;                                
+                        dt = (time - path/(beta*29.97) - trf + 120.5*rfPeriod)%rfPeriod-rfPeriod/2.0;
                         if(recEvenEB!=null && recBankEB!=null) {
                             double startTime = recEvenEB.getFloat("STTime", 0);
-                            if(startTime>-100 && recBankEB.getInt("pid", 0)==11) {
-                                double dt = time - path/(beta*29.97) - startTime;
-                                double betaTof = path/(time-startTime)/29.97;
-                                double mass2   = Math.pow(recParticle.p()/betaTof, 2)-recParticle.p()*recParticle.p();
-                                if(q==1)  {
-                                    this.getDataGroup().getItem(1).getH1F("hi_pos_en").fill(energy/dx);
-                                    this.getDataGroup().getItem(1).getH2F("hi_pos_en_p").fill(recParticle.p(),energy/dx);
-                                    this.getDataGroup().getItem(1).getH2F("hi_pos_en_paddle").fill(paddle*1.,energy/dx);
-                                    if(recParticle.p()>0.1) this.getDataGroup().getItem(4).getH2F("hi_rf_pos_paddle").fill(paddle*1.,dt);
-                                    this.getDataGroup().getItem(5).getH2F("hi_beta_pos").fill(recParticle.p(),betaTof);
-                                    this.getDataGroup().getItem(5).getH1F("hi_mass_pos").fill(mass2);
-                                }
-                                if(q==-1) {
-                                    this.getDataGroup().getItem(1).getH1F("hi_neg_en").fill(energy/dx);
-                                    this.getDataGroup().getItem(1).getH2F("hi_neg_en_p").fill(recParticle.p(),energy/dx);
-                                    this.getDataGroup().getItem(1).getH2F("hi_neg_en_paddle").fill(paddle*1.,energy/dx);
-                                    if(recParticle.p()>0.1) this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle").fill(paddle*1.,dt);
-                                    this.getDataGroup().getItem(5).getH2F("hi_beta_neg").fill(recParticle.p(),betaTof);
-                                    this.getDataGroup().getItem(5).getH1F("hi_mass_neg").fill(mass2);
-                                }
+                            if(startTime>-100 /*&& recBankEB.getInt("pid", 0)==11*/) {
+                                dt = time - path/(beta*29.97) - startTime;
+                                betaTof = path/(time-startTime)/29.97;
+                                mass2   = Math.pow(recParticle.p()/betaTof, 2)-recParticle.p()*recParticle.p();
                             }
                         }
-                    }
-                }
-            }
-        }
-        if(recCtofRaws!=null) {
-            int nrows = recCtofRaws.rows();
-            for(int loop = 0; loop < nrows; loop++){
-                int paddle   = recCtofRaws.getShort("component", loop);
-                float tleft  = recCtofRaws.getFloat("time_up", loop);
-                float tright = recCtofRaws.getFloat("time_down", loop);
-                float eleft  = recCtofRaws.getFloat("energy_up", loop);
-                float eright = recCtofRaws.getFloat("energy_down", loop);
-                this.getDataGroup().getItem(2).getH2F("hi_time_paddle").fill(paddle*1.,tleft-tright);
-                int    adc_qleft=0;
-                int    adc_qright=0;
-                double adc_tleft=0;
-                double adc_tright=0;
-                if(ctofADC!=null) {
-                    for(int iadc=0; iadc<ctofADC.rows(); iadc++) {
-                        if(paddle==ctofADC.getShort("component", iadc)) {
-                            if(ctofADC.getByte("order", iadc)==0) {
-                                adc_qleft  = ctofADC.getInt("ADC", iadc);
-                                adc_tleft  = ctofADC.getFloat("time", iadc);
-                            }
-                            else if(ctofADC.getByte("order", iadc)==1) {
-                                adc_qright = ctofADC.getInt("ADC", iadc);
-                                adc_tright = ctofADC.getFloat("time", iadc);
-                            }
+                        if(q==1)  {
+                            this.getDataGroup().getItem(1).getH1F("hi_pos_en").fill(energy/dx);
+                            this.getDataGroup().getItem(1).getH2F("hi_pos_en_p").fill(recParticle.p(),energy/dx);
+                            this.getDataGroup().getItem(1).getH2F("hi_pos_en_paddle").fill(paddle*1.,energy/dx);
+                            if(recParticle.p()>0.1) this.getDataGroup().getItem(4).getH2F("hi_rf_pos_paddle").fill(paddle*1.,dt);
+                            this.getDataGroup().getItem(5).getH2F("hi_beta_pos").fill(recParticle.p(),betaTof);
+                            this.getDataGroup().getItem(5).getH1F("hi_mass_pos").fill(mass2);
+                        }
+                        if(q==-1) {
+                            this.getDataGroup().getItem(1).getH1F("hi_neg_en").fill(energy/dx);
+                            this.getDataGroup().getItem(1).getH2F("hi_neg_en_p").fill(recParticle.p(),energy/dx);
+                            this.getDataGroup().getItem(1).getH2F("hi_neg_en_paddle").fill(paddle*1.,energy/dx);
+                            if(recParticle.p()>0.1) this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle").fill(paddle*1.,dt);
+                            this.getDataGroup().getItem(5).getH2F("hi_beta_neg").fill(recParticle.p(),betaTof);
+                            this.getDataGroup().getItem(5).getH1F("hi_mass_neg").fill(mass2);
                         }
                     }
-                }
-                if(eleft != eright && adc_qleft>0 && adc_tleft>0 && adc_qright>0 && adc_tright>0 ) {
-                    this.getDataGroup().getItem(6).getH2F("hi_adctdc_upstream").fill(adc_tleft,tleft);
-                    this.getDataGroup().getItem(6).getH2F("hi_adctdc_downstream").fill(adc_tright,tright);                
-                    this.getDataGroup().getItem(6).getH1F("hi_adc_tdc_upstream").fill(tleft-adc_tleft);
-                    this.getDataGroup().getItem(6).getH1F("hi_adc_tdc_downstream").fill(tright-adc_tright);                
-                    this.getDataGroup().getItem(6).getH2F("hi_adc_tdc_paddle_upstream").fill(tleft-adc_tleft,paddle);
-                    this.getDataGroup().getItem(6).getH2F("hi_adc_tdc_paddle_downstream").fill(tright-adc_tright,paddle); 
                 }
             }
         }

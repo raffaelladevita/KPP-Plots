@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.pdg.PhysicsConstants;
 import org.jlab.clas.physics.Particle;
-import org.jlab.detector.base.DetectorType;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
@@ -22,13 +21,13 @@ import org.jlab.io.base.DataEvent;
  *
  * @author devita
  */
-public class EBmonitor extends AnalysisMonitor {
+public class EBHBmonitor extends AnalysisMonitor {
     
     double rfPeriod = 4.008;
     int    nFT = 0;
     int    nFTel = 0;
     
-    public EBmonitor(String name) {
+    public EBHBmonitor(String name) {
         super(name);
         this.setAnalysisTabNames("Start time", "Electrons", "Pi0", "Vertex time", "Mass", "Beta");
         this.init(false);
@@ -129,7 +128,7 @@ public class EBmonitor extends AnalysisMonitor {
         dc_electron.addDataSet(hi_el_p_fd, 2);
         dc_electron.addDataSet(hi_el_p_ft, 3);
         this.getDataGroup().add(dc_electron, 1);          
-        // Pions
+        // Electrons
         DataGroup dc_pi0 = new DataGroup(2,2);
         H2F hi_pi0_angle_fd = new H2F("hi_pi0_angle_fd", "hi_pi0_angle_fd",100, 0., 30., 100, 0, 3);   
         hi_pi0_angle_fd.setTitleX("#theta (deg)"); 
@@ -141,23 +140,14 @@ public class EBmonitor extends AnalysisMonitor {
         hi_pi0_mass_fd.setTitleX("p(GeV)"); 
         hi_pi0_mass_fd.setTitleY("Counts");
         hi_pi0_mass_fd.setFillColor(3);
-        H1F hi_pi0_mass_ft = new H1F("hi_pi0_mass_ft", "hi_pi0_mass_ft", 200, 50.,300.);  
+        H1F hi_pi0_mass_ft = new H1F("hi_pi0_mass_ft", "hi_pi0_mass_ft", 200, 0.,300.);  
         hi_pi0_mass_ft.setTitleX("p(GeV)"); 
         hi_pi0_mass_ft.setTitleY("Counts");
         hi_pi0_mass_ft.setFillColor(3);
-        F1D fpi0 = new F1D("fpi0", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x", 80.,200.);
-        fpi0.setParameter(0, 0.0);
-        fpi0.setParameter(1, 140.0);
-        fpi0.setParameter(2, 2.0);
-        fpi0.setParameter(3, 0.0);
-        fpi0.setParameter(4, 0.0);
-        fpi0.setLineWidth(2);
-        fpi0.setOptStat("1111111");
         dc_pi0.addDataSet(hi_pi0_angle_fd, 0);
         dc_pi0.addDataSet(hi_pi0_angle_ft, 1);
         dc_pi0.addDataSet(hi_pi0_mass_fd, 2);
         dc_pi0.addDataSet(hi_pi0_mass_ft, 3);
-        dc_pi0.addDataSet(fpi0, 3);
         this.getDataGroup().add(dc_pi0, 2);          
         // Vertex time
         DataGroup dc_time = new DataGroup(2,2);
@@ -318,9 +308,9 @@ public class EBmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Pi0").draw(this.getDataGroup().getItem(2).getH2F("hi_pi0_angle_ft"));
         this.getAnalysisCanvas().getCanvas("Pi0").cd(2);
         this.getAnalysisCanvas().getCanvas("Pi0").draw(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_fd"));
+        this.getAnalysisCanvas().getCanvas("Electrons").cd(0);
         this.getAnalysisCanvas().getCanvas("Pi0").cd(3);
         this.getAnalysisCanvas().getCanvas("Pi0").draw(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_ft"));
-        this.getAnalysisCanvas().getCanvas("Pi0").draw(this.getDataGroup().getItem(2).getF1D("fpi0"),"same");
         this.getAnalysisCanvas().getCanvas("Electrons").cd(0);
         this.getAnalysisCanvas().getCanvas("Electrons").draw(this.getDataGroup().getItem(1).getH2F("hi_el_p_theta_fd"));
         this.getAnalysisCanvas().getCanvas("Electrons").cd(1);
@@ -353,11 +343,13 @@ public class EBmonitor extends AnalysisMonitor {
         DataBank recDeteEB = null;
         DataBank recFTagEB = null;
         DataBank recEvenEB = null;
+        DataBank recRunRF  = null;
         if(event.hasBank("RUN::config"))            recRun      = event.getBank("RUN::config");
-        if(event.hasBank("REC::Particle"))          recBankEB   = event.getBank("REC::Particle");
-        if(event.hasBank("REC::Scintillator"))      recDeteEB   = event.getBank("REC::Scintillator");
-        if(event.hasBank("REC::ForwardTagger"))     recFTagEB   = event.getBank("REC::ForwardTagger");
-        if(event.hasBank("REC::Event"))             recEvenEB   = event.getBank("REC::Event");
+        if(event.hasBank("RECHB::Particle"))        recBankEB   = event.getBank("RECHB::Particle");
+        if(event.hasBank("RECHB::Scintillator"))    recDeteEB   = event.getBank("RECHB::Scintillator");
+        if(event.hasBank("RECHB::ForwardTagger"))   recFTagEB   = event.getBank("RERECHBC::ForwardTagger");
+        if(event.hasBank("RECHB::Event"))           recEvenEB   = event.getBank("RECHB::Event");
+        if(event.hasBank("RUN::rf"))                recRunRF    = event.getBank("RUN::rf");
         int ev = 0;
         if(recRun != null) ev=recRun.getInt("event",0);
 //        System.out.println(ev); 
@@ -492,15 +484,12 @@ public class EBmonitor extends AnalysisMonitor {
                 }
             }
             if(trigger==11) this.getDataGroup().getItem(0).getH1F("hi_start_el").fill(startTime);
-            else if(trigger_bits[25]/*trigger!=0*/) this.getDataGroup().getItem(0).getH1F("hi_start_oth").fill(startTime);
+            else if(trigger!=0) this.getDataGroup().getItem(0).getH1F("hi_start_oth").fill(startTime);
             if(trigger_bits[19] || trigger_bits[20] || trigger_bits[21]) this.getDataGroup().getItem(0).getH1F("hi_start_opp").fill(startTime);
             if(recDeteEB!=null) {
                 nrows = recDeteEB.rows();
-                double dtEl=-10000;
                 for(int i=0; i<recDeteEB.rows(); i++) {
                     int pindex   = recDeteEB.getShort("pindex", i);
-                    int sector   = recDeteEB.getByte("sector", i);
-                    int layer    = recDeteEB.getByte("layer", i);
                     int detector = recDeteEB.getByte("detector", i);
                     float time   = recDeteEB.getFloat("time", i);
                     float path   = recDeteEB.getFloat("path", i);
@@ -517,7 +506,6 @@ public class EBmonitor extends AnalysisMonitor {
                     if(charge!=0) {
                         Particle recParticle = new Particle(211*charge,px,py,pz,vx,vy,vz);
                         recParticle.setProperty("status", (double) status);
-                        double mass2 = Math.pow(recParticle.p()/beta, 2)-recParticle.p()*recParticle.p();
                         double betap = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+recParticle.mass2());
                         double dt   = (time - path/(betap*PhysicsConstants.speedOfLight()) - startTime);                
                         if(startTime>-100 && trigger==11 && pindex>0) {                    
@@ -538,8 +526,8 @@ public class EBmonitor extends AnalysisMonitor {
                                 }
                             }
                         }
-                         if(trigger==11) {
-                            if(pid==11 /*&& detector==DetectorType.FTOF.getDetectorId() && sector==5*/) {
+                        if(trigger==11) {
+                            if(pid==11) {
                                 betap = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p());
                                 dt    = (time - path/(betap*PhysicsConstants.speedOfLight()) - rfTime);
                                 dt    = (dt +1000.5*this.rfPeriod)%this.rfPeriod-0.5*this.rfPeriod;
@@ -580,7 +568,6 @@ public class EBmonitor extends AnalysisMonitor {
         this.fitRF(this.getDataGroup().getItem(0).getH1F("hi_vt_el"),this.getDataGroup().getItem(0).getF1D("f1_el"));
         this.fitRF(this.getDataGroup().getItem(0).getH1F("hi_vt_pi"),this.getDataGroup().getItem(0).getF1D("f1_pi"));
         this.fitRF(this.getDataGroup().getItem(0).getH1F("hi_vt_pr"),this.getDataGroup().getItem(0).getF1D("f1_pr"));
-        this.fitpi0(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_ft"),this.getDataGroup().getItem(2).getF1D("fpi0"));
     }
     
     public void fitRF(H1F hirf,F1D f1rf) {
@@ -605,18 +592,4 @@ public class EBmonitor extends AnalysisMonitor {
         DataFitter.fit(f1rf, hirf, "Q"); //No options uses error for sigma 
         hirf.setFunction(null);
     }
-    
-    public void fitpi0(H1F h1p, F1D f1p) {
-        // fit pi0 mass
-        double hAmp  = h1p.getBinContent(h1p.getMaximumBin());
-        double hMean = h1p.getAxis().getBinCenter(h1p.getMaximumBin());
-        double hRMS  = 10; //ns
-        f1p.setParameter(0, hAmp);
-        f1p.setParLimits(0, hAmp*0.8, hAmp*1.2);
-        f1p.setParameter(1, hMean);
-        f1p.setParLimits(1, hMean-hRMS, hMean+hRMS);
-        DataFitter.fit(f1p,h1p,"LQ");
-        h1p.setFunction(null);   
-    }
-
 }
