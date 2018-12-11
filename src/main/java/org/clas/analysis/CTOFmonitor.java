@@ -8,12 +8,10 @@ package org.clas.analysis;
 import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
-import org.jlab.geom.prim.Vector3D;
 import org.jlab.groot.data.GraphErrors;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
-import org.jlab.groot.fitter.ParallelSliceFitter;
 import org.jlab.groot.group.DataGroup;
 import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
@@ -74,7 +72,7 @@ public class CTOFmonitor extends AnalysisMonitor {
         this.getDataGroup().add(dc_energy, 1);
         // paddle info
         DataGroup dc_mips = new DataGroup(1,2);
-        H2F hi_en_paddle = new H2F("hi_en_paddle", "hi_en_paddle", nPaddle, 1, nPaddle+1., 100, 1, 51);  
+        H2F hi_en_paddle = new H2F("hi_en_paddle", "hi_en_paddle", nPaddle, 1, nPaddle+1., 100, 0, 25);  
         hi_en_paddle.setTitleX("Counter"); 
         hi_en_paddle.setTitleY("Energy (MeV)");
         H2F hi_time_paddle = new H2F("hi_time_paddle", "hi_time_paddle", nPaddle, 1, nPaddle+1., 200, -20., 20.);  
@@ -155,19 +153,19 @@ public class CTOFmonitor extends AnalysisMonitor {
         H2F hi_adctdc_upstream= new H2F("hi_adctdc_upstream", "hi_adctdc_upstream", 100, 0., 400, 100, 100., 500.);  
         hi_adctdc_upstream.setTitleX("ADC time (ns)"); 
         hi_adctdc_upstream.setTitleY("TDC time (ns)");
-        H1F hi_adc_tdc_upstream= new H1F("hi_adc_tdc_upstream", "hi_adc_tdc_upstream", 100, 0., 200);  
+        H1F hi_adc_tdc_upstream= new H1F("hi_adc_tdc_upstream", "hi_adc_tdc_upstream", 100, -50., 150);  
         hi_adc_tdc_upstream.setTitleX("TDC - ADC time (ns)"); 
         hi_adc_tdc_upstream.setTitleY("Counts");
-        H2F hi_adc_tdc_paddle_upstream= new H2F("hi_adc_tdc_paddle_upstream", "hi_adc_tdc_paddle_upstream", 100, 0., 200, nPaddle, 1, nPaddle+1.);  
+        H2F hi_adc_tdc_paddle_upstream= new H2F("hi_adc_tdc_paddle_upstream", "hi_adc_tdc_paddle_upstream", 100, -50., 150, nPaddle, 1, nPaddle+1.);  
         hi_adc_tdc_paddle_upstream.setTitleX("TDC - ADC time (ns)"); 
         hi_adc_tdc_paddle_upstream.setTitleY("Paddle");
         H2F hi_adctdc_downstream= new H2F("hi_adctdc_downstream", "hi_adctdc_downstream", 100, 0., 400, 100, 100., 500.);  
         hi_adctdc_downstream.setTitleX("ADC time (ns)"); 
         hi_adctdc_downstream.setTitleY("TDC time (ns)");
-        H1F hi_adc_tdc_downstream= new H1F("hi_adc_tdc_downstream", "hi_adc_tdc_downstream", 100, 0., 200);  
+        H1F hi_adc_tdc_downstream= new H1F("hi_adc_tdc_downstream", "hi_adc_tdc_downstream", 100, -50., 150);  
         hi_adc_tdc_downstream.setTitleX("TDC - ADC time (ns)"); 
         hi_adc_tdc_downstream.setTitleY("Counts");
-        H2F hi_adc_tdc_paddle_downstream= new H2F("hi_adc_tdc_paddle_downstream", "hi_adc_tdc_paddle_downstream", 100, 0., 200, nPaddle, 1, nPaddle+1.);  
+        H2F hi_adc_tdc_paddle_downstream= new H2F("hi_adc_tdc_paddle_downstream", "hi_adc_tdc_paddle_downstream", 100, -50., 150, nPaddle, 1, nPaddle+1.);  
         hi_adc_tdc_paddle_downstream.setTitleX("TDC - ADC time (ns)"); 
         hi_adc_tdc_paddle_downstream.setTitleY("Paddle");
         DataGroup dc_adctdc = new DataGroup(2,3);
@@ -310,6 +308,7 @@ public class CTOFmonitor extends AnalysisMonitor {
 //        if(ev==93364) recCtofHits.show();
         if(recCtofHits!=null) {
             int nrows = recCtofHits.rows();
+            
             for(int loop = 0; loop < nrows; loop++){
                 int status    = recCtofHits.getShort("status", loop);
                 int paddle    = recCtofHits.getShort("component", loop);
@@ -337,6 +336,7 @@ public class CTOFmonitor extends AnalysisMonitor {
                 if(status>0) {
                     this.getDataGroup().getItem(2).getH2F("hi_en_paddle").fill(paddle*1.,energy);
                     if(trk_id!=-1 && energy>0 /*&& recRunRF!=null*/) {
+//                        System.out.println("found track");
                         int    q    = recHBTTrack.getInt("q",trk_id-1);
                         double p    = recHBTTrack.getFloat("p",trk_id-1);
                         double pt   = recHBTTrack.getFloat("pt",trk_id-1);
