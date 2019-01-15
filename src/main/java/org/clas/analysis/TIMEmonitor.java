@@ -148,7 +148,7 @@ public class TIMEmonitor extends AnalysisMonitor {
                 this.getDataGroup().getItem(1).getH1F("hi_ecal_" + superlayer).fill(TDC*0.0248);
             }
         }
-        if(ecal!=null) {
+        if(dc!=null) {
             int nrows = dc.rows();
             int rows = dc.rows();
             for(int i = 0; i < rows; i++){
