@@ -1,10 +1,8 @@
 package org.clas.viewer;
 
-import java.util.Arrays;
 import org.clas.analysis.HBTmonitor;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 import org.clas.analysis.CNDmonitor;
 import org.clas.analysis.CTOFmonitor;
 import org.clas.analysis.CVTmonitor;
@@ -26,7 +24,6 @@ import org.clas.analysis.TIMEmonitor;
 
 import org.jlab.detector.decode.CodaEventDecoder;
 import org.jlab.detector.decode.DetectorEventDecoder;
-import org.jlab.groot.data.GraphErrors;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.data.TDirectory;
 import org.jlab.io.base.DataBank;
@@ -39,8 +36,8 @@ import org.jlab.io.hipo.HipoDataSource;
  */
 public class KPPProcessor {
 
-    String prefix;
-    String flist;
+//    String prefix;
+//    String flist;
     CodaEventDecoder decoder = new CodaEventDecoder();
     DetectorEventDecoder detectorDecoder = new DetectorEventDecoder();
 
@@ -50,30 +47,30 @@ public class KPPProcessor {
 
     // detector monitors
     AnalysisMonitor[] monitors = {
-        new HBTmonitor("HBT"),
-        new TBTmonitor("TBT"),
-        new CVTmonitor("CVT"),
-        new ELmonitor("ELECTRONS"),
-        new ECmonitor("EC"),
-        new FTOFmonitor("FTOF"),
-        new HTCCmonitor("HTCC"),
-        new LTCCmonitor("LTCC"),
-        new CTOFmonitor("CTOF"),
-        new CNDmonitor("CND"),
-        new FTmonitor("FT"),
-        new FMTmonitor("FMT"),
-        new EBHBmonitor("EBHB"),
-        new EBmonitor("EB"),
-        new KINEmonitor("KINEMATICS"),
-        new ELASTICmonitor("ELASTIC"),
-        new EPIPLUSmonitor("EPIPLUS"),
-        new EPI0monitor("EPI0"),
-        new TIMEmonitor("TIME")
+    		new HBTmonitor("HBT"),
+    		new TBTmonitor("TBT"),
+                new CVTmonitor("CVT"),
+                new ELmonitor("ELECTRONS"),
+                new ECmonitor("EC"),
+                new FTOFmonitor("FTOF"),
+        	new HTCCmonitor("HTCC"),
+        	new LTCCmonitor("LTCC"),
+                new CTOFmonitor("CTOF"),
+                new CNDmonitor("CND"),
+                new FTmonitor("FT"),
+                new FMTmonitor("FMT"),
+        	new EBHBmonitor("EBHB"),
+        	new EBmonitor("EB"),
+        	new KINEmonitor("KINEMATICS"),
+           	new ELASTICmonitor("ELASTIC"),
+        	new EPIPLUSmonitor("EPIPLUS"),
+        	new EPI0monitor("EPI0"),
+        	new TIMEmonitor("TIME")
     };
 
-    public KPPProcessor(String prefix, String list) {
-        this.prefix = prefix;
-        this.flist = list;
+    public KPPProcessor() {
+//        this.prefix = prefix;
+//        this.flist = list;
     }
 
     private int getRunNumber(DataEvent event) {
@@ -88,10 +85,10 @@ public class KPPProcessor {
     public boolean processDataEvent(DataEvent event) {
         if (event != null) {
             if (this.runNumber != this.getRunNumber(event)) {
-                if (this.runNumber != 0) {
-                    saveHistosToFile();
-                    resetEventListener();
-                }
+//                if (this.runNumber != 0) {
+//                    saveHistosToFile();
+//                    resetEventListener();
+//                }
                 this.runNumber = this.getRunNumber(event);
             }
 
@@ -108,11 +105,14 @@ public class KPPProcessor {
         }
     }
 
-    public void saveHistosToFile() {
+   public void saveHistosToFile(String fileName) {
+        // TXT table summary FILE //
         TDirectory dir = new TDirectory();
-        for (int k = 0; k < this.monitors.length; k++) {
+        for(int k=0; k<this.monitors.length; k++) {
             this.monitors[k].writeDataGroup(dir);
         }
+        System.out.println("Saving histograms to file " + fileName);
+        dir.writeFile(fileName);
     }
 
     public boolean init() {
@@ -120,13 +120,17 @@ public class KPPProcessor {
     }
 
     public static void main(String[] args) throws Exception {
-        String flist = Arrays.stream(args)
-                .map(s -> s.substring(s.lastIndexOf("/") + 1))
-                .collect(Collectors.joining(";"));
+//        OptionParser parser = new OptionParser("decoder");
+//        List<String> inputList = parser.getInputList();
+//        
+//        String flist = Arrays.stream(args)
+//                .map(s -> s.substring(s.lastIndexOf("/") + 1))
+//                .collect(Collectors.joining(";"));
         
-        KPPProcessor kppProc = new KPPProcessor("kpp_histos", flist);
+        KPPProcessor kppProc = new KPPProcessor();
 
         for (int iarg = 0; iarg < args.length; iarg++) {
+            System.out.println("Processing file: " + args[iarg]);
             HipoDataSource reader = new HipoDataSource();
             reader.open(args[iarg]);
             while (reader.hasEvent() == true) {
@@ -134,6 +138,6 @@ public class KPPProcessor {
                 kppProc.processDataEvent(event);
             }
         }
-        kppProc.saveHistosToFile();
+        kppProc.saveHistosToFile("kpp_histos.hipo");
     }
 }

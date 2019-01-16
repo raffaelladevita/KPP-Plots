@@ -314,7 +314,7 @@ public class ECmonitor extends AnalysisMonitor {
                     if(recParticle.charge()==-1 && energy1>0.0 && energy4>0) {
                         double energy=(energy1+energy4+energy7)/0.245;
                         this.getDataGroup().getItem(1).getH2F("hi_ECin_vs_PCAL").fill(energy1,energy4+energy7);
-                        if(energy1>0.1 && energy4>0.0 && recParticle.p()>0 && sector==5) {
+                        if(energy1>0.1 && energy4>0.0 && recParticle.p()>0) {
                             this.getDataGroup().getItem(1).getH2F("hi_Evsp_EC").fill(recParticle.p(),energy);
                             this.getDataGroup().getItem(1).getH2F("hi_sfvsp_EC").fill(recParticle.p(),(energy1+energy4+energy7)/recParticle.p());
                             this.getDataGroup().getItem(1).getH1F("hi_dE_EC").fill(energy-recParticle.p());
