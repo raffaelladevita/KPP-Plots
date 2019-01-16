@@ -114,7 +114,7 @@ public class LTCCmonitor  extends AnalysisMonitor {
             }
         }
 
-        if(recBankEB!=null && recEvenEB!=null && recDeteEB!=null && recLTCC!=null) {
+        if(recBankEB!=null && recEvenEB!=null && recDeteEB!=null && recLTCC!=null && recTrajEB!=null) {
 //                    recDeteEB.show(); bank.show();
             double startTime = recEvenEB.getFloat("STTime", 0);
             int nrows = recDeteEB.rows();
