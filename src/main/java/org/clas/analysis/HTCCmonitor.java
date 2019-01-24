@@ -127,7 +127,8 @@ public class HTCCmonitor  extends AnalysisMonitor {
 	    int rows = bank.rows();
 	    for(int loop = 0; loop < rows; loop++){
                 float nphe  = bank.getFloat("nphe", loop);
-                int  nhits  = bank.getInt("nhits", loop);
+                int  nhits  = bank.getShort("nhits", loop);
+                if(nhits==0) bank.show();
                 float phi   = bank.getFloat("phi", loop);
                 float theta = bank.getFloat("theta", loop);
                 this.getDataGroup().getItem(1).getH1F("hi_nphe").fill(nphe*1.0);

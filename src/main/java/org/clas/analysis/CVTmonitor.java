@@ -207,31 +207,35 @@ public class CVTmonitor extends AnalysisMonitor {
         mc.addDataSet(hi_dvz_neg, 7);
         mc.addDataSet(f1_dvz_neg, 7);
         this.getDataGroup().add(mc, 3);
-        
+    }
+    
+    
+    @Override
+    public void plotHistos() {
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(0);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_p_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_p_neg"));
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(1);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_theta_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_theta_neg"));
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(2);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_phi_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_phi_neg"));
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(3);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_vz_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_vz_neg"));
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(4);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_theta_p_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH2F("hi_theta_p_neg"));
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(5);
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(hi_theta_phi_neg);
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH2F("hi_theta_phi_neg"));
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(0);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_p_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_p_pos"));
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(1);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_theta_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_theta_pos"));
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(2);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_phi_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_phi_pos"));
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(3);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_vz_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_vz_pos"));
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(4);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_theta_p_pos);
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH2F("hi_theta_p_pos"));
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(5);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(hi_theta_phi_pos);        
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH2F("hi_theta_phi_pos"));        
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(0);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dp_pos"));
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dp_pos"),"same");
@@ -350,11 +354,6 @@ public class CVTmonitor extends AnalysisMonitor {
         }
     }
 
-    @Override
-    public void resetEventListener() {
-        System.out.println("Resetting CVT histogram");
-        this.createHistos();
-    }
 
     @Override
     public void timerUpdate() {
@@ -370,12 +369,6 @@ public class CVTmonitor extends AnalysisMonitor {
         this.fitMC(this.getDataGroup().getItem(3).getH1F("hi_dvz_neg"),    this.getDataGroup().getItem(3).getF1D("f1_dvz_neg"));     
    }
 
-    @Override
-    public void setCanvasUpdate(int time) {
-        this.getAnalysisCanvas().getCanvas("Negative Tracks").initTimer(time);
-        this.getAnalysisCanvas().getCanvas("Positive Tracks").initTimer(time);
-        this.getAnalysisCanvas().getCanvas("Monte Carlo").initTimer(time);
-    }
  
     public void fitMC(H1F himc, F1D f1mc) {
         double mean  = himc.getDataX(himc.getMaximumBin());

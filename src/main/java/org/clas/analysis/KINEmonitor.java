@@ -56,12 +56,12 @@ public class KINEmonitor extends AnalysisMonitor {
         H2F hi_rec_q2w = new H2F("hi_rec_q2w","hi_rec_q2w",400, 0., 4.5, 400, 0., 14.); 
         hi_rec_q2w.setTitleX("W (GeV)");
         hi_rec_q2w.setTitleY("Q2 (GeV2)");
-        DataGroup dg_general = new DataGroup(2,3);
+        DataGroup dg_general = new DataGroup(2,1);
         dg_general.addDataSet(hi_rec_q2w,   0);
         dg_general.addDataSet(hi_rec_q2x,   1); 
         this.getDataGroup().add(dg_general, 1);
         // beta
-        DataGroup dc_part = new DataGroup(1,2);
+        DataGroup dc_part = new DataGroup(2,2);
         H2F hi_beta_pos_ftof = new H2F("hi_beta_pos_ftof", "hi_beta_pos_ftof", 500, 0., 5., 500, 0., 1.5);  
         hi_beta_pos_ftof.setTitleX("p (GeV)"); 
         hi_beta_pos_ftof.setTitleY("#beta");
