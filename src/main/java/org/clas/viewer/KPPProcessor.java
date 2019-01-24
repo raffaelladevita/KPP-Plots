@@ -113,6 +113,7 @@ public class KPPProcessor {
         for (int k = 0; k < this.monitors.length; k++) {
             this.monitors[k].writeDataGroup(dir);
         }
+        dir.writeFile(prefix+"_"+flist+".hipo");
     }
 
     public boolean init() {
