@@ -3,4 +3,4 @@
 SCRIPT_DIR=`dirname $0`
 DISTRO_DIR=$SCRIPT_DIR/../ ; export DISTRO_DIR
 
-java -Dsun.java2d.pmoffscreen=false -Xmx2048m -Xms1024m -cp "$DISTRO_DIR/lib/*" org.clas.viewer.KPPProcessor $*
+java -Xmx1536m -Xms1024m -cp "$DISTRO_DIR/lib/*" org.clas.viewer.KPPProcessor $*

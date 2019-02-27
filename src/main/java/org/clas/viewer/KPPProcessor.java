@@ -126,7 +126,7 @@ public class KPPProcessor {
 //        String flist = Arrays.stream(args)
 //                .map(s -> s.substring(s.lastIndexOf("/") + 1))
 //                .collect(Collectors.joining(";"));
-        
+        System.setProperty("java.awt.headless", "true");        
         KPPProcessor kppProc = new KPPProcessor();
 
         for (int iarg = 0; iarg < args.length; iarg++) {

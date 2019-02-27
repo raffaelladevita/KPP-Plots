@@ -267,7 +267,8 @@ public class ELASTICmonitor extends AnalysisMonitor {
         else if(run>3105 && run<=3817) ebeam=10.594;
         else if(run>3817 && run<=3861) ebeam=6.424;
         else if(run>3861 && run<=5670) ebeam=10.594;
-        else if(run>5671)              ebeam=7.546;
+        else if(run>5671 && run<=5874) ebeam=7.546;
+        else if(run>5874)              ebeam=6.535;
         if(ebeamOld!=ebeam) {
             ebeamOld=ebeam;
             this.resetEventListener();

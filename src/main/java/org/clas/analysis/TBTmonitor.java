@@ -256,10 +256,10 @@ public class TBTmonitor extends AnalysisMonitor {
         H2F hi_vz_vs_theta_neg = new H2F("hi_vz_vs_theta_neg","hi_vz_vs_theta_neg",100, 5.,40.,100,-15.,15);
         hi_vz_vs_theta_neg.setTitleX("#theta (deg)");
         hi_vz_vs_theta_neg.setTitleY("Vz (cm)");
-        H2F hi_vz_vs_phi_pos = new H2F("hi_vz_vs_phi_pos","hi_vz_vs_phi_pos",100,-15.,15.,100,-180,180);
+        H2F hi_vz_vs_phi_pos = new H2F("hi_vz_vs_phi_pos","hi_vz_vs_phi_pos",200,-15.,15.,200,-180,180);
         hi_vz_vs_phi_pos.setTitleX("Vz (cm)");
         hi_vz_vs_phi_pos.setTitleY("#phi (deg)");
-        H2F hi_vz_vs_phi_neg = new H2F("hi_vz_vs_phi_neg","hi_vz_vs_phi_neg",100,-15.,15.,100,-180,180);
+        H2F hi_vz_vs_phi_neg = new H2F("hi_vz_vs_phi_neg","hi_vz_vs_phi_neg",200,-15.,15.,200,-180,180);
         hi_vz_vs_phi_neg.setTitleX("Vz (cm)");
         hi_vz_vs_phi_neg.setTitleY("#phi (deg)");
         DataGroup vertex = new DataGroup(3,2);
