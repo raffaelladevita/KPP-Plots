@@ -372,7 +372,7 @@ public class EBHBmonitor extends AnalysisMonitor {
                 float px = recBankEB.getFloat("px", i);
                 float py = recBankEB.getFloat("py", i);
                 float pz = recBankEB.getFloat("pz", i);
-                short status = recBankEB.getShort("status", i);
+                short status = (short) Math.abs(recBankEB.getShort("status", i));
                 if(status>=1000 && status<2000) {
                     nFT++;
 //                    if(charge==-1) nFTel++;
@@ -426,7 +426,7 @@ public class EBHBmonitor extends AnalysisMonitor {
             }
         }
         if(recEvenEB!=null && recBankEB!=null) {
-            double startTime = recEvenEB.getFloat("STTime", 0);
+            double startTime = recEvenEB.getFloat("startTime", 0);
             double    rfTime = recEvenEB.getFloat("RFTime", 0);
 //            System.out.println(recEvenEB.getDouble("LT", 0) + " " + recEvenEB.getFloat("BCG", 0));
             this.getDataGroup().getItem(0).getH1F("hi_start_all").fill(startTime);
@@ -441,7 +441,7 @@ public class EBHBmonitor extends AnalysisMonitor {
                 float vy = recBankEB.getFloat("vy", i);
                 float vz = recBankEB.getFloat("vz", i);
                 float beta = recBankEB.getFloat("beta", i);
-                short status = recBankEB.getShort("status", i);
+                short status = (short) Math.abs(recBankEB.getShort("status", i));
                 Particle recParticle = null;
                 if(pid!=0) {
                     recParticle = new Particle(pid,px,py,pz,vx,vy,vz);
@@ -502,7 +502,7 @@ public class EBHBmonitor extends AnalysisMonitor {
                     float vy     = recBankEB.getFloat("vy", pindex);
                     float vz     = recBankEB.getFloat("vz", pindex);
                     float beta   = recBankEB.getFloat("beta", pindex);
-                    int status   = recBankEB.getShort("status", pindex);
+                    int status   = Math.abs(recBankEB.getShort("status", pindex));
                     if(charge!=0) {
                         Particle recParticle = new Particle(211*charge,px,py,pz,vx,vy,vz);
                         recParticle.setProperty("status", (double) status);

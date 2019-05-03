@@ -454,7 +454,7 @@ public class FTOFmonitor extends AnalysisMonitor {
                         this.getDataGroup().getItem(6).getH2F("hi_rf_pos_paddle_"+layer).fill(paddle*1.,dt);
                     }
                     if(recEvenEB!=null && recBankEB!=null) {
-                        double startTime = recEvenEB.getFloat("STTime", 0);
+                        double startTime = recEvenEB.getFloat("startTime", 0);
                         int    trigger   = recBankEB.getInt("pid", 0);
                         if(startTime>-100 && trigger == 11 && trf!=0 && sector>=1 /* && Math.abs(vz)<10 && chi2<75 && paddle>10*/) {
                             double betaTof = path/(time-startTime)/29.97;

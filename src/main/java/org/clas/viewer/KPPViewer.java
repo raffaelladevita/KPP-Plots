@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -30,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.SimpleAttributeSet;
@@ -181,7 +179,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         splitPanel.setLeftComponent(CLAS12View);
         splitPanel.setRightComponent(CLAS12Canvas);
         JTextPane clas12Text   = new JTextPane();
-        clas12Text.setText("CLAS12\n KPP plots\n V2.0");
+        clas12Text.setText("CLAS12\n KPP plots\n V3.0");
         clas12Text.setEditable(false);
         StyledDocument styledDoc = clas12Text.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
@@ -353,7 +351,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         this.CLAS12Canvas.getCanvas("Summaries").cd(0);
         
         if(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut")!=null) {
-            this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg_cut"));
+            this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getH1F("hi_vz_neg"));
             this.CLAS12Canvas.getCanvas("Summaries").draw(this.monitors[1].getDataGroup().getItem(1).getF1D("f1_vz_neg"),"same");
         }
         this.CLAS12Canvas.getCanvas("Summaries").cd(1);

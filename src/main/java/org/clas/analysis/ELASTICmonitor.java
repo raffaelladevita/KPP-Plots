@@ -285,7 +285,7 @@ public class ELASTICmonitor extends AnalysisMonitor {
             DataBank  track = event.getBank("REC::Track");
             int rows = bank.rows();
             for(int loop = 0; loop < rows; loop++){
-                if(bank.getInt("pid", loop)==11 && recEl==null && bank.getShort("status", loop)>=2000) {
+                if(bank.getInt("pid", loop)==11 && recEl==null && Math.abs(bank.getShort("status", loop))>=2000) {
                     recEl = new Particle(
                                           bank.getInt("pid", loop),
                                           bank.getFloat("px", loop),
@@ -298,7 +298,7 @@ public class ELASTICmonitor extends AnalysisMonitor {
                         if(track.getShort("pindex", j)==loop) recEl.setProperty("sector", (double) track.getByte("sector", j));
                     }
                 }
-                else if(bank.getInt("charge", loop)==1 && recPr==null && bank.getShort("status", loop)>=2000) {
+                else if(bank.getInt("charge", loop)==1 && recPr==null && Math.abs(bank.getShort("status", loop))>=2000) {
                     recPr = new Particle(
                                           2212,
                                           bank.getFloat("px", loop),
@@ -309,6 +309,16 @@ public class ELASTICmonitor extends AnalysisMonitor {
                                           bank.getFloat("vz", loop));
                 }
             }
+//            int[] nSect = {0,0,0,0,0,0};
+//            for(int j=0; j<track.rows(); j++) {
+//                if(track.getByte("sector", j)>0) nSect[(int) track.getByte("sector", j)-1]++;
+//            }
+//            for(int j=0; j<6; j++) {
+//                if(nSect[j]>1) {
+//                    System.out.println("Two tracks!!! in event " + event.getBank("RUN::config").getInt("event", 0));
+//                    bank.show(); track.show();
+//                }
+//            }
             if(recEl != null) {
 //            System.out.println("Analyzed ");
                 virtualPhoton = new LorentzVector(0., 0., ebeam, ebeam);

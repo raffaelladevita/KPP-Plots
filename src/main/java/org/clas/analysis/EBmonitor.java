@@ -24,7 +24,7 @@ import org.jlab.io.base.DataEvent;
  */
 public class EBmonitor extends AnalysisMonitor {
     
-    double rfPeriod = 4.008;
+    double rfPeriod = 2.004;
     int    nFT = 0;
     int    nFTel = 0;
     
@@ -180,19 +180,19 @@ public class EBmonitor extends AnalysisMonitor {
         this.getDataGroup().add(dc_time, 3);  
         // mass
         DataGroup dc_mass = new DataGroup(2,2);
-        H1F hi_mass_pos_ftof = new H1F("hi_mass_pos_ftof", "hi_mass_pos_ftof", 100, -1., 3.);  
+        H1F hi_mass_pos_ftof = new H1F("hi_mass_pos_ftof", "hi_mass_pos_ftof", 200, -1., 5.);  
         hi_mass_pos_ftof.setTitleX("Mass^2 (GeV)"); 
         hi_mass_pos_ftof.setTitleY("Counts");
         hi_mass_pos_ftof.setFillColor(32);
-        H1F hi_mass_neg_ftof = new H1F("hi_mass_neg_ftof", "hi_mass_neg_ftof", 100, -1., 3.);  
+        H1F hi_mass_neg_ftof = new H1F("hi_mass_neg_ftof", "hi_mass_neg_ftof", 200, -1., 5.);  
         hi_mass_neg_ftof.setTitleX("Mass^2 (GeV)"); 
         hi_mass_neg_ftof.setTitleY("Counts");
         hi_mass_neg_ftof.setFillColor(34);
-        H1F hi_mass_pos_ctof = new H1F("hi_mass_pos_ctof", "hi_mass_pos_ctof", 100, -1., 3.);  
+        H1F hi_mass_pos_ctof = new H1F("hi_mass_pos_ctof", "hi_mass_pos_ctof", 200, -1., 5.);  
         hi_mass_pos_ctof.setTitleX("Mass^2 (GeV)"); 
         hi_mass_pos_ctof.setTitleY("Counts");
         hi_mass_pos_ctof.setFillColor(32);
-        H1F hi_mass_neg_ctof = new H1F("hi_mass_neg_ctof", "hi_mass_neg_ctof", 100, -1., 3.);  
+        H1F hi_mass_neg_ctof = new H1F("hi_mass_neg_ctof", "hi_mass_neg_ctof", 200, -1., 5.);  
         hi_mass_neg_ctof.setTitleX("Mass^2 (GeV)"); 
         hi_mass_neg_ctof.setTitleY("Counts");
         hi_mass_neg_ctof.setFillColor(34);
@@ -218,13 +218,16 @@ public class EBmonitor extends AnalysisMonitor {
         F1D fpion = new F1D("fpion","x/sqrt(x*x+0.1396*0.1396)", 0.2, 5.0);
         F1D fkaon = new F1D("fkaon","x/sqrt(x*x+0.4935*0.4935)", 0.2, 5.0);
         F1D fprot = new F1D("fprot","x/sqrt(x*x+0.9383*0.9383)", 0.2, 5.0);
+        F1D fdeut = new F1D("fdeut","x/sqrt(x*x+1.8756*1.8756)", 0.2, 5.0);
         F1D cpion = new F1D("cpion","x/sqrt(x*x+0.1396*0.1396)", 0.2, 3.0);
         F1D ckaon = new F1D("ckaon","x/sqrt(x*x+0.4935*0.4935)", 0.2, 3.0);
         F1D cprot = new F1D("cprot","x/sqrt(x*x+0.9383*0.9383)", 0.2, 3.0);
+        F1D cdeut = new F1D("cdeut","x/sqrt(x*x+1.8756*1.8756)", 0.2, 3.0);
         dc_beta.addDataSet(hi_beta_pos_ftof,  0);
         dc_beta.addDataSet(fpion,  0);
         dc_beta.addDataSet(fkaon,  0);
         dc_beta.addDataSet(fprot,  0);
+        dc_beta.addDataSet(fdeut,  0);
         dc_beta.addDataSet(hi_beta_neg_ftof,  1);
         dc_beta.addDataSet(fpion,  1);
         dc_beta.addDataSet(fkaon,  1);
@@ -233,6 +236,7 @@ public class EBmonitor extends AnalysisMonitor {
         dc_beta.addDataSet(cpion,  2);
         dc_beta.addDataSet(ckaon,  2);
         dc_beta.addDataSet(cprot,  2);
+        dc_beta.addDataSet(cdeut,  2);        
         dc_beta.addDataSet(hi_beta_neg_ctof,  3);
         dc_beta.addDataSet(cpion,  3);
         dc_beta.addDataSet(ckaon,  3);
@@ -269,6 +273,7 @@ public class EBmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getF1D("fpion"),"same");
         this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getF1D("fkaon"),"same");
         this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getF1D("fprot"),"same");
+        this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getF1D("fdeut"),"same");
         this.getAnalysisCanvas().getCanvas("Beta").cd(1);
         this.getAnalysisCanvas().getCanvas("Beta").getPad(1).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getH2F("hi_beta_neg_ftof"));
@@ -281,6 +286,7 @@ public class EBmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getF1D("cpion"),"same");
         this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getF1D("ckaon"),"same");
         this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getF1D("cprot"),"same");
+        this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getF1D("cdeut"),"same");
         this.getAnalysisCanvas().getCanvas("Beta").cd(3);
         this.getAnalysisCanvas().getCanvas("Beta").getPad(3).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Beta").draw(this.getDataGroup().getItem(5).getH2F("hi_beta_neg_ctof"));    
@@ -352,11 +358,13 @@ public class EBmonitor extends AnalysisMonitor {
         DataBank recBankEB = null;
         DataBank recDeteEB = null;
         DataBank recFTagEB = null;
+        DataBank recTracEB = null;
         DataBank recEvenEB = null;
         if(event.hasBank("RUN::config"))            recRun      = event.getBank("RUN::config");
         if(event.hasBank("REC::Particle"))          recBankEB   = event.getBank("REC::Particle");
         if(event.hasBank("REC::Scintillator"))      recDeteEB   = event.getBank("REC::Scintillator");
         if(event.hasBank("REC::ForwardTagger"))     recFTagEB   = event.getBank("REC::ForwardTagger");
+        if(event.hasBank("REC::Track"))             recTracEB   = event.getBank("REC::Track");
         if(event.hasBank("REC::Event"))             recEvenEB   = event.getBank("REC::Event");
         int ev = 0;
         if(recRun != null) ev=recRun.getInt("event",0);
@@ -380,7 +388,7 @@ public class EBmonitor extends AnalysisMonitor {
                 float px = recBankEB.getFloat("px", i);
                 float py = recBankEB.getFloat("py", i);
                 float pz = recBankEB.getFloat("pz", i);
-                short status = recBankEB.getShort("status", i);
+                short status = (short) Math.abs(recBankEB.getShort("status", i));
                 if(status>=1000 && status<2000) {
                     nFT++;
 //                    if(charge==-1) nFTel++;
@@ -434,7 +442,7 @@ public class EBmonitor extends AnalysisMonitor {
             }
         }
         if(recEvenEB!=null && recBankEB!=null) {
-            double startTime = recEvenEB.getFloat("STTime", 0);
+            double startTime = recEvenEB.getFloat("startTime", 0);
             double    rfTime = recEvenEB.getFloat("RFTime", 0);
 //            System.out.println(recEvenEB.getDouble("LT", 0) + " " + recEvenEB.getFloat("BCG", 0));
             this.getDataGroup().getItem(0).getH1F("hi_start_all").fill(startTime);
@@ -449,7 +457,27 @@ public class EBmonitor extends AnalysisMonitor {
                 float vy = recBankEB.getFloat("vy", i);
                 float vz = recBankEB.getFloat("vz", i);
                 float beta = recBankEB.getFloat("beta", i);
-                short status = recBankEB.getShort("status", i);
+                short status = (short) Math.abs(recBankEB.getShort("status", i));
+                int nTracksInSector=0;
+                int nTracksMatched=0;
+                int sector=0;
+                int index=0;
+//                if(recTracEB!=null) {
+//                    for(int j=0; j<recTracEB.rows(); j++) {
+//                        if(recTracEB.getShort("pindex", j)==i) sector=recTracEB.getByte("sector", j);
+//                    }
+//                    for(int j=0; j<recTracEB.rows(); j++) {
+//                        if(recTracEB.getByte("sector", j)==sector) nTracksInSector++;
+//                    }
+//                }
+//                if(recDeteEB!=null) {
+//                    for(int j=0; j<recDeteEB.rows(); j++) {
+//                        if(recDeteEB.getShort("pindex", j)==i && recDeteEB.getByte("detector", j)==DetectorType.FTOF.getDetectorId() && recDeteEB.getByte("layer", j)==2) index=recDeteEB.getShort("index", j);
+//                    }
+//                    for(int j=0; j<recDeteEB.rows(); j++) {
+//                        if(recDeteEB.getShort("index", j)==index && recDeteEB.getByte("detector", j)==DetectorType.FTOF.getDetectorId() && recDeteEB.getByte("layer", j)==2) nTracksMatched++;
+//                    }
+//                }
                 Particle recParticle = null;
                 if(pid!=0) {
                     recParticle = new Particle(pid,px,py,pz,vx,vy,vz);
@@ -479,7 +507,8 @@ public class EBmonitor extends AnalysisMonitor {
                             this.getDataGroup().getItem(4).getH1F("hi_mass_neg_ctof").fill(mass2);                    
                         }
                     }
-                    else if(recParticle.getProperty("status")>=2000) {
+                    else if(recParticle.getProperty("status")>=2000 && nTracksMatched>=0) {
+//                        recBankEB.show();recDeteEB.show();
                         if(recParticle.charge()==1)  {
                             this.getDataGroup().getItem(5).getH2F("hi_beta_pos_ftof").fill(recParticle.p(),beta);                    
                             this.getDataGroup().getItem(4).getH1F("hi_mass_pos_ftof").fill(mass2);                    
@@ -513,7 +542,7 @@ public class EBmonitor extends AnalysisMonitor {
                     float vy     = recBankEB.getFloat("vy", pindex);
                     float vz     = recBankEB.getFloat("vz", pindex);
                     float beta   = recBankEB.getFloat("beta", pindex);
-                    int status   = recBankEB.getShort("status", pindex);
+                    int status   = Math.abs(recBankEB.getShort("status", pindex));
                     if(charge!=0) {
                         Particle recParticle = new Particle(211*charge,px,py,pz,vx,vy,vz);
                         recParticle.setProperty("status", (double) status);

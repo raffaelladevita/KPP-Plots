@@ -195,7 +195,7 @@ public class KINEmonitor extends AnalysisMonitor {
         if(recBankEB!=null && recEvenEB!=null ){
             gammasFD.clear();
             gammasFT.clear();
-            double startTime = recEvenEB.getFloat("STTime", 0);
+            double startTime = recEvenEB.getFloat("startTime", 0);
             double    rfTime = recEvenEB.getFloat("RFTime", 0);
             int rows = recBankEB.rows();
             for(int loop = 0; loop < rows; loop++){
@@ -208,7 +208,7 @@ public class KINEmonitor extends AnalysisMonitor {
                 float vy   = recBankEB.getFloat("vy", loop);
                 float vz   = recBankEB.getFloat("vz", loop);
                 float beta = recBankEB.getFloat("beta", loop);
-                short status = recBankEB.getShort("status", loop);
+                short status = (short) Math.abs(recBankEB.getShort("status", loop));
                 if(pid==0) {
                     if(charge!=0) pid=211*charge;
                     else          pid=22;

@@ -7,7 +7,6 @@ package org.clas.analysis;
 
 import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
-import org.jlab.clas.pdg.PhysicsConstants;
 import org.jlab.clas.physics.Particle;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
@@ -97,6 +96,9 @@ public class FTmonitor extends AnalysisMonitor {
         hi_cal_theta_ch.setFillColor(2);
         H1F hi_cal_phi_ch = new H1F("hi_cal_phi_ch", "#phi (deg)", "Counts", 100, -180,180); 
         hi_cal_phi_ch.setFillColor(2);
+        H2F hi_cal_phi_e_ch = new H2F("hi_cal_phi_e_ch", "hi_cal_phi_e_ch", 100, -180,180, 200, 0, 12); 
+        hi_cal_phi_e_ch.setTitleX("#phi (deg)");
+        hi_cal_phi_e_ch.setTitleY("E (GeV)");
         H1F hi_cal_time_ch = new H1F("hi_cal_time_ch", "T-T_RF(ns)", "Counts", 100, -rfPeriod/2,rfPeriod/2); 
         hi_cal_time_ch.setFillColor(33);
         H1F hi_cal_time_cut_ch = new H1F("hi_cal_time_cut_ch", "T-T_RF(ns)", "Counts", 100, -rfPeriod/2,rfPeriod/2); 
@@ -138,6 +140,7 @@ public class FTmonitor extends AnalysisMonitor {
         dc_calo.addDataSet(hi_cal_e_neu,     3);
         dc_calo.addDataSet(hi_cal_theta_ch,  4);
         dc_calo.addDataSet(hi_cal_phi_ch,    5);
+        dc_calo.addDataSet(hi_cal_phi_e_ch,  5);
         dc_calo.addDataSet(hi_cal_time_ch,   6);
         dc_calo.addDataSet(hi_cal_time_cut_ch,   6);
         dc_calo.addDataSet(ftime_ch,         6);
@@ -227,6 +230,7 @@ public class FTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Calorimeter").draw(this.getDataGroup().getItem(1).getH1F("hi_cal_theta_ch"));
         this.getAnalysisCanvas().getCanvas("Calorimeter").cd(5);
         this.getAnalysisCanvas().getCanvas("Calorimeter").draw(this.getDataGroup().getItem(1).getH1F("hi_cal_phi_ch"));
+//        this.getAnalysisCanvas().getCanvas("Calorimeter").draw(this.getDataGroup().getItem(1).getH2F("hi_cal_phi_e_ch"));
         this.getAnalysisCanvas().getCanvas("Calorimeter time").cd(0);
         this.getAnalysisCanvas().getCanvas("Calorimeter time").draw(this.getDataGroup().getItem(1).getH1F("hi_cal_time_ch"));
         this.getAnalysisCanvas().getCanvas("Calorimeter time").draw(this.getDataGroup().getItem(1).getH1F("hi_cal_time_cut_ch"),"same");
@@ -286,7 +290,7 @@ public class FTmonitor extends AnalysisMonitor {
         double startTime=-1000;
         double rfTime=-1000;
         if(recEvenEB!=null) {
-            startTime = recEvenEB.getFloat("STTime", 0);
+            startTime = recEvenEB.getFloat("startTime", 0);
             rfTime    = recEvenEB.getFloat("RFTime", 0);
         }
         // get trigger particle
@@ -331,7 +335,8 @@ public class FTmonitor extends AnalysisMonitor {
                     this.getDataGroup().getItem(1).getH1F("hi_cal_clsize_ch").fill(size);
                     this.getDataGroup().getItem(1).getH1F("hi_cal_e_ch").fill(energy);
                     this.getDataGroup().getItem(1).getH1F("hi_cal_theta_ch").fill(Math.toDegrees(Math.acos(cz)));
-                    this.getDataGroup().getItem(1).getH1F("hi_cal_phi_ch").fill(Math.toDegrees(Math.atan2(cy,cx)));
+                    if(energy>0.5)this.getDataGroup().getItem(1).getH1F("hi_cal_phi_ch").fill(Math.toDegrees(Math.atan2(cy,cx)));
+                    this.getDataGroup().getItem(1).getH2F("hi_cal_phi_e_ch").fill(Math.toDegrees(Math.atan2(cy,cx)),energy);
                     if(rfTime!=-1000) {
                         this.getDataGroup().getItem(1).getH1F("hi_cal_time_ch").fill((time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);
                         if(energy>2) this.getDataGroup().getItem(1).getH1F("hi_cal_time_cut_ch").fill((time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);

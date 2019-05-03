@@ -200,7 +200,7 @@ public class EPIPLUSmonitor extends AnalysisMonitor {
             int rows = bank.rows();
             for(int loop = 0; loop < rows; loop++){
                 if(bank.getByte("charge", loop)!=0) nCharged++;
-                if(bank.getInt("pid", loop)==11 && recEl==null && bank.getShort("status", loop)>=2000) {
+                if(bank.getInt("pid", loop)==11 && recEl==null && (short) Math.abs(bank.getShort("status", loop))>=2000) {
                     recEl = new Particle(
                                           bank.getInt("pid", loop),
                                           bank.getFloat("px", loop),
@@ -214,7 +214,7 @@ public class EPIPLUSmonitor extends AnalysisMonitor {
                     }
                 }
 //                if(bank.getInt("charge", loop)==1 && recPi==null && bank.getShort("status", loop)<4000) {
-                if(bank.getInt("pid", loop)==211 && recPi==null && bank.getShort("status", loop)<4000) {
+                if(bank.getInt("pid", loop)==211 && recPi==null && (short) Math.abs(bank.getShort("status", loop))<4000) {
                     recPi = new Particle(
                                           211,
                                           bank.getFloat("px", loop),

@@ -381,7 +381,7 @@ public class CNDmonitor extends AnalysisMonitor {
                         double mass2   = -100;                                
                         dt = (time - path/(beta*29.97) - trf + 120.5*rfPeriod)%rfPeriod-rfPeriod/2.0;
                         if(recEvenEB!=null && recBankEB!=null) {
-                            double startTime = recEvenEB.getFloat("STTime", 0);
+                            double startTime = recEvenEB.getFloat("startTime", 0);
                             if(startTime>-100 /*&& recBankEB.getInt("pid", 0)==11*/) {
                                 dt = time - path/(beta*29.97) - startTime;
                                 betaTof = path/(time-startTime)/29.97;

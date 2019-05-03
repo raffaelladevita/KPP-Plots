@@ -116,7 +116,7 @@ public class LTCCmonitor  extends AnalysisMonitor {
 
         if(recBankEB!=null && recEvenEB!=null && recDeteEB!=null && recLTCC!=null && recTrajEB!=null) {
 //                    recDeteEB.show(); bank.show();
-            double startTime = recEvenEB.getFloat("STTime", 0);
+            double startTime = recEvenEB.getFloat("startTime", 0);
             int nrows = recDeteEB.rows();
 	    for(int loop = 0; loop < nrows; loop++){
                 int    index = recDeteEB.getShort("index", loop);
@@ -145,8 +145,8 @@ public class LTCCmonitor  extends AnalysisMonitor {
                     float theta = (recLTCC.getFloat("minTheta", index)+recLTCC.getFloat("maxTheta", index))/2;
                     double path = 0;
                     for(int j=0; j<recTrajEB.rows(); j++) {
-                        if(pindex==recTrajEB.getShort("pindex", j) && recTrajEB.getShort("detId", j)==43) {
-                            path = recTrajEB.getFloat("pathlength", j);                        
+                        if(pindex==recTrajEB.getShort("pindex", j) && recTrajEB.getByte("detector", j)==DetectorType.LTCC.getDetectorId()) {
+                            path = recTrajEB.getFloat("path", j);                        
                             this.getDataGroup().getItem(1).getH1F("hi_nphe_ele").fill(nphe);
                             this.getDataGroup().getItem(1).getH1F("hi_time").fill(time-path/29.97-startTime);
                             this.getDataGroup().getItem(1).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),phi);

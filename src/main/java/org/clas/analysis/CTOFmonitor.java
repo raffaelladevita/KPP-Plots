@@ -354,7 +354,7 @@ public class CTOFmonitor extends AnalysisMonitor {
                         this.getDataGroup().getItem(3).getH2F("hi_z_hit_track").fill(z,tz);
                         this.getDataGroup().getItem(3).getH2F("hi_z_residual").fill(z-tz,paddle*1.);
                         if(recEvenEB!=null && recBankEB!=null) {
-                            double startTime = recEvenEB.getFloat("STTime", 0);
+                            double startTime = recEvenEB.getFloat("startTime", 0);
                             if(startTime>-100 && recBankEB.getInt("pid", 0)==11) {
                                 double dt = time - path/(beta*29.97) - startTime;
                                 double betaTof = path/(time-startTime)/29.97;

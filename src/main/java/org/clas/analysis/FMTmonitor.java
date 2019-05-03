@@ -13,6 +13,8 @@ import org.jlab.groot.data.H2F;
 import org.jlab.groot.group.DataGroup;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
+import org.jlab.detector.base.DetectorType;
+
 
 /**
  *
@@ -199,7 +201,7 @@ public class FMTmonitor extends AnalysisMonitor {
         double startTime = -1000;
         double rfTime = -1000;
         if (recEvenEB != null) {
-            startTime = recEvenEB.getFloat("STTime", 0);
+            startTime = recEvenEB.getFloat("startTime", 0);
             rfTime = recEvenEB.getFloat("RFTime", 0);
         }
         // get trigger particle
@@ -214,8 +216,9 @@ public class FMTmonitor extends AnalysisMonitor {
             List<Integer> matchedStrips = new ArrayList<Integer>();
             List<Integer> matchedClusters = new ArrayList<Integer>();
             for (int loop = 0; loop < recTrajEB.rows(); loop++) {
-                int detId = recTrajEB.getShort("detId", loop);
-                if (detId >= 1 && detId <= FVT_Nlayers) {
+                int detId = recTrajEB.getByte("detector", loop);
+                int layer = recTrajEB.getByte("layer", loop);
+                if (detId==DetectorType.FMT.getDetectorId() && layer>= 1 && detId <= FVT_Nlayers) {
                     double x = recTrajEB.getFloat("x", loop);
                     double y = recTrajEB.getFloat("y", loop);
                     double z = recTrajEB.getFloat("z", loop);

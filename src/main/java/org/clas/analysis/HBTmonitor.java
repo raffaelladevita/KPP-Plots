@@ -24,7 +24,7 @@ public class HBTmonitor extends AnalysisMonitor {
 
     public HBTmonitor(String name) {
         super(name);
-        this.setAnalysisTabNames("Monte Carlo","Resolutions", "Efficiency", "Vertex","Positive Tracks","Negative Tracks");
+        this.setAnalysisTabNames("Monte Carlo","Vertex","Positive Tracks","Negative Tracks");
         this.init(false);
     }
 

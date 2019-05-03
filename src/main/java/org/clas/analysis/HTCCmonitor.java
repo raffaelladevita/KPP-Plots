@@ -138,7 +138,7 @@ public class HTCCmonitor  extends AnalysisMonitor {
             }
         }
         if(recBankEB!=null && recDeteEB!=null && recEvenEB!=null) {
-            double startTime = recEvenEB.getFloat("STTime", 0);
+            double startTime = recEvenEB.getFloat("startTime", 0);
             int nrows = recBankEB.rows();
             for(int loop = 0; loop < nrows; loop++){
                 int pidCode = 0;
@@ -156,13 +156,18 @@ public class HTCCmonitor  extends AnalysisMonitor {
                                         recBankEB.getFloat("vz", loop));
                 for(int j=0; j<recDeteEB.rows(); j++) {
                     if(recDeteEB.getShort("pindex",j)==loop && recDeteEB.getByte("detector",j)==DetectorType.HTCC.getDetectorId()) {
+                        float x     = recDeteEB.getFloat("x",     j);
+                        float y     = recDeteEB.getFloat("y",     j);
+                        float z     = recDeteEB.getFloat("z",     j);
+                        double phi   = Math.toDegrees(Math.atan2(y, x));
+                        double theta = Math.toDegrees(Math.acos(z/Math.sqrt(x*x+y*y+z*z)));
                         this.getDataGroup().getItem(2).getH1F("hi_nphe_all").fill(recDeteEB.getFloat("nphe", j)*1.0);
                         if(recParticle.pid()==11) {
                             this.getDataGroup().getItem(2).getH1F("hi_nphe_ele").fill(recDeteEB.getFloat("nphe", j)*1.0);
                             this.getDataGroup().getItem(2).getH1F("hi_time").fill(recDeteEB.getFloat("time", j)-recDeteEB.getFloat("path", j)/29.97-startTime);
                         }
-                        this.getDataGroup().getItem(2).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recDeteEB.getFloat("phi", j)));
-                        this.getDataGroup().getItem(2).getH2F("hi_theta_TBT").fill(Math.toDegrees(recParticle.theta()),Math.toDegrees(recDeteEB.getFloat("theta", j)));
+                        this.getDataGroup().getItem(2).getH2F("hi_phi_TBT").fill(Math.toDegrees(recParticle.phi()),phi);
+                        this.getDataGroup().getItem(2).getH2F("hi_theta_TBT").fill(Math.toDegrees(recParticle.theta()),theta);
                     }
                 }
             }

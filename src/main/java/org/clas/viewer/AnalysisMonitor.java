@@ -212,7 +212,7 @@ public class AnalysisMonitor implements IDataEventListener {
             GStyle.getAxisAttributesZ().setTitleFontName("Avenir");
             GStyle.setGraphicsFrameLineWidth(1);
             GStyle.getH1FAttributes().setLineWidth(1); 
-//            GStyle.getH1FAttributes().setOptStat("1111111");
+            GStyle.getH1FAttributes().setOptStat("1111");
         }
     }
 
