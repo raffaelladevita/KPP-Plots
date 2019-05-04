@@ -1,5 +1,6 @@
 package org.clas.viewer;
 
+import java.util.Arrays;
 import org.clas.analysis.HBTmonitor;
 import java.util.List;
 import java.util.TreeMap;
@@ -21,6 +22,7 @@ import org.clas.analysis.KINEmonitor;
 import org.clas.analysis.LTCCmonitor;
 import org.clas.analysis.TBTmonitor;
 import org.clas.analysis.TIMEmonitor;
+import org.jlab.detector.calib.utils.ConstantsManager;
 
 import org.jlab.detector.decode.CodaEventDecoder;
 import org.jlab.detector.decode.DetectorEventDecoder;
@@ -41,36 +43,41 @@ public class KPPProcessor {
     CodaEventDecoder decoder = new CodaEventDecoder();
     DetectorEventDecoder detectorDecoder = new DetectorEventDecoder();
 
+    ConstantsManager                  ccdb = new ConstantsManager();
+        
     TreeMap<String, List<H2F>> histos = new TreeMap<String, List<H2F>>();
 
     private int runNumber = 0;
 
     // detector monitors
     AnalysisMonitor[] monitors = {
-    		new HBTmonitor("HBT"),
-    		new TBTmonitor("TBT"),
-                new CVTmonitor("CVT"),
-                new ELmonitor("ELECTRONS"),
-                new ECmonitor("EC"),
-                new FTOFmonitor("FTOF"),
-        	new HTCCmonitor("HTCC"),
-        	new LTCCmonitor("LTCC"),
-                new CTOFmonitor("CTOF"),
-                new CNDmonitor("CND"),
-                new FTmonitor("FT"),
-                new FMTmonitor("FMT"),
-        	new EBHBmonitor("EBHB"),
-        	new EBmonitor("EB"),
-        	new KINEmonitor("KINEMATICS"),
-           	new ELASTICmonitor("ELASTIC"),
-        	new EPIPLUSmonitor("EPIPLUS"),
-        	new EPI0monitor("EPI0"),
-        	new TIMEmonitor("TIME")
+    		new HBTmonitor("HBT",ccdb),
+    		new TBTmonitor("TBT",ccdb),
+                new CVTmonitor("CVT",ccdb),
+                new ELmonitor("ELECTRONS",ccdb),
+                new ECmonitor("EC",ccdb),
+                new FTOFmonitor("FTOF",ccdb),
+        	new HTCCmonitor("HTCC",ccdb),
+        	new LTCCmonitor("LTCC",ccdb),
+                new CTOFmonitor("CTOF",ccdb),
+                new CNDmonitor("CND",ccdb),
+                new FTmonitor("FT",ccdb),
+                new FMTmonitor("FMT",ccdb),
+        	new EBHBmonitor("EBHB",ccdb),
+        	new EBmonitor("EB",ccdb),
+        	new KINEmonitor("KINEMATICS",ccdb),
+           	new ELASTICmonitor("ELASTIC",ccdb),
+        	new EPIPLUSmonitor("EPIPLUS",ccdb),
+        	new EPI0monitor("EPI0",ccdb),
+        	new TIMEmonitor("TIME",ccdb)
     };
 
     public KPPProcessor() {
-//        this.prefix = prefix;
-//        this.flist = list;
+        
+        // init constants manager
+        ccdb.init(Arrays.asList(new String[]{
+                    "/calibration/eb/rf/config"}));
+
     }
 
     private int getRunNumber(DataEvent event) {

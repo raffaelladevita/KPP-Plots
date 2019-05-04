@@ -8,6 +8,7 @@ package org.clas.analysis;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
 import org.jlab.detector.base.DetectorType;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.group.DataGroup;
@@ -21,8 +22,8 @@ import org.jlab.io.base.DataEvent;
 public class HTCCmonitor  extends AnalysisMonitor {
         
     
-    public HTCCmonitor(String name) {
-        super(name);
+    public HTCCmonitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("Reconstructed Hits", "Electrons");
         this.init(false);
     }

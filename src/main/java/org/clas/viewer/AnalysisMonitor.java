@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.detector.view.DetectorPane2D;
 import org.jlab.groot.base.GStyle;
 import org.jlab.groot.data.IDataSet;
@@ -35,9 +36,10 @@ public class AnalysisMonitor implements IDataEventListener {
     private JPanel                 analysisPanel   = null;
     private EmbeddedCanvasTabbed   analysisCanvas  = null;
     private DetectorPane2D         analysisView    = null;
+    ConstantsManager               ccdb            = null;
     private int                    numberOfEvents;
 
-    public AnalysisMonitor(String name){
+    public AnalysisMonitor(String name, ConstantsManager ccdb){
         this.setStyle(0);
 //        GStyle.getH1FAttributes().setOptStat("11111111");
 
@@ -46,6 +48,7 @@ public class AnalysisMonitor implements IDataEventListener {
         this.analysisPanel  = new JPanel();
         this.analysisCanvas = new EmbeddedCanvasTabbed();
         this.analysisView   = new DetectorPane2D();
+        this.ccdb           = ccdb;
         this.numberOfEvents = 0;
     }
 
@@ -105,6 +108,10 @@ public class AnalysisMonitor implements IDataEventListener {
     
     public DetectorPane2D getAnalysisView() {
         return analysisView;
+    }
+
+    public ConstantsManager getCcdb() {
+        return ccdb;
     }
     
     public int getNumberOfEvents() {
@@ -177,6 +184,10 @@ public class AnalysisMonitor implements IDataEventListener {
         for(int tab=0; tab<this.analysisTabNames.size(); tab++) {
             this.analysisCanvas.getCanvas(this.analysisTabNames.get(tab)).initTimer(time);
         }
+    }
+
+    public void setCcdb(ConstantsManager ccdb) {
+        this.ccdb = ccdb;
     }
     
     public void setNumberOfEvents(int numberOfEvents) {

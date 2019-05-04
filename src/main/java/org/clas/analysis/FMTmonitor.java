@@ -14,6 +14,8 @@ import org.jlab.groot.group.DataGroup;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
 import org.jlab.detector.base.DetectorType;
+import org.jlab.detector.calib.utils.ConstantsManager;
+import org.jlab.utils.groups.IndexedTable;
 
 
 /**
@@ -39,8 +41,8 @@ public class FMTmonitor extends AnalysisMonitor {
     double[] FVT_Alpha = {19, 79, 139, -161, -101, -41}; //Give the rotation angle to apply
     double[] MY_Alpha = {170, 50, -70, 170, 50, -70}; //Give the rotation angle to apply
 
-    public FMTmonitor(String name) {
-        super(name);
+    public FMTmonitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("FMT hits", "FMT phi", "Clusters", "Cluster phi", "Cluster phi vs strip", "Cluster strip vs strip", "Cluster energy");
         this.init(false);
         this.LoadGeometry();
@@ -184,10 +186,14 @@ public class FMTmonitor extends AnalysisMonitor {
         if (event.hasBank("FMTRec::Clusters")) {
             fmtClusters = event.getBank("FMTRec::Clusters");
         }
-        int ev = 0;
-        if(recRun != null) ev=recRun.getInt("event",0);
-//        System.out.println(ev); 
-
+        if(recRun == null) return;
+        int ev  = recRun.getInt("event",0);
+        int run = recRun.getInt("run",0);
+        IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
+        if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
+            this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
+            this.resetEventListener();
+        }
         // Decoding Trigger Bits
         boolean[] trigger_bits = new boolean[32];
         if (event.hasBank("RUN::config")) {

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
 import org.jlab.detector.base.DetectorType;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
@@ -24,8 +25,8 @@ import org.jlab.io.base.DataEvent;
 public class ECmonitor extends AnalysisMonitor {
     
 
-    public ECmonitor(String name) {
-        super(name);
+    public ECmonitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("Clusters","Pizeros","Electrons");
         this.init(false);
     }

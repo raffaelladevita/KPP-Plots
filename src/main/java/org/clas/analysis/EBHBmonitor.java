@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.pdg.PhysicsConstants;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
@@ -16,6 +17,7 @@ import org.jlab.groot.group.DataGroup;
 import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
+import org.jlab.utils.groups.IndexedTable;
 
 /**
  *
@@ -27,8 +29,8 @@ public class EBHBmonitor extends AnalysisMonitor {
     int    nFT = 0;
     int    nFTel = 0;
     
-    public EBHBmonitor(String name) {
-        super(name);
+    public EBHBmonitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("Start time", "Electrons", "Pi0", "Vertex time", "Mass", "Beta");
         this.init(false);
     }
@@ -350,10 +352,14 @@ public class EBHBmonitor extends AnalysisMonitor {
         if(event.hasBank("RECHB::ForwardTagger"))   recFTagEB   = event.getBank("RERECHBC::ForwardTagger");
         if(event.hasBank("RECHB::Event"))           recEvenEB   = event.getBank("RECHB::Event");
         if(event.hasBank("RUN::rf"))                recRunRF    = event.getBank("RUN::rf");
-        int ev = 0;
-        if(recRun != null) ev=recRun.getInt("event",0);
-//        System.out.println(ev); 
-
+        if(recRun == null) return;
+        int ev  = recRun.getInt("event",0);
+        int run = recRun.getInt("run",0);
+        IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
+        if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
+            this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
+            this.resetEventListener();
+        }
         // Decoding Trigger Bits
         boolean[] trigger_bits = new boolean[32];
         if (event.hasBank("RUN::config")) {

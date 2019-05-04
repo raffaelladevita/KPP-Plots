@@ -8,6 +8,7 @@ package org.clas.analysis;
 import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.geom.prim.Vector3D;
 import org.jlab.groot.data.GraphErrors;
 import org.jlab.groot.data.H1F;
@@ -17,6 +18,7 @@ import org.jlab.groot.group.DataGroup;
 import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
+import org.jlab.utils.groups.IndexedTable;
 
 /**
  *
@@ -24,9 +26,10 @@ import org.jlab.io.base.DataEvent;
  */
 public class FTOFmonitor extends AnalysisMonitor {
     
-
-    public FTOFmonitor(String name) {
-        super(name);
+    private double rfPeriod = 4.008;
+    
+    public FTOFmonitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("MIPs", "dE/dx positive", "dE/dx negative","Residuals", "RF positive","RF negative", "Beta", "Mass", "Mass2");
         this.init(false);
     }
@@ -118,7 +121,7 @@ public class FTOFmonitor extends AnalysisMonitor {
         // RF offsets
         DataGroup dc_rf = new DataGroup(3,2);
         for(int layer=1; layer <= 3; layer++) {
-            H2F hi_rf_paddle = new H2F("hi_rf_neg_paddle_" + layer, "hi_rf_neg_paddle_" + layer, nPaddle[layer-1], 1, nPaddle[layer-1]+1., 100, -1., 1.);  
+            H2F hi_rf_paddle = new H2F("hi_rf_neg_paddle_" + layer, "hi_rf_neg_paddle_" + layer, nPaddle[layer-1], 1, nPaddle[layer-1]+1., 100, -this.rfPeriod/2, this.rfPeriod/2); 
             hi_rf_paddle.setTitleX("Counter");
             hi_rf_paddle.setTitleY("RF offset (ns)"); 
             hi_rf_paddle.setTitle("Panel " + panels[layer-1]);
@@ -134,7 +137,7 @@ public class FTOFmonitor extends AnalysisMonitor {
         // RF offsets hadrons
         DataGroup dc_rf_had = new DataGroup(3,2);
         for(int layer=1; layer <= 3; layer++) {
-            H2F hi_rf_paddle = new H2F("hi_rf_pos_paddle_" + layer, "hi_rf_pos_paddle_" + layer, nPaddle[layer-1], 1, nPaddle[layer-1]+1., 100, -1., 1.);  
+            H2F hi_rf_paddle = new H2F("hi_rf_pos_paddle_" + layer, "hi_rf_pos_paddle_" + layer, nPaddle[layer-1], 1, nPaddle[layer-1]+1., 100, -this.rfPeriod/2, this.rfPeriod/2);  
             hi_rf_paddle.setTitleX("Counter");
             hi_rf_paddle.setTitleY("RF offset (ns)"); 
             hi_rf_paddle.setTitle("Panel " + panels[layer-1]);
@@ -331,8 +334,14 @@ public class FTOFmonitor extends AnalysisMonitor {
         if(event.hasBank("FTOF::adc"))              ftofADC     = event.getBank("FTOF::adc");
         if(event.hasBank("FTOF::tdc"))               ftofTDC     = event.getBank("FTOF::tdc");
         if(event.hasBank("TimeBasedTrkg::TBTracks")) recHBTTrack = event.getBank("TimeBasedTrkg::TBTracks");
-        int ev = 0;
-        if(recRun != null) ev=recRun.getInt("event",0);
+        if(recRun == null) return;
+        int ev  = recRun.getInt("event",0);
+        int run = recRun.getInt("run",0);
+        IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
+        if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
+            this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
+            this.resetEventListener();
+        }
 //        System.out.println(ev); 
 //            if(ev==134 || ev==370) {System.out.println(ev); recBankEB.show(); recDeteEB.show();}
 //        if(recBankEB!=null && recDeteEB!=null) {
@@ -444,7 +453,7 @@ public class FTOFmonitor extends AnalysisMonitor {
                     for(int k = 0; k < recRunRF.rows(); k++){
                         if(recRunRF.getInt("id", k)==1) trf = recRunRF.getFloat("time",k);
                     }
-                    double dt = (time - path/(beta*29.97) - trf + 120.5*2.004)%2.004-1.002;
+                    double dt = (time - path/(beta*29.97) - trf + 120.5*this.rfPeriod)%this.rfPeriod-this.rfPeriod/2;
                     if(q==-1 && recParticle.p()>1.5 && Math.abs(vz)<10 && chi2<75) {
                         this.getDataGroup().getItem(4).getH2F("hi_x_residual_neg_"+layer).fill(hit.x()-trk.x(),paddle*1.0);                        
                         this.getDataGroup().getItem(5).getH2F("hi_rf_neg_paddle_"+layer).fill(paddle*1.,dt);

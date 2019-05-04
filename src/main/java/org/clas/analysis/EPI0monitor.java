@@ -8,6 +8,7 @@ package org.clas.analysis;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.LorentzVector;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
@@ -22,10 +23,10 @@ import org.jlab.io.base.DataEvent;
  */
 public class EPI0monitor extends AnalysisMonitor {
     
-    private double ebeam = 2.122193;
+    private double ebeam = 10.6;
     
-    public EPI0monitor(String name) {
-        super(name);
+    public EPI0monitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("Phi", "Electron", "MissingMass", "General");
         this.init(false);
     }
@@ -187,6 +188,21 @@ public class EPI0monitor extends AnalysisMonitor {
     
     @Override
     public void processEvent(DataEvent event) {
+        int run = 0;
+        if(event.hasBank("RUN::config")) {
+            run = event.getBank("RUN::config").getInt("run", 0);       
+        }
+        else {
+            return;
+        }
+        double ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
+        if(ebeamRCDB == 0) {
+            ebeamRCDB = 10.6;
+        }
+        if(ebeamRCDB!=ebeam) {
+            ebeam=ebeamRCDB;
+            this.resetEventListener();
+        }
         // process event info and save into data group
         Particle recEl = null;
         Particle recPr = null;

@@ -7,6 +7,7 @@ package org.clas.analysis;
 
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
@@ -22,8 +23,8 @@ import org.jlab.io.base.DataEvent;
 public class TBTmonitor extends AnalysisMonitor {
     
 
-    public TBTmonitor(String name) {
-        super(name);
+    public TBTmonitor(String name, ConstantsManager ccdb) {
+        super(name, ccdb);
         this.setAnalysisTabNames("Monte Carlo","Vertex","Positive Tracks","Negative Tracks");
         this.init(false);
     }
@@ -417,9 +418,9 @@ public class TBTmonitor extends AnalysisMonitor {
                     this.getDataGroup().getItem(2).getH1F("hi_vz_pos").fill(recParticle.vz());
                     this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_pos").fill(Math.toDegrees(recParticle.theta()),recParticle.vz());
                     this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_pos").fill(recParticle.vz(),Math.toDegrees(recParticle.phi()));
+                    this.getDataGroup().getItem(4).getH2F("hi_vxy_pos").fill(recParticle.vx(),recParticle.vy());
                     if(recParticle.p()>2.&& Math.toDegrees(recParticle.theta())>10.) {
                         this.getDataGroup().getItem(2).getH1F("hi_vz_pos_cut").fill(recParticle.vz());
-                        this.getDataGroup().getItem(4).getH2F("hi_vxy_pos").fill(recParticle.vx(),recParticle.vy());
                     }
                     this.getDataGroup().getItem(2).getH2F("hi_theta_p_pos").fill(recParticle.p(),Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(2).getH2F("hi_theta_phi_pos").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recParticle.theta()));
@@ -433,9 +434,9 @@ public class TBTmonitor extends AnalysisMonitor {
                     this.getDataGroup().getItem(1).getH1F("hi_vz_neg").fill(recParticle.vz());
                     this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_neg").fill(Math.toDegrees(recParticle.theta()),recParticle.vz());
                     this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_neg").fill(recParticle.vz(),Math.toDegrees(recParticle.phi()));
+                    this.getDataGroup().getItem(4).getH2F("hi_vxy_neg").fill(recParticle.vx(),recParticle.vy());
                     if(recParticle.p()>2.&& Math.toDegrees(recParticle.theta())>15.) {
                         this.getDataGroup().getItem(1).getH1F("hi_vz_neg_cut").fill(recParticle.vz());
-                        this.getDataGroup().getItem(4).getH2F("hi_vxy_neg").fill(recParticle.vx(),recParticle.vy());
                     }
                     this.getDataGroup().getItem(1).getH2F("hi_theta_p_neg").fill(recParticle.p(),Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(1).getH2F("hi_theta_phi_neg").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recParticle.theta()));                    

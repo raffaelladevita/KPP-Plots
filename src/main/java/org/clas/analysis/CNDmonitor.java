@@ -8,16 +8,16 @@ package org.clas.analysis;
 import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
-import org.jlab.geom.prim.Vector3D;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.GraphErrors;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
-import org.jlab.groot.fitter.ParallelSliceFitter;
 import org.jlab.groot.group.DataGroup;
 import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
+import org.jlab.utils.groups.IndexedTable;
 
 /**
  *
@@ -29,8 +29,8 @@ public class CNDmonitor extends AnalysisMonitor {
     private int    nPaddle = 144;
     private double tdcConv = 0.023456;
         
-    public CNDmonitor(String name) {
-        super(name);
+    public CNDmonitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("MIPs", "ADC-TDC", "dE/dx", "Residuals", "RF","Beta and Mass");
         this.init(false);
     }
@@ -303,8 +303,14 @@ public class CNDmonitor extends AnalysisMonitor {
         if(event.hasBank("CND::adc"))               cndADC     = event.getBank("CND::adc");
         if(event.hasBank("CND::tdc"))               cndTDC     = event.getBank("CND::tdc");
         if(event.hasBank("CVTRec::Tracks"))         recHBTTrack = event.getBank("CVTRec::Tracks");
-        int ev = 0;
-        if(recRun != null) ev=recRun.getInt("event",0);
+        if(recRun == null) return;
+        int ev  = recRun.getInt("event",0);
+        int run = recRun.getInt("run",0);
+        IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
+        if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
+            this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
+            this.resetEventListener();
+        }
 //        System.out.println(ev); 
 //        if(ev==134 || ev==370) {System.out.println(ev); recBankEB.show(); recDeteEB.show();}
 //        if(ev==93364) recCndHits.show();

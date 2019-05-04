@@ -7,6 +7,7 @@ package org.clas.analysis;
 
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
@@ -22,8 +23,8 @@ import org.jlab.io.base.DataEvent;
 public class ELmonitor extends AnalysisMonitor {
     
 
-    public ELmonitor(String name) {
-        super(name);
+    public ELmonitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("Monte Carlo", "Electron Tracks");
         this.init(false);
     }

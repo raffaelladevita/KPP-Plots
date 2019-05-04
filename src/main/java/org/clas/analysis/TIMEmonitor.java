@@ -7,6 +7,7 @@ package org.clas.analysis;
 
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.group.DataGroup;
 import org.jlab.io.base.DataBank;
@@ -19,8 +20,8 @@ import org.jlab.io.base.DataEvent;
 public class TIMEmonitor extends AnalysisMonitor {
     
 
-    public TIMEmonitor(String name) {
-        super(name);
+    public TIMEmonitor(String name, ConstantsManager ccdb) {
+        super(name, ccdb);
         this.setAnalysisTabNames("Timing Correlations");
         this.init(false);
     }

@@ -8,6 +8,7 @@ package org.clas.analysis;
 import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.GraphErrors;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
@@ -16,6 +17,7 @@ import org.jlab.groot.group.DataGroup;
 import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
+import org.jlab.utils.groups.IndexedTable;
 
 /**
  *
@@ -23,9 +25,10 @@ import org.jlab.io.base.DataEvent;
  */
 public class CTOFmonitor extends AnalysisMonitor {
     
-
-    public CTOFmonitor(String name) {
-        super(name);
+    private double rfPeriod = 4.008;
+    
+    public CTOFmonitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("MIPs", "ADC-TDC", "dE/dx", "Residuals", "RF","Beta and Mass");
         this.init(false);
     }
@@ -110,10 +113,10 @@ public class CTOFmonitor extends AnalysisMonitor {
         this.getDataGroup().add(dc_residuals, 3);   
         // RF offsets
         DataGroup dc_rf = new DataGroup(2,2);
-        H2F hi_rf_neg_paddle = new H2F("hi_rf_neg_paddle", "hi_rf_neg_paddle", nPaddle, 1, nPaddle+1., 100, -1., 1.);  
+        H2F hi_rf_neg_paddle = new H2F("hi_rf_neg_paddle", "hi_rf_neg_paddle", nPaddle, 1, nPaddle+1., 100, -this.rfPeriod/2, this.rfPeriod/2);  
         hi_rf_neg_paddle.setTitleX("Counter");
         hi_rf_neg_paddle.setTitleY("Vertex Time (ns)"); 
-        H2F hi_rf_pos_paddle = new H2F("hi_rf_pos_paddle", "hi_rf_pos_paddle", nPaddle, 1, nPaddle+1., 100, -1., 1.);  
+        H2F hi_rf_pos_paddle = new H2F("hi_rf_pos_paddle", "hi_rf_pos_paddle", nPaddle, 1, nPaddle+1., 100, -this.rfPeriod/2, this.rfPeriod/2);  
         hi_rf_pos_paddle.setTitleX("Counter");
         hi_rf_pos_paddle.setTitleY("Vertex Time (ns)"); 
         GraphErrors g_rf_neg_paddle = new GraphErrors("g_rf_neg_paddle");
@@ -301,11 +304,14 @@ public class CTOFmonitor extends AnalysisMonitor {
         if(event.hasBank("CTOF::adc"))              ctofADC     = event.getBank("CTOF::adc");
         if(event.hasBank("CTOF::tdc"))              ctofTDC     = event.getBank("CTOF::tdc");
         if(event.hasBank("CVTRec::Tracks"))         recHBTTrack = event.getBank("CVTRec::Tracks");
-        int ev = 0;
-        if(recRun != null) ev=recRun.getInt("event",0);
-//        System.out.println(ev); 
-//        if(ev==134 || ev==370) {System.out.println(ev); recBankEB.show(); recDeteEB.show();}
-//        if(ev==93364) recCtofHits.show();
+        if(recRun == null) return;
+        int ev  = recRun.getInt("event",0);
+        int run = recRun.getInt("run",0);
+        IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
+        if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
+            this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
+            this.resetEventListener();
+        }
         if(recCtofHits!=null) {
             int nrows = recCtofHits.rows();
             

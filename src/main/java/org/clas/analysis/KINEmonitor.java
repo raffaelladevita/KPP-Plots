@@ -11,6 +11,7 @@ import org.jlab.clas.pdg.PhysicsConstants;
 import org.jlab.clas.physics.LorentzVector;
 import org.jlab.clas.physics.Particle;
 import org.jlab.detector.base.DetectorType;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
@@ -18,6 +19,7 @@ import org.jlab.groot.group.DataGroup;
 import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
+import org.jlab.utils.groups.IndexedTable;
 
 /**
  *
@@ -25,11 +27,10 @@ import org.jlab.io.base.DataEvent;
  */
 public class KINEmonitor extends AnalysisMonitor {
     
-    private double ebeam = 2.22193;
-    private double rfPeriod = 2.004;
+    private double ebeam = 10.6;
     
-    public KINEmonitor(String name) {
-        super(name);
+    public KINEmonitor(String name, ConstantsManager ccdb) {
+        super(name, ccdb);
         this.setAnalysisTabNames("Performance", "General");
         this.init(false);
     }
@@ -174,15 +175,14 @@ public class KINEmonitor extends AnalysisMonitor {
         else {
             return;
         }
-        double ebeamOld=ebeam;
-        if(run>2365 && run<=2597)      ebeam=2.217;
-        else if(run>3028 && run<=3105) ebeam=6.424;
-        else if(run>3105 && run<=3817) ebeam=10.594;
-        else if(run>3817 && run<=3861) ebeam=6.424;
-        else if(run>3861 && run<=5670) ebeam=10.594;
-        else if(run>5671)              ebeam=7.546;
-        if(ebeamOld!=ebeam) {
-            ebeamOld=ebeam;
+        IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
+        double rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
+        double ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
+        if(ebeamRCDB == 0) {
+            ebeamRCDB = 10.6;
+        }
+        if(ebeamRCDB!=ebeam) {
+            ebeam=ebeamRCDB;
             this.resetEventListener();
         }
         Particle recEl = null;
@@ -228,7 +228,7 @@ public class KINEmonitor extends AnalysisMonitor {
                             recParticle.setProperty("time", (double) time);
                             recParticle.setProperty("path", (double) path);
                             double dt = (recParticle.getProperty("time") - recParticle.getProperty("path")/(PhysicsConstants.speedOfLight()) - rfTime);
-                            dt = (dt +1000.5*this.rfPeriod)%this.rfPeriod-0.5*this.rfPeriod;
+                            dt = (dt +1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod;
                             recParticle.setProperty("vertexTime", dt);
                         }
                     }

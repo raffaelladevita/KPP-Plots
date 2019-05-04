@@ -8,6 +8,7 @@ package org.clas.analysis;
 import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
@@ -15,6 +16,7 @@ import org.jlab.groot.group.DataGroup;
 import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
+import org.jlab.utils.groups.IndexedTable;
 
 /**
  *
@@ -24,8 +26,8 @@ public class FTmonitor extends AnalysisMonitor {
     
     double rfPeriod = 4.008;
     
-    public FTmonitor(String name) {
-        super(name);
+    public FTmonitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("Hodoscope energy", "Hodoscope time", "Calorimeter", "Calorimeter time", "pi0");
         this.init(false);
     }
@@ -273,10 +275,14 @@ public class FTmonitor extends AnalysisMonitor {
         if(event.hasBank("FTCAL::clusters"))      ftCalClusters = event.getBank("FTCAL::clusters");
         if(event.hasBank("FTHODO::clusters"))    ftHodoClusters = event.getBank("FTHODO::clusters");
         if(event.hasBank("FTHODO::hits"))            ftHodoHits = event.getBank("FTHODO::hits");
-        int ev = 0;
-        if(recRun != null) ev=recRun.getInt("event",0);
-//        System.out.println(ev); 
-
+        if(recRun == null) return;
+        int ev  = recRun.getInt("event",0);
+        int run = recRun.getInt("run",0);
+        IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
+        if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
+            this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
+            this.resetEventListener();
+        }
         // Decoding Trigger Bits
         boolean[] trigger_bits = new boolean[32];
         if (event.hasBank("RUN::config")) {

@@ -8,6 +8,7 @@ package org.clas.analysis;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
 import org.jlab.detector.base.DetectorType;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.group.DataGroup;
@@ -21,8 +22,8 @@ import org.jlab.io.base.DataEvent;
 public class LTCCmonitor  extends AnalysisMonitor {
         
     
-    public LTCCmonitor(String name) {
-        super(name);
+    public LTCCmonitor(String name, ConstantsManager ccdb) {
+        super(name, ccdb);
         this.setAnalysisTabNames("Electrons");
         this.init(false);
     }

@@ -8,6 +8,7 @@ package org.clas.analysis;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.LorentzVector;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.fitter.DataFitter;
@@ -22,10 +23,10 @@ import org.jlab.io.base.DataEvent;
  */
 public class ELASTICmonitor extends AnalysisMonitor {
     
-    private double ebeam = 2.22193;
+    private double ebeam = 10.6;
     
-    public ELASTICmonitor(String name) {
-        super(name);
+    public ELASTICmonitor(String name, ConstantsManager ccdb) {
+        super(name,ccdb);
         this.setAnalysisTabNames("Beam", "Phi", "Electron", "Proton", "W", "General");
         this.init(false);
     }
@@ -261,16 +262,12 @@ public class ELASTICmonitor extends AnalysisMonitor {
         else {
             return;
         }
-        double ebeamOld=ebeam;
-        if(run>2365 && run<=2597)      ebeam=2.217;
-        else if(run>3028 && run<=3105) ebeam=6.424;
-        else if(run>3105 && run<=3817) ebeam=10.594;
-        else if(run>3817 && run<=3861) ebeam=6.424;
-        else if(run>3861 && run<=5670) ebeam=10.594;
-        else if(run>5671 && run<=5874) ebeam=7.546;
-        else if(run>5874)              ebeam=6.535;
-        if(ebeamOld!=ebeam) {
-            ebeamOld=ebeam;
+        double ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
+        if(ebeamRCDB == 0) {
+            ebeamRCDB = 10.6;
+        }
+        if(ebeamRCDB!=ebeam) {
+            ebeam=ebeamRCDB;
             this.resetEventListener();
         }
         // process event info and save into data group
