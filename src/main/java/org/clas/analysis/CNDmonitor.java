@@ -114,10 +114,10 @@ public class CNDmonitor extends AnalysisMonitor {
         this.getDataGroup().add(dc_residuals, 3);   
         // RF offsets
         DataGroup dc_rf = new DataGroup(2,2);
-        H2F hi_rf_neg_paddle = new H2F("hi_rf_neg_paddle", "hi_rf_neg_paddle", nPaddle, 1, nPaddle+1., 100, -rfPeriod*2.0, rfPeriod*2.0);
+        H2F hi_rf_neg_paddle = new H2F("hi_rf_neg_paddle", "hi_rf_neg_paddle", nPaddle, 1, nPaddle+1., 100, -rfPeriod*1.0, rfPeriod*1.0);
         hi_rf_neg_paddle.setTitleX("Counter");
         hi_rf_neg_paddle.setTitleY("Vertex Time (ns)"); 
-        H2F hi_rf_pos_paddle = new H2F("hi_rf_pos_paddle", "hi_rf_pos_paddle", nPaddle, 1, nPaddle+1., 100, -rfPeriod*2.0, rfPeriod*2.0);
+        H2F hi_rf_pos_paddle = new H2F("hi_rf_pos_paddle", "hi_rf_pos_paddle", nPaddle, 1, nPaddle+1., 100, -rfPeriod*1.0, rfPeriod*1.0);
         hi_rf_pos_paddle.setTitleX("Counter");
         hi_rf_pos_paddle.setTitleY("Vertex Time (ns)"); 
         GraphErrors g_rf_neg_paddle = new GraphErrors("g_rf_neg_paddle");
@@ -298,7 +298,6 @@ public class CNDmonitor extends AnalysisMonitor {
         if(event.hasBank("REC::Particle"))          recBankEB   = event.getBank("REC::Particle");
         if(event.hasBank("REC::Scintillator"))      recDeteEB   = event.getBank("REC::Scintillator");
         if(event.hasBank("REC::Event"))             recEvenEB   = event.getBank("REC::Event");
-        if(event.hasBank("RUN::rf"))                recRunRF    = event.getBank("RUN::rf");
         if(event.hasBank("CND::hits"))              recCndHits = event.getBank("CND::hits");
         if(event.hasBank("CND::adc"))               cndADC     = event.getBank("CND::adc");
         if(event.hasBank("CND::tdc"))               cndTDC     = event.getBank("CND::tdc");
@@ -365,17 +364,11 @@ public class CNDmonitor extends AnalysisMonitor {
                 if(status>=0) {
                     this.getDataGroup().getItem(2).getH2F("hi_en_paddle").fill(paddle*1.,energy);
                     this.getDataGroup().getItem(2).getH2F("hi_time_paddle").fill(paddle*1.,(tdc1-tdc2)*tdcConv);
-                    if(trk_id!=-1 && energy>0 /*&& recRunRF!=null*/) {
+                    if(trk_id!=-1 && energy>0) {
                         int    q    = recHBTTrack.getInt("q",trk_id-1);
                         double p    = recHBTTrack.getFloat("p",trk_id-1);
                         double pt   = recHBTTrack.getFloat("pt",trk_id-1);
                         double phi0 = recHBTTrack.getFloat("phi0",trk_id-1);
-                        Particle recParticle = new Particle(211,pt*Math.cos(phi0),pt*Math.sin(phi0),Math.sqrt(p*p-pt*pt),0,0,0);
-                        double beta = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+recParticle.mass2());
-                        double trf = 0;
-                        for(int k = 0; k < recRunRF.rows(); k++){
-                            if(recRunRF.getInt("id", k)==1) trf = recRunRF.getFloat("time",k);
-                        }
                         this.getDataGroup().getItem(3).getH1F("hi_z_hit").fill(z);
                         this.getDataGroup().getItem(3).getH1F("hi_z_track").fill(tz);
                         this.getDataGroup().getItem(3).getH2F("hi_rz_hit").fill(z,Math.sqrt(x*x+y*y));
@@ -385,9 +378,12 @@ public class CNDmonitor extends AnalysisMonitor {
                         double dt      = -100;
                         double betaTof = -100;
                         double mass2   = -100;                                
-                        dt = (time - path/(beta*29.97) - trf + 120.5*rfPeriod)%rfPeriod-rfPeriod/2.0;
-                        if(recEvenEB!=null && recBankEB!=null) {
+                        Particle recParticle = new Particle(211,pt*Math.cos(phi0),pt*Math.sin(phi0),Math.sqrt(p*p-pt*pt),0,0,0);
+                        double beta = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+recParticle.mass2());
+                        if(recEvenEB!=null) {
                             double startTime = recEvenEB.getFloat("startTime", 0);
+                            double trf       = recEvenEB.getFloat("RFTime", 0);
+//                            dt = (time - path/(beta*29.97) - trf + 120.5*rfPeriod)%rfPeriod-rfPeriod/2.0;
                             if(startTime>-100 /*&& recBankEB.getInt("pid", 0)==11*/) {
                                 dt = time - path/(beta*29.97) - startTime;
                                 betaTof = path/(time-startTime)/29.97;
@@ -398,7 +394,7 @@ public class CNDmonitor extends AnalysisMonitor {
                             this.getDataGroup().getItem(1).getH1F("hi_pos_en").fill(energy/dx);
                             this.getDataGroup().getItem(1).getH2F("hi_pos_en_p").fill(recParticle.p(),energy/dx);
                             this.getDataGroup().getItem(1).getH2F("hi_pos_en_paddle").fill(paddle*1.,energy/dx);
-                            if(recParticle.p()>0.1) this.getDataGroup().getItem(4).getH2F("hi_rf_pos_paddle").fill(paddle*1.,dt);
+                            if(recParticle.p()>0.1 && dt!=-100) this.getDataGroup().getItem(4).getH2F("hi_rf_pos_paddle").fill(paddle*1.,dt);
                             this.getDataGroup().getItem(5).getH2F("hi_beta_pos").fill(recParticle.p(),betaTof);
                             this.getDataGroup().getItem(5).getH1F("hi_mass_pos").fill(mass2);
                         }
@@ -406,7 +402,7 @@ public class CNDmonitor extends AnalysisMonitor {
                             this.getDataGroup().getItem(1).getH1F("hi_neg_en").fill(energy/dx);
                             this.getDataGroup().getItem(1).getH2F("hi_neg_en_p").fill(recParticle.p(),energy/dx);
                             this.getDataGroup().getItem(1).getH2F("hi_neg_en_paddle").fill(paddle*1.,energy/dx);
-                            if(recParticle.p()>0.1) this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle").fill(paddle*1.,dt);
+                            if(recParticle.p()>0.1 && dt!=-100) this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle").fill(paddle*1.,dt);
                             this.getDataGroup().getItem(5).getH2F("hi_beta_neg").fill(recParticle.p(),betaTof);
                             this.getDataGroup().getItem(5).getH1F("hi_mass_neg").fill(mass2);
                         }

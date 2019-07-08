@@ -275,7 +275,6 @@ public class CVTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Vertex").getPad(2).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vxy_pos"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(3);
-        this.getAnalysisCanvas().getCanvas("Vertex").getPad(2).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_pos"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(4);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(1).getH1F("hi_vz_neg"));
@@ -283,11 +282,10 @@ public class CVTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Vertex").cd(5);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_neg"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(6);
-        this.getAnalysisCanvas().getCanvas("Vertex").getPad(5).getAxisZ().setLog(true);
+        this.getAnalysisCanvas().getCanvas("Vertex").getPad(6).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vxy_neg"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(7);
-        this.getAnalysisCanvas().getCanvas("Vertex").getPad(2).getAxisZ().setLog(true);
-        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_neg"));
+         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_neg"));
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(0);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dp_pos"));
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dp_pos"),"same");

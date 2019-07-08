@@ -54,10 +54,10 @@ public class TBTmonitor extends AnalysisMonitor {
         H1F hi_chi2_neg = new H1F("hi_chi2_neg", "hi_chi2_neg", 100, 0.0, 180.0);   
         hi_chi2_neg.setTitleX("#chi2");
         hi_chi2_neg.setTitleY("Counts");
-        H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 180, -25.0, 25.0);   
+        H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 180, -25.0, 40.0);   
         hi_vz_neg.setTitleX("Vz (cm)");
         hi_vz_neg.setTitleY("Counts");
-        H1F hi_vz_neg_cut = new H1F("hi_vz_neg_cut", "hi_vz_neg_cut", 180, -25.0, 25.0);   
+        H1F hi_vz_neg_cut = new H1F("hi_vz_neg_cut", "hi_vz_neg_cut", 180, -25.0, 40.0);   
         hi_vz_neg_cut.setTitleX("Vz (cm)");
         hi_vz_neg_cut.setTitleY("Counts");
         hi_vz_neg_cut.setLineColor(2);
@@ -102,10 +102,10 @@ public class TBTmonitor extends AnalysisMonitor {
         H1F hi_chi2_pos = new H1F("hi_chi2_pos", "hi_chi2_pos", 100, 0.0, 180.0);   
         hi_chi2_pos.setTitleX("#chi2");
         hi_chi2_pos.setTitleY("Counts");
-        H1F hi_vz_pos = new H1F("hi_vz_pos", "hi_vz_pos", 180, -25.0, 25.0);   
+        H1F hi_vz_pos = new H1F("hi_vz_pos", "hi_vz_pos", 180, -25.0, 40.0);   
         hi_vz_pos.setTitleX("Vz (cm)");
         hi_vz_pos.setTitleY("Counts");
-        H1F hi_vz_pos_cut = new H1F("hi_vz_pos_cut", "hi_vz_pos_cut", 180, -25.0, 25.0);   
+        H1F hi_vz_pos_cut = new H1F("hi_vz_pos_cut", "hi_vz_pos_cut", 180, -25.0, 40.0);   
         hi_vz_pos_cut.setTitleX("Vz (cm)");
         hi_vz_pos_cut.setTitleY("Counts");
         hi_vz_pos_cut.setLineColor(2);
@@ -256,10 +256,10 @@ public class TBTmonitor extends AnalysisMonitor {
         H2F hi_vxy_neg = new H2F("hi_vxy_neg","hi_vxy_neg",100,-15.,15.,100,-15.,15);
         hi_vxy_neg.setTitleX("Vx (cm)");
         hi_vxy_neg.setTitleY("Vy (cm)"); 
-        H2F hi_vz_vs_theta_pos = new H2F("hi_vz_vs_theta_pos","hi_vz_vs_theta_pos",100, 5.,40.,100,-15.,15);
+        H2F hi_vz_vs_theta_pos = new H2F("hi_vz_vs_theta_pos","hi_vz_vs_theta_pos",100, 5.,40.,100,-15.,40);
         hi_vz_vs_theta_pos.setTitleX("#theta (deg)");
         hi_vz_vs_theta_pos.setTitleY("Vz (cm)");
-        H2F hi_vz_vs_theta_neg = new H2F("hi_vz_vs_theta_neg","hi_vz_vs_theta_neg",100, 5.,40.,100,-15.,15);
+        H2F hi_vz_vs_theta_neg = new H2F("hi_vz_vs_theta_neg","hi_vz_vs_theta_neg",100, 5.,40.,100,-15.,40);
         hi_vz_vs_theta_neg.setTitleX("#theta (deg)");
         hi_vz_vs_theta_neg.setTitleY("Vz (cm)");
         H2F hi_vz_vs_phi_pos = new H2F("hi_vz_vs_phi_pos","hi_vz_vs_phi_pos",200,-15.,15.,200,-180,180);
@@ -363,7 +363,6 @@ public class TBTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Vertex").getPad(2).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vxy_pos"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(3);
-        this.getAnalysisCanvas().getCanvas("Vertex").getPad(2).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_pos"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(4);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(1).getH1F("hi_vz_neg"));
@@ -372,10 +371,9 @@ public class TBTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Vertex").cd(5);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_neg"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(6);
-        this.getAnalysisCanvas().getCanvas("Vertex").getPad(5).getAxisZ().setLog(true);
+        this.getAnalysisCanvas().getCanvas("Vertex").getPad(6).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vxy_neg"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(7);
-        this.getAnalysisCanvas().getCanvas("Vertex").getPad(2).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_neg"));
 
         

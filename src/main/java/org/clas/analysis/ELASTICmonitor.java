@@ -258,6 +258,7 @@ public class ELASTICmonitor extends AnalysisMonitor {
         int run = 0;
         if(event.hasBank("RUN::config")) {
             run = event.getBank("RUN::config").getInt("run", 0);       
+//            if(run==5990) run=5900;
         }
         else {
             return;

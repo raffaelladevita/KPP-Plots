@@ -34,7 +34,7 @@ public class LTCCmonitor  extends AnalysisMonitor {
         this.setNumberOfEvents(0);
         H1F summary = new H1F("summary","summary",6,1,7);
         summary.setTitleX("sector");
-        summary.setTitleY("HTCC hits");
+        summary.setTitleY("LTCC hits");
         summary.setFillColor(36);
         DataGroup sum = new DataGroup(1,1);
         sum.addDataSet(summary, 0);
@@ -51,10 +51,10 @@ public class LTCCmonitor  extends AnalysisMonitor {
         hi_time.setTitleY("Counts");
         H2F hi_phi_TBT = new H2F("hi_phi_TBT", "hi_phi_TBT", 100, -180.0, 180.0, 100, -180.0, 180.0);  
         hi_phi_TBT.setTitleX("#phi_TBT (deg)"); 
-        hi_phi_TBT.setTitleY("#phi_HTCC (deg)");
+        hi_phi_TBT.setTitleY("#phi_LTCC (deg)");
         H2F hi_theta_TBT = new H2F("hi_theta_TBT", "hi_theta_TBT", 100, 5.0, 45.0, 20, 5.0, 45.0);  
         hi_theta_TBT.setTitleX("#theta_TBT (deg)"); 
-        hi_theta_TBT.setTitleY("#theta_HTCC (deg)");
+        hi_theta_TBT.setTitleY("#theta_LTCC (deg)");
            
         DataGroup dg_elec = new DataGroup(2,2);
         dg_elec.addDataSet(hi_nphe_all, 0);

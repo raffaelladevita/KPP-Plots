@@ -465,7 +465,7 @@ public class FTOFmonitor extends AnalysisMonitor {
                     if(recEvenEB!=null && recBankEB!=null) {
                         double startTime = recEvenEB.getFloat("startTime", 0);
                         int    trigger   = recBankEB.getInt("pid", 0);
-                        if(startTime>-100 && trigger == 11 && trf!=0 && sector>=1 /* && Math.abs(vz)<10 && chi2<75 && paddle>10*/) {
+                        if(startTime>-100 && trigger == 11 && trf!=0 && sector==1 /* && Math.abs(vz)<10 && chi2<75 && paddle>10*/) {
                             double betaTof = path/(time-startTime)/29.97;
                             double mass2   = Math.pow(recParticle.p()/betaTof, 2)-recParticle.p()*recParticle.p();
                             if(q==1)  {

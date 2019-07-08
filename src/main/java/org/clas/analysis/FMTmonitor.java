@@ -282,7 +282,7 @@ public class FMTmonitor extends AnalysisMonitor {
                 }
             }
             for (int loop = 0; loop < recTrajEB.rows(); loop++) {
-                int detId = recTrajEB.getShort("detId", loop);
+                int detId = recTrajEB.getShort("detector", loop);
                 if (detId >= 1 && detId <= FVT_Nlayers) {
                     double x = recTrajEB.getFloat("x", loop);
                     double y = recTrajEB.getFloat("y", loop);

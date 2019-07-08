@@ -41,7 +41,7 @@ public class AnalysisMonitor implements IDataEventListener {
 
     public AnalysisMonitor(String name, ConstantsManager ccdb){
         this.setStyle(0);
-//        GStyle.getH1FAttributes().setOptStat("11111111");
+        GStyle.getH1FAttributes().setOptStat("11111111");
 
                                
         this.analysisName = name;

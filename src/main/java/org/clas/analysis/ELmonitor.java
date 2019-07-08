@@ -42,7 +42,7 @@ public class ELmonitor extends AnalysisMonitor {
         sum.addDataSet(summary, 0);
         this.setAnalysisSummary(sum);
         // negative tracks
-        H1F hi_p_neg = new H1F("hi_p_neg", "hi_p_neg", 100, 0.0, 8.0);     
+        H1F hi_p_neg = new H1F("hi_p_neg", "hi_p_neg", 100, 0.0, 10.0);     
         hi_p_neg.setTitleX("p (GeV)");
         hi_p_neg.setTitleY("Counts");
         H1F hi_theta_neg = new H1F("hi_theta_neg", "hi_theta_neg", 100, 0.0, 40.0); 

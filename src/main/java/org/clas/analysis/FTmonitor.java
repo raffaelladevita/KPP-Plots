@@ -266,6 +266,7 @@ public class FTmonitor extends AnalysisMonitor {
         DataBank recEvenEB = null;
         DataBank ftParticles = null;
         DataBank ftCalClusters = null;
+        DataBank ftCalHits = null;
         DataBank ftHodoClusters = null;
         DataBank ftHodoHits = null;
         if(event.hasBank("RUN::config"))            recRun      = event.getBank("RUN::config");
@@ -273,6 +274,7 @@ public class FTmonitor extends AnalysisMonitor {
         if(event.hasBank("REC::Event"))             recEvenEB   = event.getBank("REC::Event");
         if(event.hasBank("FT::particles"))          ftParticles = event.getBank("FT::particles");
         if(event.hasBank("FTCAL::clusters"))      ftCalClusters = event.getBank("FTCAL::clusters");
+        if(event.hasBank("FTCAL::hits"))              ftCalHits = event.getBank("FTCAL::hits");
         if(event.hasBank("FTHODO::clusters"))    ftHodoClusters = event.getBank("FTHODO::clusters");
         if(event.hasBank("FTHODO::hits"))            ftHodoHits = event.getBank("FTHODO::hits");
         if(recRun == null) return;
@@ -332,6 +334,17 @@ public class FTmonitor extends AnalysisMonitor {
                         time     = ftCalClusters.getFloat("time", i)-path/29.97;
 		    }
 	        }
+//	        for(int i=0; i<ftCalHits.rows(); i++) {
+//                        energyR  = ftCalHits.getFloat("energy", i);
+//                        double x = ftCalHits.getFloat("x", i);
+//                        double y = ftCalHits.getFloat("y", i);
+//                        double z = ftCalHits.getFloat("z", i);
+//                        path     = Math.sqrt(x*x+y*y+z*z);
+//                        time     = ftCalHits.getFloat("time", i)-path/29.97;
+//                        this.getDataGroup().getItem(1).getH1F("hi_cal_time_ch").fill(time-startTime);
+//                        if(energy>2) this.getDataGroup().getItem(1).getH1F("hi_cal_time_cut_ch").fill(time-startTime);
+//                        this.getDataGroup().getItem(1).getH2F("hi_cal_time_e_ch").fill(energy,(time-startTime));
+//	        }
                 
                 this.getDataGroup().getItem(1).getH1F("hi_cal_clsize").fill(size);
                 this.getDataGroup().getItem(1).getH1F("hi_cal_e_all").fill(energy);
@@ -344,8 +357,8 @@ public class FTmonitor extends AnalysisMonitor {
                     if(energy>0.5)this.getDataGroup().getItem(1).getH1F("hi_cal_phi_ch").fill(Math.toDegrees(Math.atan2(cy,cx)));
                     this.getDataGroup().getItem(1).getH2F("hi_cal_phi_e_ch").fill(Math.toDegrees(Math.atan2(cy,cx)),energy);
                     if(rfTime!=-1000) {
-                        this.getDataGroup().getItem(1).getH1F("hi_cal_time_ch").fill((time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);
-                        if(energy>2) this.getDataGroup().getItem(1).getH1F("hi_cal_time_cut_ch").fill((time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);
+                        if(energy>0.5) this.getDataGroup().getItem(1).getH1F("hi_cal_time_ch").fill((time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);
+                        if(energy>2.0) this.getDataGroup().getItem(1).getH1F("hi_cal_time_cut_ch").fill((time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);
                         this.getDataGroup().getItem(1).getH2F("hi_cal_time_e_ch").fill(energy,(time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);
                         this.getDataGroup().getItem(1).getH2F("hi_cal_time_theta_ch").fill(Math.toDegrees(Math.acos(cz)),(time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);
                     }

@@ -51,7 +51,7 @@ public class KINEmonitor extends AnalysisMonitor {
         sum.addDataSet(summary, 0);
         this.setAnalysisSummary(sum);
         // General
-        H2F hi_rec_q2x = new H2F("hi_rec_q2x","hi_rec_q2x",400, 0., 1.0, 400, 0., 14.); 
+        H2F hi_rec_q2x = new H2F("hi_rec_q2x","hi_rec_q2x",400, 0., 1.2, 400, 0., 14.); 
         hi_rec_q2x.setTitleX("x");
         hi_rec_q2x.setTitleY("Q2 (GeV2)");
         H2F hi_rec_q2w = new H2F("hi_rec_q2w","hi_rec_q2w",400, 0., 4.5, 400, 0., 14.); 
@@ -170,7 +170,8 @@ public class KINEmonitor extends AnalysisMonitor {
         int ev  = 0;
         int run = 0;
         if(recRun!=null) {
-            run = event.getBank("RUN::config").getInt("run", 0);       
+            run = event.getBank("RUN::config").getInt("run", 0);  
+//            if(run==5990) run=5900;
         }
         else {
             return;
@@ -244,7 +245,7 @@ public class KINEmonitor extends AnalysisMonitor {
                         recEl.setProperty("status", recParticle.getProperty("status"));
                     }
                 }
-                if(charge>0 && recEl!=null && recParticle.hasProperty("time")) {
+                if(charge>0 && recEl!=null && recParticle.hasProperty("time") && recEl.getProperty("vertexTime")<0.5 && Math.abs(recEl.vz()+3)<5) {
                     if(recParticle.getProperty("status")>4000) this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ctof").fill(recParticle.p(),beta);
                     else                                       this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ftof").fill(recParticle.p(),beta);
 

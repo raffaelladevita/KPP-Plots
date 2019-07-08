@@ -18,6 +18,7 @@ import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
 import org.jlab.utils.groups.IndexedTable;
+import org.jlab.detector.base.DetectorType;
 
 /**
  *
@@ -535,6 +536,7 @@ public class EBmonitor extends AnalysisMonitor {
                     int pindex   = recDeteEB.getShort("pindex", i);
                     int sector   = recDeteEB.getByte("sector", i);
                     int layer    = recDeteEB.getByte("layer", i);
+                    int paddle   = recDeteEB.getShort("component", i);
                     int detector = recDeteEB.getByte("detector", i);
                     float time   = recDeteEB.getFloat("time", i);
                     float path   = recDeteEB.getFloat("path", i);
