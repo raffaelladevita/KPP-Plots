@@ -182,7 +182,7 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         splitPanel.setLeftComponent(CLAS12View);
         splitPanel.setRightComponent(CLAS12Canvas);
         JTextPane clas12Text   = new JTextPane();
-        clas12Text.setText("CLAS12\n KPP plots\n V3.0");
+        clas12Text.setText("CLAS12\n KPP plots\n V3.1");
         clas12Text.setEditable(false);
         StyledDocument styledDoc = clas12Text.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();

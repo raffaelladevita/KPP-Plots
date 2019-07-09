@@ -180,10 +180,12 @@ public class ELmonitor extends AnalysisMonitor {
                                               genBank.getFloat("vx", loop),
                                               genBank.getFloat("vy", loop),
                                               genBank.getFloat("vz", loop));
-                    this.getDataGroup().getItem(3).getH1F("hi_dp_neg").fill(partRecNeg.p()-partGenNeg.p());
-                    this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg").fill(Math.toDegrees(partRecNeg.theta()-partGenNeg.theta()));
-                    this.getDataGroup().getItem(3).getH1F("hi_dphi_neg").fill(Math.toDegrees(partRecNeg.phi()-partGenNeg.phi()));
-                    this.getDataGroup().getItem(3).getH1F("hi_dvz_neg").fill(partRecNeg.vz()-partGenNeg.vz());
+                    if(partRecNeg!=null) {
+                        this.getDataGroup().getItem(3).getH1F("hi_dp_neg").fill(partRecNeg.p()-partGenNeg.p());
+                        this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg").fill(Math.toDegrees(partRecNeg.theta()-partGenNeg.theta()));
+                        this.getDataGroup().getItem(3).getH1F("hi_dphi_neg").fill(Math.toDegrees(partRecNeg.phi()-partGenNeg.phi()));
+                        this.getDataGroup().getItem(3).getH1F("hi_dvz_neg").fill(partRecNeg.vz()-partGenNeg.vz());
+                    }
                 }
             }
         }

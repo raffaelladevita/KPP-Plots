@@ -339,6 +339,7 @@ public class TBTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dphi_pos"),"same");
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(3);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dvz_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dvz_pos"),"same");
 //        this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(3);
 //        this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH2F("hi_dp_phi_neg"));
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(4);
