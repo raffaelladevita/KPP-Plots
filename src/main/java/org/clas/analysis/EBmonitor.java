@@ -574,7 +574,7 @@ public class EBmonitor extends AnalysisMonitor {
                                 }
                             }
                         }
-                         if(trigger==11) {
+                         if(trigger==11 && detector==DetectorType.FTOF.getDetectorId() && layer==2) {
                             if(pid==11 /*&& detector==DetectorType.FTOF.getDetectorId() && sector==5*/) {
                                 betap = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p());
                                 dt    = (time - path/(betap*PhysicsConstants.speedOfLight()) - rfTime);

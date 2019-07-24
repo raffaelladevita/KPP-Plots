@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.pdg.PhysicsConstants;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.base.DetectorType;
 import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
@@ -497,6 +498,7 @@ public class EBHBmonitor extends AnalysisMonitor {
                 for(int i=0; i<recDeteEB.rows(); i++) {
                     int pindex   = recDeteEB.getShort("pindex", i);
                     int detector = recDeteEB.getByte("detector", i);
+                    int layer    = recDeteEB.getByte("layer", i);
                     float time   = recDeteEB.getFloat("time", i);
                     float path   = recDeteEB.getFloat("path", i);
                     int pid      = recBankEB.getInt("pid", pindex);
@@ -532,7 +534,7 @@ public class EBHBmonitor extends AnalysisMonitor {
                                 }
                             }
                         }
-                        if(trigger==11) {
+                        if(trigger==11 && detector==DetectorType.FTOF.getDetectorId() && layer==2) {
                             if(pid==11) {
                                 betap = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p());
                                 dt    = (time - path/(betap*PhysicsConstants.speedOfLight()) - rfTime);

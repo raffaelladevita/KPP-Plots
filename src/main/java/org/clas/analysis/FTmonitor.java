@@ -101,9 +101,9 @@ public class FTmonitor extends AnalysisMonitor {
         H2F hi_cal_phi_e_ch = new H2F("hi_cal_phi_e_ch", "hi_cal_phi_e_ch", 100, -180,180, 200, 0, 12); 
         hi_cal_phi_e_ch.setTitleX("#phi (deg)");
         hi_cal_phi_e_ch.setTitleY("E (GeV)");
-        H1F hi_cal_time_ch = new H1F("hi_cal_time_ch", "T-T_RF(ns)", "Counts", 100, -rfPeriod/2,rfPeriod/2); 
+        H1F hi_cal_time_ch = new H1F("hi_cal_time_ch", "T-T_RF(ns)", "Counts", 200, -rfPeriod/2,rfPeriod/2); 
         hi_cal_time_ch.setFillColor(33);
-        H1F hi_cal_time_cut_ch = new H1F("hi_cal_time_cut_ch", "T-T_RF(ns)", "Counts", 100, -rfPeriod/2,rfPeriod/2); 
+        H1F hi_cal_time_cut_ch = new H1F("hi_cal_time_cut_ch", "T-T_RF(ns)", "Counts", 200, -rfPeriod/2,rfPeriod/2); 
         hi_cal_time_cut_ch.setFillColor(3);
         F1D ftime_ch = new F1D("ftime_ch", "[amp]*gaus(x,[mean],[sigma])", -1., 1.);
         ftime_ch.setParameter(0, 0.0);
