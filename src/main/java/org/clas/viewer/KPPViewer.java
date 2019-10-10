@@ -211,7 +211,9 @@ public class KPPViewer implements IDataEventListener, DetectorListener, ActionLi
         
         // init constants manager
         ccdb.init(Arrays.asList(new String[]{
-                    "/calibration/eb/rf/config"}));
+                    "/calibration/eb/rf/config",
+                    "/calibration/ctof/time_offsets"}));
+//        ccdb.setVariation("rga_fall2018_ctof");
         // set directory to local
         this.kppDir = System.getProperty("user.dir");
         System.out.println("Work directory set to " + this.kppDir);

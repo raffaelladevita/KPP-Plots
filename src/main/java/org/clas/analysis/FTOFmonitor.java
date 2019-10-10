@@ -318,7 +318,6 @@ public class FTOFmonitor extends AnalysisMonitor {
         DataBank recBankEB = null;
         DataBank recDeteEB = null;
         DataBank recEvenEB = null;
-        DataBank recRunRF  = null;
         DataBank recFtofHits = null;
         DataBank recFtofRaws = null;
         DataBank recHBTTrack = null;
@@ -328,7 +327,6 @@ public class FTOFmonitor extends AnalysisMonitor {
         if(event.hasBank("REC::Particle"))          recBankEB   = event.getBank("REC::Particle");
         if(event.hasBank("REC::Scintillator"))      recDeteEB   = event.getBank("REC::Scintillator");
         if(event.hasBank("REC::Event"))             recEvenEB   = event.getBank("REC::Event");
-        if(event.hasBank("RUN::rf"))                recRunRF    = event.getBank("RUN::rf");
         if(event.hasBank("FTOF::hits"))             recFtofHits = event.getBank("FTOF::hits");
         if(event.hasBank("FTOF::rawhits"))          recFtofRaws = event.getBank("FTOF::rawhits");
         if(event.hasBank("FTOF::adc"))              ftofADC     = event.getBank("FTOF::adc");
@@ -433,7 +431,7 @@ public class FTOFmonitor extends AnalysisMonitor {
         	hit.rotateX(angle);
         	trk.rotateX(angle);
                 this.getDataGroup().getItem(3).getH2F("hi_en_paddle_"+layer).fill(paddle*1.,energy);
-                if(trk_id!=-1 && energy>3.0 && recHBTTrack!=null && recRunRF!=null) {
+                if(trk_id!=-1 && energy>3.0 && recHBTTrack!=null && recEvenEB!=null) {
         	    int    q    = recHBTTrack.getByte("q",trk_id-1);
                     double c3x  = recHBTTrack.getFloat("c3_x",trk_id-1);
                     double c3y  = recHBTTrack.getFloat("c3_y",trk_id-1);
@@ -449,11 +447,8 @@ public class FTOFmonitor extends AnalysisMonitor {
                     Particle recParticle = new Particle(211,p0x,p0y,p0z,0,0,0);
                     double beta = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+recParticle.mass2());
                     double path = recHBTTrack.getFloat("pathlength",trk_id-1) + Math.sqrt((tx-c3x)*(tx-c3x)+(ty-c3y)*(ty-c3y)+(tz-c3z)*(tz-c3z));
-                    double trf = 0;
-                    for(int k = 0; k < recRunRF.rows(); k++){
-                        if(recRunRF.getInt("id", k)==1) trf = recRunRF.getFloat("time",k);
-                    }
-                    double dt = (time - path/(beta*29.97) - trf + 120.5*this.rfPeriod)%this.rfPeriod-this.rfPeriod/2;
+                    double startTime = recEvenEB.getFloat("startTime", 0);
+                    double dt = time - path/(beta*29.97) - startTime;
                     if(q==-1 && recParticle.p()>1.5 && Math.abs(vz)<10 && chi2<75) {
                         this.getDataGroup().getItem(4).getH2F("hi_x_residual_neg_"+layer).fill(hit.x()-trk.x(),paddle*1.0);                        
                         this.getDataGroup().getItem(5).getH2F("hi_rf_neg_paddle_"+layer).fill(paddle*1.,dt);
@@ -463,9 +458,8 @@ public class FTOFmonitor extends AnalysisMonitor {
                         this.getDataGroup().getItem(6).getH2F("hi_rf_pos_paddle_"+layer).fill(paddle*1.,dt);
                     }
                     if(recEvenEB!=null && recBankEB!=null) {
-                        double startTime = recEvenEB.getFloat("startTime", 0);
                         int    trigger   = recBankEB.getInt("pid", 0);
-                        if(startTime>-100 && trigger == 11 && trf!=0 && sector==1 /* && Math.abs(vz)<10 && chi2<75 && paddle>10*/) {
+                        if(startTime>-100 && trigger == 11 /* && sector==1 && Math.abs(vz)<10 && chi2<75 && paddle>10*/) {
                             double betaTof = path/(time-startTime)/29.97;
                             double mass2   = Math.pow(recParticle.p()/betaTof, 2)-recParticle.p()*recParticle.p();
                             if(q==1)  {

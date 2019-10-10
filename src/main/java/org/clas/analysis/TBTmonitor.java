@@ -51,9 +51,13 @@ public class TBTmonitor extends AnalysisMonitor {
         H1F hi_phi_neg = new H1F("hi_phi_neg", "hi_phi_neg", 100, -180.0, 180.0);   
         hi_phi_neg.setTitleX("#phi (deg)");
         hi_phi_neg.setTitleY("Counts");
-        H1F hi_chi2_neg = new H1F("hi_chi2_neg", "hi_chi2_neg", 100, 0.0, 180.0);   
+        H1F hi_chi2_neg = new H1F("hi_chi2_neg", "hi_chi2_neg", 100, 0.0, 50.0);   
         hi_chi2_neg.setTitleX("#chi2");
         hi_chi2_neg.setTitleY("Counts");
+        H1F hi_chi2_neg_cut = new H1F("hi_chi2_neg_cut", "hi_chi2_neg_cut", 100, 0.0, 50.0);   
+        hi_chi2_neg_cut.setTitleX("#chi2");
+        hi_chi2_neg_cut.setTitleY("Counts");
+        hi_chi2_neg_cut.setLineColor(2);
         H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 180, -25.0, 40.0);   
         hi_vz_neg.setTitleX("Vz (cm)");
         hi_vz_neg.setTitleY("Counts");
@@ -82,6 +86,7 @@ public class TBTmonitor extends AnalysisMonitor {
         dg_neg.addDataSet(hi_theta_neg, 1);
         dg_neg.addDataSet(hi_phi_neg, 2);
         dg_neg.addDataSet(hi_chi2_neg, 3);
+        dg_neg.addDataSet(hi_chi2_neg_cut, 3);
         dg_neg.addDataSet(hi_vz_neg, 4);
         dg_neg.addDataSet(hi_vz_neg_cut, 4);
         dg_neg.addDataSet(f1_vz_neg, 4);
@@ -99,9 +104,13 @@ public class TBTmonitor extends AnalysisMonitor {
         H1F hi_phi_pos = new H1F("hi_phi_pos", "hi_phi_pos", 100, -180.0, 180.0);   
         hi_phi_pos.setTitleX("#phi (deg)");
         hi_phi_pos.setTitleY("Counts");
-        H1F hi_chi2_pos = new H1F("hi_chi2_pos", "hi_chi2_pos", 100, 0.0, 180.0);   
+        H1F hi_chi2_pos = new H1F("hi_chi2_pos", "hi_chi2_pos", 100, 0.0, 50.0);   
         hi_chi2_pos.setTitleX("#chi2");
         hi_chi2_pos.setTitleY("Counts");
+        H1F hi_chi2_pos_cut = new H1F("hi_chi2_pos_cut", "hi_chi2_pos_cut", 100, 0.0, 50.0);   
+        hi_chi2_pos_cut.setTitleX("#chi2");
+        hi_chi2_pos_cut.setTitleY("Counts");
+        hi_chi2_pos_cut.setLineColor(2);
         H1F hi_vz_pos = new H1F("hi_vz_pos", "hi_vz_pos", 180, -25.0, 40.0);   
         hi_vz_pos.setTitleX("Vz (cm)");
         hi_vz_pos.setTitleY("Counts");
@@ -130,6 +139,7 @@ public class TBTmonitor extends AnalysisMonitor {
         dg_pos.addDataSet(hi_theta_pos, 1);
         dg_pos.addDataSet(hi_phi_pos, 2);
         dg_pos.addDataSet(hi_chi2_pos, 3);
+        dg_pos.addDataSet(hi_chi2_pos_cut, 3);
         dg_pos.addDataSet(hi_vz_pos, 4);
         dg_pos.addDataSet(hi_vz_pos_cut, 4);
         dg_pos.addDataSet(f1_vz_pos, 4);
@@ -300,6 +310,7 @@ public class TBTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_phi_neg"));
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(3);
         this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_chi2_neg"));
+        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_chi2_neg_cut"),"same");
         this.getAnalysisCanvas().getCanvas("Negative Tracks").cd(4);
         this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_vz_neg"));
 //        this.getAnalysisCanvas().getCanvas("Negative Tracks").draw(this.getDataGroup().getItem(1).getH1F("hi_vz_neg_cut"),"same");
@@ -318,6 +329,7 @@ public class TBTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_phi_pos"));
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(3);
         this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_chi2_pos"));
+        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_chi2_pos_cut"),"same");
         this.getAnalysisCanvas().getCanvas("Positive Tracks").cd(4);
         this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_vz_pos"));
 //        this.getAnalysisCanvas().getCanvas("Positive Tracks").draw(this.getDataGroup().getItem(2).getH1F("hi_vz_pos_cut"),"same");
@@ -408,12 +420,14 @@ public class TBTmonitor extends AnalysisMonitor {
                                           bank.getFloat("Vtx0_y", loop),
                                           bank.getFloat("Vtx0_z", loop));
                 int sector = bank.getByte("sector", loop);
-                if(bank.getShort("ndf", loop)>0) recParticle.setProperty("chi2", bank.getFloat("chi2", loop)/bank.getShort("ndf", loop));
+                recParticle.setProperty("chi2", bank.getFloat("chi2", loop));
+                recParticle.setProperty("ndf", (float) bank.getShort("ndf", loop));
                 if(recParticle.charge()>0) {
                     this.getDataGroup().getItem(2).getH1F("hi_p_pos").fill(recParticle.p());
                     this.getDataGroup().getItem(2).getH1F("hi_theta_pos").fill(Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(2).getH1F("hi_phi_pos").fill(Math.toDegrees(recParticle.phi()));
                     this.getDataGroup().getItem(2).getH1F("hi_chi2_pos").fill(recParticle.getProperty("chi2"));
+                    if(recParticle.getProperty("ndf")>30) this.getDataGroup().getItem(2).getH1F("hi_chi2_pos_cut").fill(recParticle.getProperty("chi2"));
                     this.getDataGroup().getItem(2).getH1F("hi_vz_pos").fill(recParticle.vz());
                     this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_pos").fill(Math.toDegrees(recParticle.theta()),recParticle.vz());
                     this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_pos").fill(recParticle.vz(),Math.toDegrees(recParticle.phi()));
@@ -430,6 +444,7 @@ public class TBTmonitor extends AnalysisMonitor {
                     this.getDataGroup().getItem(1).getH1F("hi_theta_neg").fill(Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(1).getH1F("hi_phi_neg").fill(Math.toDegrees(recParticle.phi()));
                     this.getDataGroup().getItem(1).getH1F("hi_chi2_neg").fill(recParticle.getProperty("chi2"));
+                    if(recParticle.getProperty("ndf")>30) this.getDataGroup().getItem(1).getH1F("hi_chi2_neg_cut").fill(recParticle.getProperty("chi2"));
                     this.getDataGroup().getItem(1).getH1F("hi_vz_neg").fill(recParticle.vz());
                     this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_neg").fill(Math.toDegrees(recParticle.theta()),recParticle.vz());
                     this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_neg").fill(recParticle.vz(),Math.toDegrees(recParticle.phi()));

@@ -56,7 +56,7 @@ public class CVTmonitor extends AnalysisMonitor {
         H1F hi_p_neg = new H1F("hi_p_neg", "hi_p_neg", 100, 0.0, 3.0);     
         hi_p_neg.setTitleX("p (GeV)");
         hi_p_neg.setTitleY("Counts");
-        H1F hi_theta_neg = new H1F("hi_theta_neg", "hi_theta_neg", 100, 50.0, 120.0); 
+        H1F hi_theta_neg = new H1F("hi_theta_neg", "hi_theta_neg", 100, 30.0, 150.0); 
         hi_theta_neg.setTitleX("#theta (deg)");
         hi_theta_neg.setTitleY("Counts");
         H1F hi_phi_neg = new H1F("hi_phi_neg", "hi_phi_neg", 100, -180.0, 180.0);   
@@ -64,10 +64,10 @@ public class CVTmonitor extends AnalysisMonitor {
         H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 100, -10.0, 10.0);   
         hi_vz_neg.setTitleX("Vz (cm)");
         hi_vz_neg.setTitleY("Counts");
-        H2F hi_theta_p_neg = new H2F("hi_theta_p_neg", "hi_theta_p_neg", 100, 0.0, 3.0, 100, 50.0, 120.0); 
+        H2F hi_theta_p_neg = new H2F("hi_theta_p_neg", "hi_theta_p_neg", 100, 0.0, 3.0, 100, 30.0, 150.0); 
         hi_theta_p_neg.setTitleX("p (GeV)");
         hi_theta_p_neg.setTitleY("#theta (deg)");        
-        H2F hi_theta_phi_neg = new H2F("hi_theta_phi_neg", "hi_theta_phi_neg", 100, -180.0, 180.0, 100, 50.0, 120.0); 
+        H2F hi_theta_phi_neg = new H2F("hi_theta_phi_neg", "hi_theta_phi_neg", 100, -180.0, 180.0, 100, 30.0, 150.0); 
         hi_theta_phi_neg.setTitleX("#phi (deg)");
         hi_theta_phi_neg.setTitleY("#theta (deg)");        
         DataGroup dg_neg = new DataGroup(3,2);
@@ -82,7 +82,7 @@ public class CVTmonitor extends AnalysisMonitor {
         H1F hi_p_pos = new H1F("hi_p_pos", "hi_p_pos", 100, 0.0, 3.0);     
         hi_p_pos.setTitleX("p (GeV)");
         hi_p_pos.setTitleY("Counts");
-        H1F hi_theta_pos = new H1F("hi_theta_pos", "hi_theta_pos", 100, 50.0, 120.0); 
+        H1F hi_theta_pos = new H1F("hi_theta_pos", "hi_theta_pos", 100, 30.0, 150.0); 
         hi_theta_pos.setTitleX("#theta (deg)");
         hi_theta_pos.setTitleY("Counts");
         H1F hi_phi_pos = new H1F("hi_phi_pos", "hi_phi_pos", 100, -180.0, 180.0);   
@@ -90,10 +90,10 @@ public class CVTmonitor extends AnalysisMonitor {
         H1F hi_vz_pos = new H1F("hi_vz_pos", "hi_vz_pos", 100, -10.0, 10.0);   
         hi_vz_pos.setTitleX("Vz (cm)");
         hi_vz_pos.setTitleY("Counts");
-        H2F hi_theta_p_pos = new H2F("hi_theta_p_pos", "hi_theta_p_pos", 100, 0.0, 3.0, 100, 50.0, 120.0); 
+        H2F hi_theta_p_pos = new H2F("hi_theta_p_pos", "hi_theta_p_pos", 100, 0.0, 3.0, 100, 30.0, 150.0); 
         hi_theta_p_pos.setTitleX("p (GeV)");
         hi_theta_p_pos.setTitleY("#theta (deg)");        
-        H2F hi_theta_phi_pos = new H2F("hi_theta_phi_pos", "hi_theta_phi_pos", 100, -180.0, 180.0, 100, 50.0, 120.0); 
+        H2F hi_theta_phi_pos = new H2F("hi_theta_phi_pos", "hi_theta_phi_pos", 100, -180.0, 180.0, 100, 30.0, 150.0); 
         hi_theta_phi_pos.setTitleX("#phi (deg)");
         hi_theta_phi_pos.setTitleY("#theta (deg)");  
         DataGroup dg_pos = new DataGroup(3,2);

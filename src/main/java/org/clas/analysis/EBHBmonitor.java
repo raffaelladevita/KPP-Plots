@@ -509,6 +509,7 @@ public class EBHBmonitor extends AnalysisMonitor {
                     float vx     = recBankEB.getFloat("vx", pindex);
                     float vy     = recBankEB.getFloat("vy", pindex);
                     float vz     = recBankEB.getFloat("vz", pindex);
+                    float vt     = recBankEB.getFloat("vz", pindex);
                     float beta   = recBankEB.getFloat("beta", pindex);
                     int status   = Math.abs(recBankEB.getShort("status", pindex));
                     if(charge!=0) {
@@ -537,20 +538,17 @@ public class EBHBmonitor extends AnalysisMonitor {
                         if(trigger==11 && detector==DetectorType.FTOF.getDetectorId() && layer==2) {
                             if(pid==11) {
                                 betap = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p());
-                                dt    = (time - path/(betap*PhysicsConstants.speedOfLight()) - rfTime);
-                                dt    = (dt +1000.5*this.rfPeriod)%this.rfPeriod-0.5*this.rfPeriod;
+                                dt    = (time - path/(betap*PhysicsConstants.speedOfLight()) - vt);
                                 this.getDataGroup().getItem(0).getH1F("hi_vt_el").fill(dt);
                             }
                             else if(pid==211 || pid==-211) {
                                 betap = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+PhysicsConstants.massPionCharged()*PhysicsConstants.massPionCharged());
-                                dt    = (time - path/(betap*PhysicsConstants.speedOfLight()) - rfTime);
-                                dt    = (dt +1000.5*this.rfPeriod)%this.rfPeriod-0.5*this.rfPeriod;
+                                dt    = (time - path/(betap*PhysicsConstants.speedOfLight()) - vt);
                                 this.getDataGroup().getItem(0).getH1F("hi_vt_pi").fill(dt);
                             }
                             else if(pid==2212) {
                                 betap = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+PhysicsConstants.massProton()*PhysicsConstants.massProton());
-                                dt    = (time - path/(betap*PhysicsConstants.speedOfLight()) - rfTime);
-                                dt    = (dt +1000.5*this.rfPeriod)%this.rfPeriod-0.5*this.rfPeriod;
+                                dt    = (time - path/(betap*PhysicsConstants.speedOfLight()) - vt);
                                 this.getDataGroup().getItem(0).getH1F("hi_vt_pr").fill(dt);
                             } 
                         }

@@ -147,9 +147,17 @@ public class CTOFmonitor extends AnalysisMonitor {
         H2F hi_beta_neg = new H2F("hi_beta_neg", "hi_beta_neg", 100, 0., 2., 100, 0., 1.4);  
         hi_beta_neg.setTitleX("p (GeV)"); 
         hi_beta_neg.setTitleY("#beta");
+        F1D cpion = new F1D("cpion","x/sqrt(x*x+0.1396*0.1396)", 0.2, 2.0);
+        F1D ckaon = new F1D("ckaon","x/sqrt(x*x+0.4935*0.4935)", 0.2, 2.0);
+        F1D cprot = new F1D("cprot","x/sqrt(x*x+0.9383*0.9383)", 0.2, 2.0);
+        F1D cdeut = new F1D("cdeut","x/sqrt(x*x+1.8756*1.8756)", 0.2, 2.0);
         dc_beta.addDataSet(hi_mass_pos,  0);
         dc_beta.addDataSet(hi_mass_neg,  1);
         dc_beta.addDataSet(hi_beta_pos,  2);
+        dc_beta.addDataSet(cpion,        2);
+        dc_beta.addDataSet(ckaon,        2);
+        dc_beta.addDataSet(cprot,        2);
+        dc_beta.addDataSet(cdeut,        2);  
         dc_beta.addDataSet(hi_beta_neg,  3);
         this.getDataGroup().add(dc_beta, 5);  
         // adc-tdc matching
@@ -268,9 +276,14 @@ public class CTOFmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Beta and Mass").cd(2);
         this.getAnalysisCanvas().getCanvas("Beta and Mass").getPad(2).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getH2F("hi_beta_pos"));
+        this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getF1D("cpion"),"same");
+        this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getF1D("ckaon"),"same");
+        this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getF1D("cprot"),"same");
         this.getAnalysisCanvas().getCanvas("Beta and Mass").cd(3);
         this.getAnalysisCanvas().getCanvas("Beta and Mass").getPad(3).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getH2F("hi_beta_neg"));
+        this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getF1D("cpion"),"same");
+        this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getF1D("ckaon"),"same");
 
         this.getAnalysisCanvas().getCanvas("MIPs").update();    
         this.getAnalysisCanvas().getCanvas("ADC-TDC").update();    
@@ -329,16 +342,16 @@ public class CTOFmonitor extends AnalysisMonitor {
                 double tz     = recCtofHits.getFloat("tz", loop);
                 double path   = recCtofHits.getFloat("pathLength", loop);
                 double dx     = recCtofHits.getFloat("pathLengthThruBar", loop);
-//        	int adcId1    = recCtofHits.getShort("adc_idx1", loop);
-//                int adcId2    = recCtofHits.getShort("adc_idx2", loop);
-//                int tdcId1    = recCtofHits.getShort("tdc_idx1", loop);
-//                int tdcId2    = recCtofHits.getShort("tdc_idx2", loop);
-//                double adc1   = (double) ctofADC.getInt("ADC",adcId1);
-//                double adc2   = (double) ctofADC.getInt("ADC",adcId2);
-//                double adct1  = (double) ctofADC.getFloat("time",adcId1);
-//                double adct2  = (double) ctofADC.getFloat("time",adcId2);
-//                double tdc1   = (double) ctofTDC.getInt("TDC",tdcId1);
-//                double tdc2   = (double) ctofTDC.getInt("TDC",tdcId2);
+        	int adcId1    = recCtofHits.getShort("adc_idx1", loop);
+                int adcId2    = recCtofHits.getShort("adc_idx2", loop);
+                int tdcId1    = recCtofHits.getShort("tdc_idx1", loop);
+                int tdcId2    = recCtofHits.getShort("tdc_idx2", loop);
+                double adc1   = (double) ctofADC.getInt("ADC",adcId1);
+                double adc2   = (double) ctofADC.getInt("ADC",adcId2);
+                double adct1  = (double) ctofADC.getFloat("time",adcId1);
+                double adct2  = (double) ctofADC.getFloat("time",adcId2);
+                double tdc1   = (double) ctofTDC.getInt("TDC",tdcId1);
+                double tdc2   = (double) ctofTDC.getInt("TDC",tdcId2);
                 if(status>0) {
                     this.getDataGroup().getItem(2).getH2F("hi_en_paddle").fill(paddle*1.,energy);
                     if(trk_id!=-1 && energy>0 /*&& recRunRF!=null*/) {

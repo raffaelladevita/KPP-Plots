@@ -195,7 +195,7 @@ public class AnalysisMonitor implements IDataEventListener {
     }
 
     public void setStyle(int mode) {
-        if(mode==1) {
+        if(mode==0) {
             GStyle.getAxisAttributesX().setTitleFontSize(32);
             GStyle.getAxisAttributesX().setLabelFontSize(24);
             GStyle.getAxisAttributesY().setTitleFontSize(32);

@@ -69,6 +69,9 @@ public class KINEmonitor extends AnalysisMonitor {
         H2F hi_beta_pos_ctof = new H2F("hi_beta_pos_ctof", "hi_beta_pos_ctof", 500, 0., 3., 500, 0.2, 1.5);  
         hi_beta_pos_ctof.setTitleX("p (GeV)"); 
         hi_beta_pos_ctof.setTitleY("#beta");
+        H2F hi_beta_pos_ft = new H2F("hi_beta_pos_ft", "hi_beta_pos_ft", 500, 0., 5., 500, 0., 1.5);  
+        hi_beta_pos_ft.setTitleX("p (GeV)"); 
+        hi_beta_pos_ft.setTitleY("#beta");
         F1D fpion = new F1D("fpion","x/sqrt(x*x+0.1396*0.1396)", 0.2, 5.0);
         F1D fkaon = new F1D("fkaon","x/sqrt(x*x+0.4935*0.4935)", 0.2, 5.0);
         F1D fprot = new F1D("fprot","x/sqrt(x*x+0.9383*0.9383)", 0.2, 5.0);
@@ -76,9 +79,9 @@ public class KINEmonitor extends AnalysisMonitor {
         F1D ckaon = new F1D("ckaon","x/sqrt(x*x+0.4935*0.4935)", 0.2, 3.0);
         F1D cprot = new F1D("cprot","x/sqrt(x*x+0.9383*0.9383)", 0.2, 3.0);
         H1F hi_pi0_mass_fd = new H1F("hi_pi0_mass_fd", "hi_pi0_mass_fd", 200, 0.,400.);  
-        hi_pi0_mass_fd.setTitleX("p(GeV)"); 
+        hi_pi0_mass_fd.setTitleX("#gamma#gamma invariant mass (MeV)"); 
         hi_pi0_mass_fd.setTitleY("Counts");
-        F1D fpi0_fd = new F1D("fpi0_fd", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x", 50.,200.);
+        F1D fpi0_fd = new F1D("fpi0_fd", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x+[p2]*x*x", 50.,200.);
         fpi0_fd.setParameter(0, 0.0);
         fpi0_fd.setParameter(1, 140.0);
         fpi0_fd.setParameter(2, 2.0);
@@ -88,16 +91,16 @@ public class KINEmonitor extends AnalysisMonitor {
         fpi0_fd.setLineColor(2);
         fpi0_fd.setOptStat("1111111");        
         H1F hi_pi0_mass_ft = new H1F("hi_pi0_mass_ft", "hi_pi0_mass_ft", 200, 0.,400.);  
-        hi_pi0_mass_ft.setTitleX("p(GeV)"); 
+        hi_pi0_mass_ft.setTitleX("#gamma#gamma invariant mass (MeV)"); 
         hi_pi0_mass_ft.setTitleY("Counts");
-        F1D fpi0_ft = new F1D("fpi0_ft", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x", 80.,200.);
+        F1D fpi0_ft = new F1D("fpi0_ft", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x+[p2]*x*x", 100.,160.);
         fpi0_ft.setParameter(0, 0.0);
         fpi0_ft.setParameter(1, 140.0);
         fpi0_ft.setParameter(2, 2.0);
         fpi0_ft.setParameter(3, 0.0);
         fpi0_ft.setParameter(4, 0.0);
         fpi0_ft.setLineWidth(2);
-        fpi0_fd.setLineColor(2);
+        fpi0_ft.setLineColor(2);
         fpi0_ft.setOptStat("1111111");
         dc_part.addDataSet(hi_beta_pos_ftof, 0);
         dc_part.addDataSet(fpion,  0);
@@ -107,6 +110,7 @@ public class KINEmonitor extends AnalysisMonitor {
         dc_part.addDataSet(cpion,  1);
         dc_part.addDataSet(ckaon,  1);
         dc_part.addDataSet(cprot,  1);
+        dc_part.addDataSet(hi_beta_pos_ft, 2);
         dc_part.addDataSet(hi_pi0_mass_fd, 2);
         dc_part.addDataSet(fpi0_fd,        2);
         dc_part.addDataSet(hi_pi0_mass_ft, 3);
@@ -135,12 +139,20 @@ public class KINEmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fpion"),"same");
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fkaon"),"same");
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fprot"),"same");
+        this.getAnalysisCanvas().getCanvas("Performance").getPad(0).getAxisX().setRange(0.5, 5.0);
+        this.getAnalysisCanvas().getCanvas("Performance").getPad(0).getAxisY().setRange(0.5, 1.15);
         this.getAnalysisCanvas().getCanvas("Performance").cd(1);
         this.getAnalysisCanvas().getCanvas("Performance").getPad(1).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ctof"));
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("cpion"),"same");
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("ckaon"),"same");
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("cprot"),"same");
+//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ft"));
+//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fpion"),"same");
+//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fkaon"),"same");
+//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fprot"),"same");
+//        this.getAnalysisCanvas().getCanvas("Performance").getPad(1).getAxisX().setRange(0.5, 5.0);
+//        this.getAnalysisCanvas().getCanvas("Performance").getPad(1).getAxisY().setRange(0.5, 1.15);
         this.getAnalysisCanvas().getCanvas("Performance").cd(2);
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_fd"));
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fpi0_fd"),"same");
@@ -155,6 +167,7 @@ public class KINEmonitor extends AnalysisMonitor {
         // event builder
         DataBank recRun    = null;
         DataBank recBankEB = null;
+        DataBank recBankFT = null;
         DataBank recDeteEB = null;
         DataBank recCaloEB = null;
         DataBank recFTagEB = null;
@@ -162,6 +175,7 @@ public class KINEmonitor extends AnalysisMonitor {
         DataBank recEvenEB = null;
         if(event.hasBank("RUN::config"))            recRun      = event.getBank("RUN::config");
         if(event.hasBank("REC::Particle"))          recBankEB   = event.getBank("REC::Particle");
+        if(event.hasBank("RECFT::Particle"))        recBankFT   = event.getBank("RECFT::Particle");
         if(event.hasBank("REC::Scintillator"))      recDeteEB   = event.getBank("REC::Scintillator");
         if(event.hasBank("REC::Calorimeter"))       recCaloEB   = event.getBank("REC::Calorimeter");
         if(event.hasBank("REC::ForwardTagger"))     recFTagEB   = event.getBank("REC::ForwardTagger");
@@ -187,6 +201,7 @@ public class KINEmonitor extends AnalysisMonitor {
             this.resetEventListener();
         }
         Particle recEl = null;
+        Particle recFT = null;
         ArrayList<Particle> gammasFD = new ArrayList();
         ArrayList<Particle> gammasFT = new ArrayList();
         LorentzVector virtualPhoton  = null;
@@ -200,23 +215,37 @@ public class KINEmonitor extends AnalysisMonitor {
             double    rfTime = recEvenEB.getFloat("RFTime", 0);
             int rows = recBankEB.rows();
             for(int loop = 0; loop < rows; loop++){
-                int pid    = recBankEB.getInt("pid", loop);
-                int charge = recBankEB.getByte("charge", loop);
-                float px   = recBankEB.getFloat("px", loop);
-                float py   = recBankEB.getFloat("py", loop);
-                float pz   = recBankEB.getFloat("pz", loop);
-                float vx   = recBankEB.getFloat("vx", loop);
-                float vy   = recBankEB.getFloat("vy", loop);
-                float vz   = recBankEB.getFloat("vz", loop);
-                float beta = recBankEB.getFloat("beta", loop);
-                short status = (short) Math.abs(recBankEB.getShort("status", loop));
+                int pid         = recBankEB.getInt("pid", loop);
+                int charge      = recBankEB.getByte("charge", loop);
+                double px       = recBankEB.getFloat("px", loop);
+                double py       = recBankEB.getFloat("py", loop);
+                double pz       = recBankEB.getFloat("pz", loop);
+                double vx       = recBankEB.getFloat("vx", loop);
+                double vy       = recBankEB.getFloat("vy", loop);
+                double vz       = recBankEB.getFloat("vz", loop);
+                double vt       = recBankEB.getFloat("vt", loop);
+                double beta     = recBankEB.getFloat("beta", loop);
+                short status    = (short) Math.abs(recBankEB.getShort("status", loop));
+                double betaFT   = 0;
+                double vtFT     = 0;
+                short  statusFT = 0;
                 if(pid==0) {
                     if(charge!=0) pid=211*charge;
                     else          pid=22;
                 }
+                if(recBankFT!=null) {
+                    betaFT   = recBankFT.getFloat("beta", loop);
+                    vtFT     = recBankFT.getFloat("vt", loop);
+                    statusFT = recBankFT.getShort("status", loop);
+                }
                 Particle recParticle = new Particle(pid,px,py,pz,vx,vy,vz);
-                recParticle.setProperty("beta", (double) beta);
+                recParticle.setProperty("beta", beta);
+                recParticle.setProperty("startTime", vt);
                 recParticle.setProperty("status", (double) status);
+                recParticle.setProperty("betaFT",      betaFT);
+                recParticle.setProperty("startTimeFT", vtFT);
+                recParticle.setProperty("statusFT",    statusFT);
+                
                 if(charge!=0  && recDeteEB!=null ) {
                     for(int i=0; i<recDeteEB.rows(); i++) {
                         int pindex   = recDeteEB.getShort("pindex", i);
@@ -226,10 +255,11 @@ public class KINEmonitor extends AnalysisMonitor {
                         double time  = recDeteEB.getFloat("time", i);
                         double path  = recDeteEB.getFloat("path", i);
                         if(pindex==loop && ((detector==DetectorType.FTOF.getDetectorId() && layer==2) || detector==DetectorType.CTOF.getDetectorId())){
-                            recParticle.setProperty("time", (double) time);
-                            recParticle.setProperty("path", (double) path);
-                            double dt = (recParticle.getProperty("time") - recParticle.getProperty("path")/(PhysicsConstants.speedOfLight()) - rfTime);
-                            dt = (dt +1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod;
+                            recParticle.setProperty("time", time);
+                            recParticle.setProperty("path", path);
+//                            double dt = (recParticle.getProperty("time") - recParticle.getProperty("path")/(PhysicsConstants.speedOfLight()) - rfTime);
+//                            dt = (dt +1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod;
+                            double dt    = (time - path/PhysicsConstants.speedOfLight() - vt);                                
                             recParticle.setProperty("vertexTime", dt);
                         }
                     }
@@ -245,10 +275,22 @@ public class KINEmonitor extends AnalysisMonitor {
                         recEl.setProperty("status", recParticle.getProperty("status"));
                     }
                 }
-                if(charge>0 && recEl!=null && recParticle.hasProperty("time") && recEl.getProperty("vertexTime")<0.5 && Math.abs(recEl.vz()+3)<5) {
+                else if(pid==11 && status<2000 && statusFT<0) {
+                    recFT = new Particle(recParticle); 
+                    if(recParticle.hasProperty("betaFT")) {
+                        double dt = (recParticle.getProperty("startTimeFT") - rfTime);
+                        dt = (dt +1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod;
+                        recFT.setProperty("vertexTime",  dt);
+                        recFT.setProperty("betaFT",      recParticle.getProperty("betaFT"));
+                        recFT.setProperty("startTimeFT", recParticle.getProperty("startTimeFT"));
+                    }
+                }
+                if(charge>0 && recEl!=null && recParticle.hasProperty("time") && recEl.getProperty("vertexTime")<0.15 && Math.abs(recEl.vz()-recParticle.vz())<3) {
                     if(recParticle.getProperty("status")>4000) this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ctof").fill(recParticle.p(),beta);
                     else                                       this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ftof").fill(recParticle.p(),beta);
-
+                }
+                else if(charge>0 && recFT!=null && recParticle.hasProperty("time") && recFT.getProperty("vertexTime")<0.3 && Math.abs(recParticle.vz()+3)<5) {
+                    if(recParticle.getProperty("status")<4000) this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ft").fill(recParticle.p(),betaFT);
                 }
                 else if(charge==0 && recCaloEB!=null) {
                     double energy1=0;
@@ -291,7 +333,7 @@ public class KINEmonitor extends AnalysisMonitor {
                         double invmass = Math.sqrt(partPi0.mass2());
                         double x = (partGamma1.p() - partGamma2.p()) / (partGamma1.p() + partGamma2.p());
                         double angle = Math.toDegrees(Math.acos(partGamma1.cosTheta(partGamma2)));
-                        if (angle > 1.5) {
+                        if (angle > 2.0 && partGamma1.p()>0.5  & partGamma2.p()>0.5) {
                             this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_ft").fill(invmass * 1000);
                         }
                     }
