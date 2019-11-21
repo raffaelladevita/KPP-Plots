@@ -15,7 +15,7 @@ echo "Building KPP-Plot..."
     rm lib/*
     mvn install
     mvn package
-    cp target/KPP-Plots-2.0-jar-with-dependencies.jar lib/
+    cp target/KPP-Plots-3.2-jar-with-dependencies.jar lib/
 
 
 # Finishing touches

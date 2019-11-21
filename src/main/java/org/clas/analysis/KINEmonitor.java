@@ -20,6 +20,7 @@ import org.jlab.groot.math.F1D;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
 import org.jlab.utils.groups.IndexedTable;
+import org.jlab.geom.prim.Vector3D;
 
 /**
  *
@@ -31,7 +32,7 @@ public class KINEmonitor extends AnalysisMonitor {
     
     public KINEmonitor(String name, ConstantsManager ccdb) {
         super(name, ccdb);
-        this.setAnalysisTabNames("Performance", "General");
+        this.setAnalysisTabNames("Neutrals", "Charged Particles", "General");
         this.init(false);
     }
 
@@ -62,22 +63,34 @@ public class KINEmonitor extends AnalysisMonitor {
         dg_general.addDataSet(hi_rec_q2x,   1); 
         this.getDataGroup().add(dg_general, 1);
         // beta
-        DataGroup dc_part = new DataGroup(2,2);
-        H2F hi_beta_pos_ftof = new H2F("hi_beta_pos_ftof", "hi_beta_pos_ftof", 500, 0., 5., 500, 0., 1.5);  
+        DataGroup dc_part = new DataGroup(1,8);
+        H2F hi_beta_pos_ftof = new H2F("hi_beta_pos_ftof", "hi_beta_pos_ftof", 500, 0., 5., 500, 0.5, 1.05);  
         hi_beta_pos_ftof.setTitleX("p (GeV)"); 
         hi_beta_pos_ftof.setTitleY("#beta");
         H2F hi_beta_pos_ctof = new H2F("hi_beta_pos_ctof", "hi_beta_pos_ctof", 500, 0., 3., 500, 0.2, 1.5);  
         hi_beta_pos_ctof.setTitleX("p (GeV)"); 
         hi_beta_pos_ctof.setTitleY("#beta");
-        H2F hi_beta_pos_ft = new H2F("hi_beta_pos_ft", "hi_beta_pos_ft", 500, 0., 5., 500, 0., 1.5);  
+        H2F hi_beta_pos_ft = new H2F("hi_beta_pos_ft", "hi_beta_pos_ft", 500, 0., 5., 500, 0.5, 1.05);  
         hi_beta_pos_ft.setTitleX("p (GeV)"); 
         hi_beta_pos_ft.setTitleY("#beta");
-        F1D fpion = new F1D("fpion","x/sqrt(x*x+0.1396*0.1396)", 0.2, 5.0);
-        F1D fkaon = new F1D("fkaon","x/sqrt(x*x+0.4935*0.4935)", 0.2, 5.0);
-        F1D fprot = new F1D("fprot","x/sqrt(x*x+0.9383*0.9383)", 0.2, 5.0);
+        H1F hi_ftof_residual = new H1F("hi_ftof_residual", "hi_ftof_residual", 200, 0., 10.);  
+        hi_ftof_residual.setTitleX("DOCA (cm)"); 
+        hi_ftof_residual.setTitleY("Counts");
+        H1F hi_pcal_residual = new H1F("hi_pcal_residual", "hi_pcal_residual", 200, 0., 10.);  
+        hi_pcal_residual.setTitleX("DOCA (cm)"); 
+        hi_pcal_residual.setTitleY("Counts");
+        F1D fpion = new F1D("fpion","x/sqrt(x*x+0.1396*0.1396)", 0.2, 5.0); fpion.setLineWidth(2);
+        F1D fkaon = new F1D("fkaon","x/sqrt(x*x+0.4935*0.4935)", 0.2, 5.0); fkaon.setLineWidth(2);
+        F1D fprot = new F1D("fprot","x/sqrt(x*x+0.9383*0.9383)", 0.2, 5.0); fprot.setLineWidth(2);
         F1D cpion = new F1D("cpion","x/sqrt(x*x+0.1396*0.1396)", 0.2, 3.0);
         F1D ckaon = new F1D("ckaon","x/sqrt(x*x+0.4935*0.4935)", 0.2, 3.0);
         F1D cprot = new F1D("cprot","x/sqrt(x*x+0.9383*0.9383)", 0.2, 3.0);
+        H1F hi_beta_neu_fd = new H1F("hi_beta_neu_fd", "hi_beta_neu_fd", 500, 0.2, 1.5);  
+        hi_beta_neu_fd.setTitleX("#beta"); 
+        hi_beta_neu_fd.setTitleY("Counts");
+        H1F hi_beta_neu_cd = new H1F("hi_beta_neu_cd", "hi_beta_neu_cd", 500, 0.2, 1.5);  
+        hi_beta_neu_cd.setTitleX("#beta"); 
+        hi_beta_neu_cd.setTitleY("Counts");
         H1F hi_pi0_mass_fd = new H1F("hi_pi0_mass_fd", "hi_pi0_mass_fd", 200, 0.,400.);  
         hi_pi0_mass_fd.setTitleX("#gamma#gamma invariant mass (MeV)"); 
         hi_pi0_mass_fd.setTitleY("Counts");
@@ -111,10 +124,14 @@ public class KINEmonitor extends AnalysisMonitor {
         dc_part.addDataSet(ckaon,  1);
         dc_part.addDataSet(cprot,  1);
         dc_part.addDataSet(hi_beta_pos_ft, 2);
-        dc_part.addDataSet(hi_pi0_mass_fd, 2);
-        dc_part.addDataSet(fpi0_fd,        2);
-        dc_part.addDataSet(hi_pi0_mass_ft, 3);
-        dc_part.addDataSet(fpi0_ft,        3);
+        dc_part.addDataSet(hi_ftof_residual, 3);
+        dc_part.addDataSet(hi_pcal_residual, 3);
+        dc_part.addDataSet(hi_beta_neu_fd, 4);
+        dc_part.addDataSet(hi_beta_neu_cd, 5);
+        dc_part.addDataSet(hi_pi0_mass_fd, 6);
+        dc_part.addDataSet(fpi0_fd,        6);
+        dc_part.addDataSet(hi_pi0_mass_ft, 7);
+        dc_part.addDataSet(fpi0_ft,        7);
         this.getDataGroup().add(dc_part, 2);  
 
     }
@@ -124,41 +141,51 @@ public class KINEmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("General").divide(2,1);
         this.getAnalysisCanvas().getCanvas("General").setGridX(false);
         this.getAnalysisCanvas().getCanvas("General").setGridY(false);
-        this.getAnalysisCanvas().getCanvas("Performance").divide(2,2);
-        this.getAnalysisCanvas().getCanvas("Performance").setGridX(false);
-        this.getAnalysisCanvas().getCanvas("Performance").setGridY(false);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").divide(2,2);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").setGridX(false);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").setGridY(false);
+        this.getAnalysisCanvas().getCanvas("Neutrals").divide(2,2);
+        this.getAnalysisCanvas().getCanvas("Neutrals").setGridX(false);
+        this.getAnalysisCanvas().getCanvas("Neutrals").setGridY(false);
         this.getAnalysisCanvas().getCanvas("General").cd(0);
         this.getAnalysisCanvas().getCanvas("General").draw(this.getDataGroup().getItem(1).getH2F("hi_rec_q2x"));
         this.getAnalysisCanvas().getCanvas("General").getPad(0).getAxisZ().setLog(true);        
         this.getAnalysisCanvas().getCanvas("General").cd(1);
         this.getAnalysisCanvas().getCanvas("General").draw(this.getDataGroup().getItem(1).getH2F("hi_rec_q2w"));
         this.getAnalysisCanvas().getCanvas("General").getPad(1).getAxisZ().setLog(true);        
-        this.getAnalysisCanvas().getCanvas("Performance").cd(0);
-        this.getAnalysisCanvas().getCanvas("Performance").getPad(0).getAxisZ().setLog(true);
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ftof"));
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fpion"),"same");
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fkaon"),"same");
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fprot"),"same");
-        this.getAnalysisCanvas().getCanvas("Performance").getPad(0).getAxisX().setRange(0.5, 5.0);
-        this.getAnalysisCanvas().getCanvas("Performance").getPad(0).getAxisY().setRange(0.5, 1.15);
-        this.getAnalysisCanvas().getCanvas("Performance").cd(1);
-        this.getAnalysisCanvas().getCanvas("Performance").getPad(1).getAxisZ().setLog(true);
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ctof"));
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("cpion"),"same");
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("ckaon"),"same");
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("cprot"),"same");
-//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ft"));
-//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fpion"),"same");
-//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fkaon"),"same");
-//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fprot"),"same");
-//        this.getAnalysisCanvas().getCanvas("Performance").getPad(1).getAxisX().setRange(0.5, 5.0);
-//        this.getAnalysisCanvas().getCanvas("Performance").getPad(1).getAxisY().setRange(0.5, 1.15);
-        this.getAnalysisCanvas().getCanvas("Performance").cd(2);
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_fd"));
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fpi0_fd"),"same");
-        this.getAnalysisCanvas().getCanvas("Performance").cd(3);
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_ft"));
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(2).getF1D("fpi0_ft"),"same");
+        this.getAnalysisCanvas().getCanvas("Charged Particles").cd(0);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").getPad(0).getAxisZ().setLog(true);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ftof"));
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("fpion"),"same");
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("fkaon"),"same");
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("fprot"),"same");
+        this.getAnalysisCanvas().getCanvas("Charged Particles").getPad(0).getAxisX().setRange(0.5, 5.0);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").getPad(0).getAxisY().setRange(0.5, 1.05);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").cd(1);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").getPad(1).getAxisZ().setLog(true);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ctof"));
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("cpion"),"same");
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("ckaon"),"same");
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("cprot"),"same");
+        this.getAnalysisCanvas().getCanvas("Charged Particles").cd(2);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ft"));
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("fpion"),"same");
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("fkaon"),"same");
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("fprot"),"same");
+        this.getAnalysisCanvas().getCanvas("Charged Particles").getPad(2).getAxisX().setRange(0.5, 5.0);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").getPad(2).getAxisY().setRange(0.5, 1.05);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").cd(3);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getH1F("hi_pcal_residual"));
+        this.getAnalysisCanvas().getCanvas("Neutrals").cd(0);
+        this.getAnalysisCanvas().getCanvas("Neutrals").draw(this.getDataGroup().getItem(2).getH1F("hi_beta_neu_fd"));
+        this.getAnalysisCanvas().getCanvas("Neutrals").cd(1);
+        this.getAnalysisCanvas().getCanvas("Neutrals").draw(this.getDataGroup().getItem(2).getH1F("hi_beta_neu_cd"));
+        this.getAnalysisCanvas().getCanvas("Neutrals").cd(2);
+        this.getAnalysisCanvas().getCanvas("Neutrals").draw(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_fd"));
+        this.getAnalysisCanvas().getCanvas("Neutrals").draw(this.getDataGroup().getItem(2).getF1D("fpi0_fd"),"same");
+        this.getAnalysisCanvas().getCanvas("Neutrals").cd(3);
+        this.getAnalysisCanvas().getCanvas("Neutrals").draw(this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_ft"));
+        this.getAnalysisCanvas().getCanvas("Neutrals").draw(this.getDataGroup().getItem(2).getF1D("fpi0_ft"),"same");
     }
     
     @Override
@@ -185,14 +212,16 @@ public class KINEmonitor extends AnalysisMonitor {
         int run = 0;
         if(recRun!=null) {
             run = event.getBank("RUN::config").getInt("run", 0);  
+            ev  = event.getBank("RUN::config").getInt("event", 0);  
 //            if(run==5990) run=5900;
         }
         else {
             return;
-        }
+        }        
         IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
         double rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
-        double ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
+        double ebeamRCDB = 10.6;
+        if(run!=11) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
         if(ebeamRCDB == 0) {
             ebeamRCDB = 10.6;
         }
@@ -251,12 +280,31 @@ public class KINEmonitor extends AnalysisMonitor {
                         int pindex   = recDeteEB.getShort("pindex", i);
                         int sector   = recDeteEB.getByte("sector", i);
                         int layer    = recDeteEB.getByte("layer", i);
+                        int component= recDeteEB.getShort("component", i);
                         int detector = recDeteEB.getByte("detector", i);
                         double time  = recDeteEB.getFloat("time", i);
                         double path  = recDeteEB.getFloat("path", i);
+                        double x  = recDeteEB.getFloat("x", i);
+                        double y  = recDeteEB.getFloat("y", i);
+                        double z  = recDeteEB.getFloat("z", i);
+                        double hx = recDeteEB.getFloat("hx", i);
+                        double hy = recDeteEB.getFloat("hy", i);
+                        double hz = recDeteEB.getFloat("hz", i);
+                        double doca = Math.sqrt((x-hx)*(x-hx)+(y-hy)*(y-hy)+(z-hz)*(z-hz));
+                        Vector3D poca  = new Vector3D(hx,hy,hz);
+                        Vector3D hit   = new Vector3D( x, y, z);
+                        double phi   = Math.toRadians(-60*(sector-1));
+                        double theta = Math.toRadians(-25);
+                        if(layer==3) theta = Math.toRadians(-58.11);
+                        poca.rotateZ(phi);
+                        poca.rotateY(theta);
+                        hit.rotateZ(phi);
+                        hit.rotateY(theta);
                         if(pindex==loop && ((detector==DetectorType.FTOF.getDetectorId() && layer==2) || detector==DetectorType.CTOF.getDetectorId())){
                             recParticle.setProperty("time", time);
                             recParticle.setProperty("path", path);
+                            recParticle.setProperty("docaFTOF", 2*poca.sub(hit).mag());
+                            recParticle.setProperty("paddle", (double) component);
 //                            double dt = (recParticle.getProperty("time") - recParticle.getProperty("path")/(PhysicsConstants.speedOfLight()) - rfTime);
 //                            dt = (dt +1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod;
                             double dt    = (time - path/PhysicsConstants.speedOfLight() - vt);                                
@@ -264,7 +312,26 @@ public class KINEmonitor extends AnalysisMonitor {
                         }
                     }
                 }
-                
+                if(charge!=0  && recCaloEB!=null ) {
+                    for(int i=0; i<recCaloEB.rows(); i++) {
+                        int pindex   = recCaloEB.getShort("pindex", i);
+                        int sector   = recCaloEB.getByte("sector", i);
+                        int layer    = recCaloEB.getByte("layer", i);
+                        int detector = recCaloEB.getByte("detector", i);
+                        double x  = recCaloEB.getFloat("x", i);
+                        double y  = recCaloEB.getFloat("y", i);
+                        double z  = recCaloEB.getFloat("z", i);
+                        double hx = recCaloEB.getFloat("hx", i);
+                        double hy = recCaloEB.getFloat("hy", i);
+                        double hz = recCaloEB.getFloat("hz", i);
+                        Vector3D poca  = new Vector3D(hx,hy,hz);
+                        Vector3D hit   = new Vector3D( x, y, z);
+                        if(pindex==loop && detector==DetectorType.ECAL.getDetectorId() && layer==1 ){
+                            recParticle.setProperty("docaPCAL", 2*poca.sub(hit).mag());
+                        }
+                    }
+                }
+                  
                 if(loop==0 && pid==11 && status>=2000) {
                     recEl = new Particle(recParticle); 
                     if(recParticle.hasProperty("time")) {
@@ -285,9 +352,21 @@ public class KINEmonitor extends AnalysisMonitor {
                         recFT.setProperty("startTimeFT", recParticle.getProperty("startTimeFT"));
                     }
                 }
+                if(recParticle.hasProperty("time") && recParticle.getProperty("status")<4000) this.getDataGroup().getItem(2).getH1F("hi_ftof_residual").fill(recParticle.getProperty("docaFTOF"));
+                if(recParticle.hasProperty("docaPCAL"))                                       this.getDataGroup().getItem(2).getH1F("hi_pcal_residual").fill(recParticle.getProperty("docaPCAL"));
                 if(charge>0 && recEl!=null && recParticle.hasProperty("time") && recEl.getProperty("vertexTime")<0.15 && Math.abs(recEl.vz()-recParticle.vz())<3) {
                     if(recParticle.getProperty("status")>4000) this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ctof").fill(recParticle.p(),beta);
                     else                                       this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ftof").fill(recParticle.p(),beta);
+                    double oldSTT  = recEl.getProperty("time")-recEl.getProperty("path")/PhysicsConstants.speedOfLight();
+                    double deltatr = - oldSTT + rfTime + 800.5*rfPeriod;
+                    double rfcorr  = deltatr % rfPeriod - rfPeriod/2;
+                    oldSTT  = oldSTT + rfcorr;	 
+                    double mybeta = recParticle.getProperty("path")/(recParticle.getProperty("time")-recParticle.getProperty("startTime"))/PhysicsConstants.speedOfLight();
+//                    if(recParticle.getProperty("status")<4000) this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ft").fill(recParticle.p(),mybeta);
+                }
+                else if(charge==0 && recEl!=null && recEl.getProperty("vertexTime")<0.15 && status>2000) {
+                    if(status>4000) this.getDataGroup().getItem(2).getH1F("hi_beta_neu_cd").fill(beta);
+                    else            this.getDataGroup().getItem(2).getH1F("hi_beta_neu_fd").fill(beta);
                 }
                 else if(charge>0 && recFT!=null && recParticle.hasProperty("time") && recFT.getProperty("vertexTime")<0.3 && Math.abs(recParticle.vz()+3)<5) {
                     if(recParticle.getProperty("status")<4000) this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ft").fill(recParticle.p(),betaFT);

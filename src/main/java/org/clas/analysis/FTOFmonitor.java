@@ -335,11 +335,14 @@ public class FTOFmonitor extends AnalysisMonitor {
         if(recRun == null) return;
         int ev  = recRun.getInt("event",0);
         int run = recRun.getInt("run",0);
-        IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
-        if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
-            this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
-            this.resetEventListener();
+        if(run>0) {
+            IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
+            if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
+                this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
+                this.resetEventListener();
+            }
         }
+        else return;
 //        System.out.println(ev); 
 //            if(ev==134 || ev==370) {System.out.println(ev); recBankEB.show(); recDeteEB.show();}
 //        if(recBankEB!=null && recDeteEB!=null) {
