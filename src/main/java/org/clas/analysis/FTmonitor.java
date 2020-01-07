@@ -370,7 +370,7 @@ public class FTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(3).getH1F("hi_theta_ch"));
         this.getAnalysisCanvas().getCanvas("Performance").cd(4);
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(3).getH2F("hi_etheta_ch"));
-        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(3).getH1F("hi_cal_radius"));
+//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(3).getH1F("hi_cal_radius"));
 //        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(3).getH2F("hi_cal_radius_size"));
         this.getAnalysisCanvas().getCanvas("Performance").cd(5);
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(3).getH1F("hi_dtime_calhodo"));

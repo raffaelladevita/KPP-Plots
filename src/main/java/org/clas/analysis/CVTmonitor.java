@@ -24,7 +24,7 @@ public class CVTmonitor extends AnalysisMonitor {
 
     public CVTmonitor(String name, ConstantsManager ccdb) {
         super(name, ccdb);
-        this.setAnalysisTabNames("Monte Carlo","Vertex","Positive Tracks","Negative Tracks");
+        this.setAnalysisTabNames("Monte Carlo","Monte Carlo 2D","Vertex","Positive Tracks","Negative Tracks");
         this.init(false);
     }
 
@@ -42,6 +42,9 @@ public class CVTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Vertex").divide(4, 2);
         this.getAnalysisCanvas().getCanvas("Vertex").setGridX(false);
         this.getAnalysisCanvas().getCanvas("Vertex").setGridY(false);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").divide(4, 2);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").setGridX(false);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").setGridY(false);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").divide(4, 2);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").setGridX(false);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").setGridY(false);
@@ -232,6 +235,41 @@ public class CVTmonitor extends AnalysisMonitor {
         mc.addDataSet(hi_dvz_neg, 7);
         mc.addDataSet(f1_dvz_neg, 7);
         this.getDataGroup().add(mc, 3);
+        // MC-2D
+        H2F hi_dp_p_pos = new H2F("hi_dp_p_pos","hi_dp_p_pos",100, 0., 3., 100, -0.4, 0.4);
+        hi_dp_p_pos.setTitleX("p (GeV)");
+        hi_dp_p_pos.setTitleY("#DeltaP/P ");
+        H2F hi_dp_theta_pos = new H2F("hi_dp_theta_pos","hi_dp_theta_pos",100, 35, 155, 100, -0.4, 0.4);
+        hi_dp_theta_pos.setTitleX("#theta (deg)");
+        hi_dp_theta_pos.setTitleY("#DeltaP/P ");
+        H2F hi_dp_phi_pos = new H2F("hi_dp_phi_pos","hi_dp_phi_pos",100, -180, 180, 100, -0.4, 0.4);
+        hi_dp_phi_pos.setTitleX("#phi (deg)");
+        hi_dp_phi_pos.setTitleY("#DeltaP/P ");
+        H2F hi_dp_z_pos = new H2F("hi_dp_z_pos","hi_dp_z_pos",100, -5, 5, 100, -0.4, 0.4);
+        hi_dp_z_pos.setTitleX("z (cm)");
+        hi_dp_z_pos.setTitleY("#DeltaP/P ");
+        H2F hi_dp_p_neg = new H2F("hi_dp_p_neg","hi_dp_p_neg",100, 0., 3., 100, -0.4, 0.4);
+        hi_dp_p_neg.setTitleX("p (GeV)");
+        hi_dp_p_neg.setTitleY("#DeltaP/P ");
+        H2F hi_dp_theta_neg = new H2F("hi_dp_theta_neg","hi_dp_theta_neg",100, 35, 155, 100, -0.4, 0.4);
+        hi_dp_theta_neg.setTitleX("#theta (deg)");
+        hi_dp_theta_neg.setTitleY("#DeltaP/P ");
+        H2F hi_dp_phi_neg = new H2F("hi_dp_phi_neg","hi_dp_phi_neg",100, -180, 180, 100, -0.4, 0.4);
+        hi_dp_phi_neg.setTitleX("#phi (deg)");
+        hi_dp_phi_neg.setTitleY("#DeltaP/P ");
+        H2F hi_dp_z_neg = new H2F("hi_dp_z_neg","hi_dp_z_neg",100, -5, 5, 100, -0.4, 0.4);
+        hi_dp_z_neg.setTitleX("z (cm)");
+        hi_dp_z_neg.setTitleY("#DeltaP/P ");
+        DataGroup mc2d = new DataGroup(4,2);
+        mc2d.addDataSet(hi_dp_p_pos,     0);
+        mc2d.addDataSet(hi_dp_theta_pos, 1);
+        mc2d.addDataSet(hi_dp_phi_pos,   2);
+        mc2d.addDataSet(hi_dp_z_pos,     3);
+        mc2d.addDataSet(hi_dp_p_neg,     4);
+        mc2d.addDataSet(hi_dp_theta_neg, 5);
+        mc2d.addDataSet(hi_dp_phi_neg,   6);
+        mc2d.addDataSet(hi_dp_z_neg,     7);
+        this.getDataGroup().add(mc2d, 4);
         // vertex
         H2F hi_vxy_pos = new H2F("hi_vxy_pos","hi_vxy_pos",100,-1.,1.,100,-1.,1);
         hi_vxy_pos.setTitleX("Vx (cm)");
@@ -258,7 +296,7 @@ public class CVTmonitor extends AnalysisMonitor {
         vertex.addDataSet(hi_vz_vs_theta_neg, 3);
         vertex.addDataSet(hi_vxy_neg, 4);
         vertex.addDataSet(hi_vz_vs_phi_neg, 5);
-        this.getDataGroup().add(vertex, 4);
+        this.getDataGroup().add(vertex, 5);
     }
     
     
@@ -295,22 +333,38 @@ public class CVTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(2).getH1F("hi_vz_pos"));
 //        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(2).getH1F("hi_vz_pos_cut"),"same");
         this.getAnalysisCanvas().getCanvas("Vertex").cd(1);
-        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_pos"));
+        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(5).getH2F("hi_vz_vs_theta_pos"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(2);
         this.getAnalysisCanvas().getCanvas("Vertex").getPad(2).getAxisZ().setLog(true);
-        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vxy_pos"));
+        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(5).getH2F("hi_vxy_pos"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(3);
-        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_pos"));
+        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(5).getH2F("hi_vz_vs_phi_pos"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(4);
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(1).getH1F("hi_vz_neg"));
 //        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(1).getH1F("hi_vz_neg_cut"),"same");
         this.getAnalysisCanvas().getCanvas("Vertex").cd(5);
-        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_neg"));
+        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(5).getH2F("hi_vz_vs_theta_neg"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(6);
         this.getAnalysisCanvas().getCanvas("Vertex").getPad(6).getAxisZ().setLog(true);
-        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vxy_neg"));
+        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(5).getH2F("hi_vxy_neg"));
         this.getAnalysisCanvas().getCanvas("Vertex").cd(7);
-         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_neg"));
+        this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(5).getH2F("hi_vz_vs_phi_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").cd(0);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").draw(this.getDataGroup().getItem(4).getH2F("hi_dp_p_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").cd(1);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").draw(this.getDataGroup().getItem(4).getH2F("hi_dp_theta_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").cd(2);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").draw(this.getDataGroup().getItem(4).getH2F("hi_dp_phi_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").cd(3);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").draw(this.getDataGroup().getItem(4).getH2F("hi_dp_z_pos"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").cd(4);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").draw(this.getDataGroup().getItem(4).getH2F("hi_dp_p_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").cd(5);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").draw(this.getDataGroup().getItem(4).getH2F("hi_dp_theta_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").cd(6);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").draw(this.getDataGroup().getItem(4).getH2F("hi_dp_phi_neg"));
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").cd(7);
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").draw(this.getDataGroup().getItem(4).getH2F("hi_dp_z_neg"));
         this.getAnalysisCanvas().getCanvas("Monte Carlo").cd(0);
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getH1F("hi_dp_pos"));
         this.getAnalysisCanvas().getCanvas("Monte Carlo").draw(this.getDataGroup().getItem(3).getF1D("f1_dp_pos"),"same");
@@ -340,6 +394,7 @@ public class CVTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Negative Tracks").update();
         this.getAnalysisCanvas().getCanvas("Positive Tracks").update();
         this.getAnalysisCanvas().getCanvas("Vertex").update();
+        this.getAnalysisCanvas().getCanvas("Monte Carlo 2D").update();
         this.getAnalysisCanvas().getCanvas("Monte Carlo").update();
     }
         
@@ -368,27 +423,29 @@ public class CVTmonitor extends AnalysisMonitor {
                                           -bank.getFloat("d0", loop)*Math.sin(bank.getFloat("phi0", loop)),
                                           bank.getFloat("d0", loop)*Math.cos(bank.getFloat("phi0", loop)),
                                           bank.getFloat("z0", loop));
-                if(recParticle.charge()>0) {
+                recParticle.setProperty("pt", bank.getFloat("pt", loop));
+                recParticle.setProperty("ndf", bank.getShort("ndf", loop));
+                if(recParticle.charge()>0 && recParticle.getProperty("ndf")>=3 && recParticle.getProperty("pt")>0.2) {
                     this.getDataGroup().getItem(2).getH1F("hi_p_pos").fill(recParticle.p());
                     this.getDataGroup().getItem(2).getH1F("hi_theta_pos").fill((float) Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(2).getH1F("hi_phi_pos").fill(Math.toDegrees(recParticle.phi()));
                     this.getDataGroup().getItem(2).getH1F("hi_vz_pos").fill(recParticle.vz());
                     this.getDataGroup().getItem(2).getH2F("hi_theta_p_pos").fill(recParticle.p(),Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(2).getH2F("hi_theta_phi_pos").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recParticle.theta()));
-                    this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_pos").fill(Math.toDegrees(recParticle.theta()),recParticle.vz());
-                    this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_pos").fill(recParticle.vz(),Math.toDegrees(recParticle.phi()));
-                    this.getDataGroup().getItem(4).getH2F("hi_vxy_pos").fill(recParticle.vx(),recParticle.vy());
-              }
-                else {
+                    this.getDataGroup().getItem(5).getH2F("hi_vz_vs_theta_pos").fill(Math.toDegrees(recParticle.theta()),recParticle.vz());
+                    this.getDataGroup().getItem(5).getH2F("hi_vz_vs_phi_pos").fill(recParticle.vz(),Math.toDegrees(recParticle.phi()));
+                    this.getDataGroup().getItem(5).getH2F("hi_vxy_pos").fill(recParticle.vx(),recParticle.vy());
+                }
+                else if(recParticle.charge()<0 && recParticle.getProperty("ndf")>=3 && recParticle.getProperty("pt")>0.2){
                     this.getDataGroup().getItem(1).getH1F("hi_p_neg").fill(recParticle.p());
                     this.getDataGroup().getItem(1).getH1F("hi_theta_neg").fill(Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(1).getH1F("hi_phi_neg").fill(Math.toDegrees(recParticle.phi()));
                     this.getDataGroup().getItem(1).getH1F("hi_vz_neg").fill(recParticle.vz());
                     this.getDataGroup().getItem(1).getH2F("hi_theta_p_neg").fill(recParticle.p(),Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(1).getH2F("hi_theta_phi_neg").fill(Math.toDegrees(recParticle.phi()),Math.toDegrees(recParticle.theta()));                    
-                    this.getDataGroup().getItem(4).getH2F("hi_vz_vs_theta_neg").fill(Math.toDegrees(recParticle.theta()),recParticle.vz());
-                    this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_neg").fill(recParticle.vz(),Math.toDegrees(recParticle.phi()));
-                    this.getDataGroup().getItem(4).getH2F("hi_vxy_neg").fill(recParticle.vx(),recParticle.vy());
+                    this.getDataGroup().getItem(5).getH2F("hi_vz_vs_theta_neg").fill(Math.toDegrees(recParticle.theta()),recParticle.vz());
+                    this.getDataGroup().getItem(5).getH2F("hi_vz_vs_phi_neg").fill(recParticle.vz(),Math.toDegrees(recParticle.phi()));
+                    this.getDataGroup().getItem(5).getH2F("hi_vxy_neg").fill(recParticle.vx(),recParticle.vy());
                 }
                 if(partRecNeg==null && recParticle.charge()<0) partRecNeg=recParticle;
                 if(partRecPos==null && recParticle.charge()>0) partRecPos=recParticle;
@@ -437,19 +494,27 @@ public class CVTmonitor extends AnalysisMonitor {
 //                    partGenPos=genPart;
 //                    System.out.println(" --> q+ = "+partRecPos.charge()+" "+((partRecPos != null)) +" "+partRecPos.p() );
 //                    System.out.println(" --> q- = "+partRecNeg.charge()+" "+((partRecNeg != null)) );
-                    if(partRecNeg != null && genPart.charge()==-1) { 
+                    if(partRecNeg != null && genPart.charge()==-1 && partRecPos.getProperty("ndf")>=3 && partRecPos.getProperty("pt")>0.2) { 
                         //System.out.println(" Filling negative track info ...");
                         this.getDataGroup().getItem(3).getH1F("hi_dp_neg").fill((partRecNeg.p()-genPart.p())/genPart.p());
                         this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg").fill(Math.toDegrees(partRecNeg.theta()-genPart.theta()));
                         this.getDataGroup().getItem(3).getH1F("hi_dphi_neg").fill(Math.toDegrees(partRecNeg.phi()-genPart.phi()));
                         this.getDataGroup().getItem(3).getH1F("hi_dvz_neg").fill(partRecNeg.vz()-genPart.vz());
+                        this.getDataGroup().getItem(4).getH2F("hi_dp_p_neg").fill(genPart.p(),(partRecNeg.p()-genPart.p())/genPart.p());
+                        this.getDataGroup().getItem(4).getH2F("hi_dp_theta_neg").fill(Math.toDegrees(genPart.theta()),(partRecNeg.p()-genPart.p())/genPart.p());
+                        this.getDataGroup().getItem(4).getH2F("hi_dp_phi_neg").fill(Math.toDegrees(genPart.phi()),(partRecNeg.p()-genPart.p())/genPart.p());
+                        this.getDataGroup().getItem(4).getH2F("hi_dp_z_neg").fill(genPart.vz(),(partRecNeg.p()-genPart.p())/genPart.p());
                     }
-                    if(partRecPos != null && genPart.charge()==1) { 
+                    if(partRecPos != null && genPart.charge()==1 && partRecPos.getProperty("ndf")>=3 && partRecPos.getProperty("pt")>0.2) { 
                         //System.out.println(" Filling positive track info ...");
                         this.getDataGroup().getItem(3).getH1F("hi_dp_pos").fill((partRecPos.p()-genPart.p())/genPart.p());
                         this.getDataGroup().getItem(3).getH1F("hi_dtheta_pos").fill(Math.toDegrees(partRecPos.theta()-genPart.theta()));
                         this.getDataGroup().getItem(3).getH1F("hi_dphi_pos").fill(Math.toDegrees(partRecPos.phi()-genPart.phi()));
                         this.getDataGroup().getItem(3).getH1F("hi_dvz_pos").fill(partRecPos.vz()-genPart.vz());
+                        this.getDataGroup().getItem(4).getH2F("hi_dp_p_pos").fill(genPart.p(),(partRecPos.p()-genPart.p())/genPart.p());
+                        this.getDataGroup().getItem(4).getH2F("hi_dp_theta_pos").fill(Math.toDegrees(genPart.theta()),(partRecPos.p()-genPart.p())/genPart.p());
+                        this.getDataGroup().getItem(4).getH2F("hi_dp_phi_pos").fill(Math.toDegrees(genPart.phi()),(partRecPos.p()-genPart.p())/genPart.p());
+                        this.getDataGroup().getItem(4).getH2F("hi_dp_z_pos").fill(genPart.vz(),(partRecPos.p()-genPart.p())/genPart.p());
                     }
                 }
             }
