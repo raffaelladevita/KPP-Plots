@@ -38,9 +38,13 @@ public class FMTmonitor extends AnalysisMonitor {
     double[][][] FVT_stripsY; //Give the  end-points y-coordinates of the strip segment
 
     double[] FVT_Zlayer = {294.997, 306.897, 318.797, 332.697, 344.597, 356.497}; //Give z-coordinate of the layer
-    double[] FVT_Alpha = {19, 79, 139, -161, -101, -41}; //Give the rotation angle to apply
+//    double[] FVT_Alpha = {19, 79, 139, -161, -101, -41}; //Give the rotation angle to apply
+    double[] FVT_Alpha = {157.5, 217.5, 277.5, 157.5, 217.5, 277.5}; //Give the rotation angle to apply
     double[] MY_Alpha = {170, 50, -70, 170, 50, -70}; //Give the rotation angle to apply
 
+    int ntraj=0;
+    int nfmt=0;
+    
     public FMTmonitor(String name, ConstantsManager ccdb) {
         super(name,ccdb);
         this.setAnalysisTabNames("FMT hits", "FMT phi", "Clusters", "Cluster phi", "Cluster phi vs strip", "Cluster strip vs strip", "Cluster energy");
@@ -189,6 +193,7 @@ public class FMTmonitor extends AnalysisMonitor {
         if(recRun == null) return;
         int ev  = recRun.getInt("event",0);
         int run = recRun.getInt("run",0);
+        if(run==0) return;
         IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
         if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
             this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
@@ -215,6 +220,23 @@ public class FMTmonitor extends AnalysisMonitor {
         if (recBankEB != null) {
             trigger = recBankEB.getInt("pid", 0);
         }
+        
+        if(recTrajEB != null) {
+            for (int loop = 0; loop < recTrajEB.rows(); loop++) {
+                int detId = recTrajEB.getInt("detector", loop);
+                int layer = recTrajEB.getByte("layer", loop);
+                if (detId==DetectorType.FMT.getDetectorId() && layer==1) {
+                    double x = recTrajEB.getFloat("x", loop);
+                    double y = recTrajEB.getFloat("y", loop);
+                    double z = recTrajEB.getFloat("z", loop);
+                    double angle = Math.toDegrees(Math.acos(z/Math.sqrt(x*x+y*y+z*z)));
+                    if(angle>7 && angle<25) {
+                        ntraj++;
+                        if(fmtHits!=null) nfmt++;
+                    }
+                }
+            }
+        }
 
         if (fmtHits != null && fmtClusters != null && recTrajEB != null) {
 //            System.out.println("Updating AAA");
@@ -224,18 +246,18 @@ public class FMTmonitor extends AnalysisMonitor {
             for (int loop = 0; loop < recTrajEB.rows(); loop++) {
                 int detId = recTrajEB.getByte("detector", loop);
                 int layer = recTrajEB.getByte("layer", loop);
-                if (detId==DetectorType.FMT.getDetectorId() && layer>= 1 && detId <= FVT_Nlayers) {
+                if (detId==DetectorType.FMT.getDetectorId() && layer>= 1 && layer <= FVT_Nlayers) {
                     double x = recTrajEB.getFloat("x", loop);
                     double y = recTrajEB.getFloat("y", loop);
                     double z = recTrajEB.getFloat("z", loop);
                     double phiRef = 0;
                     if (event.hasBank("MC::Particle")) {
-                        phiRef = FVT_Alpha[detId - 1];
+                        phiRef = FVT_Alpha[layer - 1];
                     } else {
-                        phiRef = MY_Alpha[detId - 1];
+                        phiRef = MY_Alpha[layer - 1];
                     }
                     for (int i = 0; i < fmtHits.rows(); i++) {
-                        if (detId == fmtHits.getByte("layer", i)) {
+                        if (layer == fmtHits.getByte("layer", i)) {
                             int strip = fmtHits.getInt("strip", i);
                             double xLoc = x * Math.cos(Math.toRadians(phiRef)) + y * Math.sin(Math.toRadians(phiRef));
                             double yLoc = y * Math.cos(Math.toRadians(phiRef)) - x * Math.sin(Math.toRadians(phiRef));
@@ -243,18 +265,18 @@ public class FMTmonitor extends AnalysisMonitor {
 //                            if (Math.abs(yLoc - FVT_stripsYlocref[strip]) < 5) {
 //                                matchedLayers[detId - 1]++;
 //                            }
-                            if(detId==3) matchedStrips.add(strip);
-                            this.getDataGroup().getItem(0).getH1F("hi_hit_res_l" + detId).fill(yLoc - FVT_stripsYlocref[strip]);
+                            if(layer==3) matchedStrips.add(strip);
+                            this.getDataGroup().getItem(0).getH1F("hi_hit_res_l" + layer).fill(yLoc - FVT_stripsYlocref[strip]);
                             if (phi[0] > -9999 && strip<=512) {
-                                this.getDataGroup().getItem(0).getH1F("hi_hit_phi_l" + detId).fill(phi[0]);
+                                this.getDataGroup().getItem(0).getH1F("hi_hit_phi_l" + layer).fill(phi[0]);
                             }
                             if (phi[1] > -9999 && strip>512) {
-                                this.getDataGroup().getItem(0).getH1F("hi_hit_phi_l" + detId).fill(phi[1]);
+                                this.getDataGroup().getItem(0).getH1F("hi_hit_phi_l" + layer).fill(phi[1]);
                             }
                         }
                     }
                     for (int i = 0; i < fmtClusters.rows(); i++) {
-                        if (detId == fmtClusters.getByte("layer", i)) {
+                        if (layer == fmtClusters.getByte("layer", i)) {
                             int strip = fmtClusters.getInt("seedStrip", i);
                             double energy = fmtClusters.getFloat("ETot", i);
                             double xLoc = x * Math.cos(Math.toRadians(phiRef)) + y * Math.sin(Math.toRadians(phiRef));
@@ -263,63 +285,64 @@ public class FMTmonitor extends AnalysisMonitor {
 //                            if (Math.abs(yLoc - FVT_stripsYlocref[strip]) < 5) {
 //                                matchedLayers[detId - 1]++;
 //                            }
-                            if(detId==3) matchedClusters.add(strip);
-                            this.getDataGroup().getItem(1).getH1F("hi_cluster_res_l" + detId).fill(yLoc - FVT_stripsYlocref[strip]);
+                            if(layer==3) matchedClusters.add(strip);
+                            this.getDataGroup().getItem(1).getH1F("hi_cluster_res_l" + layer).fill(yLoc - FVT_stripsYlocref[strip]);
                             if (phi[0] > -9999 && strip<=512) {
-                                this.getDataGroup().getItem(1).getH1F("hi_cluster_phi_l" + detId).fill(phi[0]);
-                                this.getDataGroup().getItem(1).getH2F("hi_cluster_phi_energy_l" + detId).fill(phi[0],energy);
-                                if(energy>100) this.getDataGroup().getItem(1).getH1F("hi_cluster_energy_cut_l" + detId).fill(phi[0]);
-                                this.getDataGroup().getItem(1).getH2F("hi_cluster_phi_strip_l" + detId).fill(phi[0],strip);
+                                this.getDataGroup().getItem(1).getH1F("hi_cluster_phi_l" + layer).fill(phi[0]);
+                                this.getDataGroup().getItem(1).getH2F("hi_cluster_phi_energy_l" + layer).fill(phi[0],energy);
+                                if(energy>100) this.getDataGroup().getItem(1).getH1F("hi_cluster_energy_cut_l" + layer).fill(phi[0]);
+                                this.getDataGroup().getItem(1).getH2F("hi_cluster_phi_strip_l" + layer).fill(phi[0],strip);
                             }
                             if (phi[1] > -9999 && strip>512) {
-                                this.getDataGroup().getItem(1).getH1F("hi_cluster_phi_l" + detId).fill(phi[1]);
-                                this.getDataGroup().getItem(1).getH2F("hi_cluster_phi_energy_l" + detId).fill(phi[1],energy);
-                                if(energy>100) this.getDataGroup().getItem(1).getH1F("hi_cluster_energy_cut_l" + detId).fill(phi[1]);
-                                this.getDataGroup().getItem(1).getH2F("hi_cluster_phi_strip_l" + detId).fill(phi[1],strip);
+                                this.getDataGroup().getItem(1).getH1F("hi_cluster_phi_l" + layer).fill(phi[1]);
+                                this.getDataGroup().getItem(1).getH2F("hi_cluster_phi_energy_l" + layer).fill(phi[1],energy);
+                                if(energy>100) this.getDataGroup().getItem(1).getH1F("hi_cluster_energy_cut_l" + layer).fill(phi[1]);
+                                this.getDataGroup().getItem(1).getH2F("hi_cluster_phi_strip_l" + layer).fill(phi[1],strip);
                             }
                         }
                     }
                 }
             }
             for (int loop = 0; loop < recTrajEB.rows(); loop++) {
-                int detId = recTrajEB.getShort("detector", loop);
-                if (detId >= 1 && detId <= FVT_Nlayers) {
+                int detId = recTrajEB.getByte("detector", loop);
+                int layer = recTrajEB.getByte("layer", loop);
+                if (detId==DetectorType.FMT.getDetectorId() && layer>= 1 && layer <= FVT_Nlayers) {
                     double x = recTrajEB.getFloat("x", loop);
                     double y = recTrajEB.getFloat("y", loop);
                     double z = recTrajEB.getFloat("z", loop);
 //                    if (matchedLayers[0] > 0 && matchedLayers[1] > 0 && matchedLayers[3] > 0 && matchedLayers[4] > 0) {
                     for (int i = 0; i < fmtHits.rows(); i++) {
-                        if (detId == fmtHits.getByte("layer", i)) {
+                        if (layer == fmtHits.getByte("layer", i)) {
                             int strip = fmtHits.getInt("strip", i);
                             boolean match = false;
-                            for(int strip3 : matchedStrips) if(detId==6 && Math.abs(strip-strip3)<30) match=true;
+                            for(int strip3 : matchedStrips) if(layer==6 && Math.abs(strip-strip3)<30) match=true;
                             if(match) {
                                 double phi[] = this.getPhi(x, y, FVT_stripsYlocref[strip]);
                                 if (phi[0] > -9999 && strip<=512) {
-                                    this.getDataGroup().getItem(0).getH1F("hi_hit_phi_cut_l" + detId).fill(phi[0]);
+                                    this.getDataGroup().getItem(0).getH1F("hi_hit_phi_cut_l" + layer).fill(phi[0]);
                                 }
                                 if (phi[1] > -9999 && strip>512) {
-                                    this.getDataGroup().getItem(0).getH1F("hi_hit_phi_cut_l" + detId).fill(phi[1]);
+                                    this.getDataGroup().getItem(0).getH1F("hi_hit_phi_cut_l" + layer).fill(phi[1]);
                                 }
                             }
                         }
                     }
                     for (int i = 0; i < fmtClusters.rows(); i++) {
-                        if (detId == fmtClusters.getByte("layer", i)) {
+                        if (layer == fmtClusters.getByte("layer", i)) {
                             int strip = fmtClusters.getInt("seedStrip", i);
                             double energy = fmtClusters.getFloat("ETot", i);
                             boolean match = false;
                             for(int strip3 : matchedClusters) {
-                                if(detId==6 && Math.abs(strip-strip3)<30) match=true;
-                                this.getDataGroup().getItem(1).getH2F("hi_cluster_strip_strip_l" + detId).fill(strip3,strip);
+                                if(layer==6 && Math.abs(strip-strip3)<30) match=true;
+                                this.getDataGroup().getItem(1).getH2F("hi_cluster_strip_strip_l" + layer).fill(strip3,strip);
                             }
                             if(match) {
                                 double phi[] = this.getPhi(x, y, FVT_stripsYlocref[strip]);
                                 if (phi[0] > -9999 && strip<=512 && energy>100) {
-                                    this.getDataGroup().getItem(1).getH1F("hi_cluster_phi_cut_l" + detId).fill(phi[0]);
+                                    this.getDataGroup().getItem(1).getH1F("hi_cluster_phi_cut_l" + layer).fill(phi[0]);
                                 }
                                 if (phi[1] > -9999 && strip>512 && energy>100) {
-                                    this.getDataGroup().getItem(1).getH1F("hi_cluster_phi_cut_l" + detId).fill(phi[1]);
+                                    this.getDataGroup().getItem(1).getH1F("hi_cluster_phi_cut_l" + layer).fill(phi[1]);
                                 }
                             }
                         }
@@ -343,6 +366,7 @@ public class FMTmonitor extends AnalysisMonitor {
     @Override
     public void analyze() {
         // fit hodoscope charge
+//        System.out.println(ntraj + " " + nfmt);
     }
 
     public void LoadGeometry() {

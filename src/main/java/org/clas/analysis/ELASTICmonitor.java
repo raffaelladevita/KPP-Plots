@@ -263,7 +263,9 @@ public class ELASTICmonitor extends AnalysisMonitor {
         else {
             return;
         }
-        double ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
+        if(run == 0) return;
+        double ebeamRCDB = 10.6;
+        if(run!=11 && run!=10) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
         if(ebeamRCDB == 0) {
             ebeamRCDB = 10.6;
         }
@@ -293,7 +295,11 @@ public class ELASTICmonitor extends AnalysisMonitor {
                                           bank.getFloat("vy", loop),
                                           bank.getFloat("vz", loop));
                     for(int j=0; j<track.rows(); j++) {
-                        if(track.getShort("pindex", j)==loop) recEl.setProperty("sector", (double) track.getByte("sector", j));
+                        if(track.getShort("pindex", j)==loop) {
+                            int sector = track.getByte("sector", j);
+                            recEl.setProperty("sector", sector);
+//                            if(sector<1 || sector>6) System.out.println("aaaaaa   " + sector);
+                        }
                     }
                 }
                 else if(bank.getInt("charge", loop)==1 && recPr==null && Math.abs(bank.getShort("status", loop))>=2000) {
@@ -324,6 +330,7 @@ public class ELASTICmonitor extends AnalysisMonitor {
                 hadronSystem = new LorentzVector(0., 0., ebeam, 0.9383+ebeam);
                 hadronSystem.sub(recEl.vector());
                 int secEl = (int) recEl.getProperty("sector");
+//                if(secEl<1 || secEl>6) System.out.println("bbbbbb  " + secEl);
                 if(Math.toDegrees(recEl.theta())>0){
                     this.getDataGroup().getItem(1).getH2F("hi_rec_q2w").fill(hadronSystem.mass(),-virtualPhoton.mass2());
                     this.getDataGroup().getItem(1).getH1F("hi_rec_w").fill(hadronSystem.mass());
@@ -345,7 +352,7 @@ public class ELASTICmonitor extends AnalysisMonitor {
 
                     this.getDataGroup().getItem(1).getH2F("hi_phi").fill(Math.toDegrees(recEl.phi()),Math.toDegrees(recPr.phi()));
                     this.getDataGroup().getItem(5).getH1F("hi_dphi_" + secEl).fill(phPr-phEl);
-                    if(recPr != null && Math.abs(phPr-phEl-180)<10) {
+                    if(Math.abs(phPr-phEl-180)<10) {
                         this.getDataGroup().getItem(4).getH2F("hi_rec_de_theta_" + secEl).fill(recEl.p()-(ebeam+0.93832-recPr.e()),Math.toDegrees(recEl.theta()));
                         this.getDataGroup().getItem(3).getH2F("hi_rec_pr_" + secEl).fill(recPr.p(),Math.toDegrees(recPr.theta()));
                         this.getDataGroup().getItem(6).getH1F("hi_beam_" + secEl).fill((-0.93832+recPr.e()+recEl.p()));

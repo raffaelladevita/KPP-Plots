@@ -218,10 +218,11 @@ public class KINEmonitor extends AnalysisMonitor {
         else {
             return;
         }        
+        if(run==0) return;
         IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
         double rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
         double ebeamRCDB = 10.6;
-        if(run!=11) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
+        if(run!=11 && run!=10) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
         if(ebeamRCDB == 0) {
             ebeamRCDB = 10.6;
         }
@@ -383,7 +384,7 @@ public class KINEmonitor extends AnalysisMonitor {
                     if(status>2000 && status<3000 && (status-2000)<100 && (status-2000)>10 && energy1>0.05 && energy4>0) {
                         gammasFD.add(recParticle);
                     }
-                    else if(status>=1000 && status<2000) {
+                    else if(status>=1000 && status<2000 && recParticle.p()>0.5) {
                          gammasFT.add(recParticle);                    
                     }
                 }
@@ -412,7 +413,7 @@ public class KINEmonitor extends AnalysisMonitor {
                         double invmass = Math.sqrt(partPi0.mass2());
                         double x = (partGamma1.p() - partGamma2.p()) / (partGamma1.p() + partGamma2.p());
                         double angle = Math.toDegrees(Math.acos(partGamma1.cosTheta(partGamma2)));
-                        if (angle > 2.0 && partGamma1.p()>0.5  & partGamma2.p()>0.5) {
+                        if (angle > 2.0) {
                             this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_ft").fill(invmass * 1000);
                         }
                     }

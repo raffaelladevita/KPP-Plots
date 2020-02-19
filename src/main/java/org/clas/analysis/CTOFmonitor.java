@@ -103,7 +103,7 @@ public class CTOFmonitor extends AnalysisMonitor {
         hi_rz_hit.setTitleY("CTOF hit r (cm)"); 
         H2F hi_rz_track = new H2F("hi_rz_track", "hi_rz_track", 100, -60., 40., 100, 20., 40.);  
         hi_rz_track.setTitleX("Track z (cm)");
-        hi_rz_track.setTitleY("Tracl r (cm)"); 
+        hi_rz_track.setTitleY("Track r (cm)"); 
         dc_residuals.addDataSet(hi_z_hit,       0);
         dc_residuals.addDataSet(hi_rz_hit,      1);
         dc_residuals.addDataSet(hi_z_hit_track, 2);
@@ -254,6 +254,20 @@ public class CTOFmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(3).getH1F("hi_z_track"));
         this.getAnalysisCanvas().getCanvas("Residuals").cd(4);
         this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(3).getH2F("hi_rz_track"));
+//        DataLine lineV = new DataLine(-15,26.611,31.598,26.611);
+//                lineV.setLineColor(2);
+//                lineV.setLineWidth(2);
+//                lineV.setArrowSizeOrigin(0);
+//                lineV.setArrowSizeEnd(0);
+//                lineV.setArrowAngle(25);
+//        DataLine lineV1 = new DataLine(31.598,26.611,41.59826,26.611+3.54);
+//                lineV1.setLineColor(2);
+//                lineV1.setLineWidth(2);
+//                lineV1.setArrowSizeOrigin(0);
+//                lineV1.setArrowSizeEnd(0);
+//                lineV1.setArrowAngle(25);
+//        this.getAnalysisCanvas().getCanvas("Residuals").draw(lineV);
+//        this.getAnalysisCanvas().getCanvas("Residuals").draw(lineV1);                
         this.getAnalysisCanvas().getCanvas("Residuals").cd(5);
         this.getAnalysisCanvas().getCanvas("Residuals").getPad(5).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(3).getH2F("hi_z_residual"));
@@ -321,7 +335,7 @@ public class CTOFmonitor extends AnalysisMonitor {
         int ev  = recRun.getInt("event",0);
         int run = recRun.getInt("run",0);
         IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
-        if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
+        if(run!=0 && this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
             this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
             this.resetEventListener();
         }

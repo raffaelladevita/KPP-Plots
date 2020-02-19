@@ -456,7 +456,7 @@ public class FTmonitor extends AnalysisMonitor {
         int trigger=0;
         if(recBankEB!=null) trigger = recBankEB.getInt("pid", 0);
      
-        if (ftParticles != null /*&& trigger_bits[25]*/) {
+        if (ftParticles != null && ftCalClusters!=null) {
             Particle p1 = null;
             Particle p2 = null;
             ArrayList<Particle> gammas = new ArrayList();
@@ -493,27 +493,17 @@ public class FTmonitor extends AnalysisMonitor {
                         time     = ftCalClusters.getFloat("time", i)-path/29.97;
 		    }
 	        }
-	        for(int i=0; i<ftHodoClusters.rows(); i++) {
-	            if(calID == ftHodoClusters.getShort("id", i)) {
-                        double x = ftHodoClusters.getFloat("x", i);
-                        double y = ftHodoClusters.getFloat("y", i);
-                        double z = ftHodoClusters.getFloat("z", i);
-                        path     = Math.sqrt(x*x+y*y+z*z);
-                        timeH    = ftHodoClusters.getFloat("time", i)-path/29.97;
-		    }
-	        }
-//	        for(int i=0; i<ftCalHits.rows(); i++) {
-//                        energyR  = ftCalHits.getFloat("energy", i);
-//                        double x = ftCalHits.getFloat("x", i);
-//                        double y = ftCalHits.getFloat("y", i);
-//                        double z = ftCalHits.getFloat("z", i);
-//                        path     = Math.sqrt(x*x+y*y+z*z);
-//                        time     = ftCalHits.getFloat("time", i)-path/29.97;
-//                        this.getDataGroup().getItem(1).getH1F("hi_cal_time_ch").fill(time-startTime);
-//                        if(energy>2) this.getDataGroup().getItem(1).getH1F("hi_cal_time_cut_ch").fill(time-startTime);
-//                        this.getDataGroup().getItem(1).getH2F("hi_cal_time_e_ch").fill(energy,(time-startTime));
-//	        }
-                
+                if(ftHodoClusters!=null) {
+                    for(int i=0; i<ftHodoClusters.rows(); i++) {
+                        if(calID == ftHodoClusters.getShort("id", i)) {
+                            double x = ftHodoClusters.getFloat("x", i);
+                            double y = ftHodoClusters.getFloat("y", i);
+                            double z = ftHodoClusters.getFloat("z", i);
+                            path     = Math.sqrt(x*x+y*y+z*z);
+                            timeH    = ftHodoClusters.getFloat("time", i)-path/29.97;
+                        }
+                    }  
+                }
                 this.getDataGroup().getItem(1).getH1F("hi_cal_clsize").fill(size);
                 this.getDataGroup().getItem(1).getH1F("hi_cal_e_all").fill(energy);
                 this.getDataGroup().getItem(1).getH2F("hi_cal_clsize_en").fill(size, energy);
@@ -527,7 +517,7 @@ public class FTmonitor extends AnalysisMonitor {
                     this.getDataGroup().getItem(1).getH2F("hi_cal_xy_ch").fill(xClus,yClus);
                     if(rfTime!=-1000) {
                         double theta = Math.toDegrees(Math.acos(cz));
-                        if(energy>0.5 && energyM>0.3 && size > 3) {                            
+                        if(energy>0.5 && energyM>0.3 && size > 3 && theta>2.5 && theta<4.5) {                            
                             this.getDataGroup().getItem(1).getH1F("hi_cal_time_ch").fill((time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);
                             this.getDataGroup().getItem(1).getH2F("hi_cal_time_e_ch").fill(energy,(time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);
                             this.getDataGroup().getItem(1).getH2F("hi_cal_time_theta_ch").fill(theta,(time-rfTime+1000.5*rfPeriod)%rfPeriod-0.5*rfPeriod);
@@ -547,10 +537,11 @@ public class FTmonitor extends AnalysisMonitor {
                 }
                 else {
                     Particle recParticle = new Particle(22, energy*cx, energy*cy, energy*cz, 0,0,0);
-                    gammas.add(recParticle);
                     this.getDataGroup().getItem(1).getH1F("hi_cal_e_neu").fill(energy); 
-                    if(startTime!=-1000 && trigger==11) {
-                        if(energy>0.5 && energyM>0.3 && size > 3) {
+                    double theta = Math.toDegrees(Math.acos(cz));
+                        if(energy>0.5 && energyM>0.3 && size > 3 && theta>2.5 && theta<4.5) {
+                        gammas.add(recParticle);
+                        if(startTime!=-1000 && trigger==11) {
                             this.getDataGroup().getItem(1).getH1F("hi_cal_time_neu").fill(time-startTime);
                             this.getDataGroup().getItem(1).getH2F("hi_cal_time_e_neu").fill(energy,time-startTime);
                             this.getDataGroup().getItem(1).getH2F("hi_cal_time_theta_neu").fill(Math.toDegrees(Math.acos(cz)),time-startTime);
@@ -570,7 +561,7 @@ public class FTmonitor extends AnalysisMonitor {
                         double invmass = Math.sqrt(partPi0.mass2());
                         double x = (partGamma1.p() - partGamma2.p()) / (partGamma1.p() + partGamma2.p());
                         double angle = Math.toDegrees(Math.acos(partGamma1.cosTheta(partGamma2)));
-                        if(angle>1.5) this.getDataGroup().getItem(2).getH1F("hpi0sum").fill(invmass*1000);
+                        if(angle>2) this.getDataGroup().getItem(2).getH1F("hpi0sum").fill(invmass*1000);
                         this.getDataGroup().getItem(2).getH2F("hmassangle").fill(invmass*1000, angle);
                     }
                 }
@@ -664,12 +655,13 @@ public class FTmonitor extends AnalysisMonitor {
                 recParticle.setProperty("beta", beta);
                 recParticle.setProperty("vt", vt);
                 recParticle.setProperty("status", (double) status);
-                if(status<=-1000 && pid==11 && electronFT==null) electronFT=recParticle;
+                if(status>-2000 && status<=-1000 && pid==11 && electronFT==null) electronFT=recParticle;
                 if(pid==211  && piplus==null)  piplus=recParticle;
                 if(pid==-211 && piminus==null) piminus=recParticle;
                 if(pid==2212 && proton==null)  proton=recParticle;
             }
             if(electronFT!=null && piplus!=null && piminus!=null && proton!=null && ncharged==3) {
+//                System.out.println(electronFT.getProperty("status") + " " + piplus.getProperty("status") + " " + piminus.getProperty("status") + " " + proton.getProperty("status"));
                 virtualPhoton = new LorentzVector(0., 0., ebeam, ebeam);
                 virtualPhoton.sub(electronFT.vector());
                 hadronSystem = new LorentzVector(0., 0., ebeam, 0.9383+ebeam);
@@ -687,7 +679,7 @@ public class FTmonitor extends AnalysisMonitor {
                 rho.add(piplus.vector());
                 rho.add(piminus.vector());
                 this.getDataGroup().getItem(4).getH1F("hi_mm").fill(missingParticle.mass2());
-                if(Math.abs(missingParticle.mass2())<0.05 && Math.abs(missingParticle.e())<1) {
+                if(Math.abs(missingParticle.mass2())<0.05 && Math.abs(missingParticle.e())<1 && Math.toDegrees(electronFT.theta())>2.5&& Math.toDegrees(electronFT.theta())<4.5) {
                    this.getDataGroup().getItem(4).getH1F("hi_mi").fill(rho.mass());
                    this.getDataGroup().getItem(4).getH2F("hi_dE_E").fill(missingElectron.e(),(missingElectron.e()-electronFT.e())/missingElectron.e());
                    this.getDataGroup().getItem(4).getH1F("hi_dE").fill((missingElectron.e()-electronFT.e())/missingElectron.e());

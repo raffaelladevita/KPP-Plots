@@ -181,7 +181,7 @@ public class EBmonitor extends AnalysisMonitor {
         dc_time.addDataSet(hi_time_neg_ctof,  3);
         this.getDataGroup().add(dc_time, 3);  
         // mass
-        DataGroup dc_mass = new DataGroup(2,2);
+        DataGroup dc_mass = new DataGroup(3,2);
         H1F hi_mass_pos_ftof = new H1F("hi_mass_pos_ftof", "hi_mass_pos_ftof", 200, -1., 5.);  
         hi_mass_pos_ftof.setTitleX("Mass^2 (GeV)"); 
         hi_mass_pos_ftof.setTitleY("Counts");
@@ -198,10 +198,20 @@ public class EBmonitor extends AnalysisMonitor {
         hi_mass_neg_ctof.setTitleX("Mass^2 (GeV)"); 
         hi_mass_neg_ctof.setTitleY("Counts");
         hi_mass_neg_ctof.setFillColor(34);
+        H1F hi_mass_pos_cnd = new H1F("hi_mass_pos_cnd", "hi_mass_pos_cnd", 200, -1., 5.);  
+        hi_mass_pos_cnd.setTitleX("Mass^2 (GeV)"); 
+        hi_mass_pos_cnd.setTitleY("Counts");
+        hi_mass_pos_cnd.setFillColor(32);
+        H1F hi_mass_neg_cnd = new H1F("hi_mass_neg_cnd", "hi_mass_neg_cnd", 200, -1., 5.);  
+        hi_mass_neg_cnd.setTitleX("Mass^2 (GeV)"); 
+        hi_mass_neg_cnd.setTitleY("Counts");
+        hi_mass_neg_cnd.setFillColor(34);
         dc_mass.addDataSet(hi_mass_pos_ftof, 0);
         dc_mass.addDataSet(hi_mass_neg_ftof, 1);
         dc_mass.addDataSet(hi_mass_pos_ctof, 2);
         dc_mass.addDataSet(hi_mass_neg_ctof, 3);
+        dc_mass.addDataSet(hi_mass_pos_cnd,  4);
+        dc_mass.addDataSet(hi_mass_neg_cnd,  5);
         this.getDataGroup().add(dc_mass, 4);          
         // beta
         DataGroup dc_beta = new DataGroup(2,2);
@@ -252,7 +262,7 @@ public class EBmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Beta").divide(2, 2);
         this.getAnalysisCanvas().getCanvas("Beta").setGridX(false);
         this.getAnalysisCanvas().getCanvas("Beta").setGridY(false);
-        this.getAnalysisCanvas().getCanvas("Mass").divide(2, 2);
+        this.getAnalysisCanvas().getCanvas("Mass").divide(3, 2);
         this.getAnalysisCanvas().getCanvas("Mass").setGridX(false);
         this.getAnalysisCanvas().getCanvas("Mass").setGridY(false);
         this.getAnalysisCanvas().getCanvas("Vertex time").divide(2, 2);
@@ -298,15 +308,21 @@ public class EBmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Mass").cd(0);
         this.getAnalysisCanvas().getCanvas("Mass").getPad(0).getAxisY().setLog(true);
         this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(4).getH1F("hi_mass_pos_ftof"));
-        this.getAnalysisCanvas().getCanvas("Mass").cd(1);
-        this.getAnalysisCanvas().getCanvas("Mass").getPad(1).getAxisY().setLog(true);
-        this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(4).getH1F("hi_mass_neg_ftof"));
-        this.getAnalysisCanvas().getCanvas("Mass").cd(2);
-        this.getAnalysisCanvas().getCanvas("Mass").getPad(2).getAxisY().setLog(true);
-        this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(4).getH1F("hi_mass_pos_ctof"));
         this.getAnalysisCanvas().getCanvas("Mass").cd(3);
         this.getAnalysisCanvas().getCanvas("Mass").getPad(3).getAxisY().setLog(true);
+        this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(4).getH1F("hi_mass_neg_ftof"));
+        this.getAnalysisCanvas().getCanvas("Mass").cd(1);
+        this.getAnalysisCanvas().getCanvas("Mass").getPad(1).getAxisY().setLog(true);
+        this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(4).getH1F("hi_mass_pos_ctof"));
+        this.getAnalysisCanvas().getCanvas("Mass").cd(4);
+        this.getAnalysisCanvas().getCanvas("Mass").getPad(4).getAxisY().setLog(true);
         this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(4).getH1F("hi_mass_neg_ctof"));
+        this.getAnalysisCanvas().getCanvas("Mass").cd(2);
+        this.getAnalysisCanvas().getCanvas("Mass").getPad(2).getAxisY().setLog(true);
+        this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(4).getH1F("hi_mass_pos_cnd"));
+        this.getAnalysisCanvas().getCanvas("Mass").cd(5);
+        this.getAnalysisCanvas().getCanvas("Mass").getPad(5).getAxisY().setLog(true);
+        this.getAnalysisCanvas().getCanvas("Mass").draw(this.getDataGroup().getItem(4).getH1F("hi_mass_neg_cnd"));
         this.getAnalysisCanvas().getCanvas("Vertex time").cd(0);
         this.getAnalysisCanvas().getCanvas("Vertex time").getPad(0).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Vertex time").draw(this.getDataGroup().getItem(3).getH2F("hi_time_pos_ftof"));
@@ -371,6 +387,7 @@ public class EBmonitor extends AnalysisMonitor {
         if(recRun == null) return;
         int ev  = recRun.getInt("event",0);
         int run = recRun.getInt("run",0);
+        if(run==0) return;
         IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
         if(this.rfPeriod!=rfConfig.getDoubleValue("clock", 1,1,1)) {
             this.rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
@@ -404,7 +421,7 @@ public class EBmonitor extends AnalysisMonitor {
                     if(status>2000 && status<3000 && (status-2000)<100 && (status-2000)>10) {
                         gammasFD.add(recParticle);
                     }
-                    else if(status>=1000 && status<2000) {
+                    else if(status>=1000 && status<2000 && recParticle.p()>0.5) {
                          gammasFT.add(recParticle);                    
                     }
                 }
@@ -420,7 +437,7 @@ public class EBmonitor extends AnalysisMonitor {
                         double invmass = Math.sqrt(partPi0.mass2());
                         double x = (partGamma1.p() - partGamma2.p()) / (partGamma1.p() + partGamma2.p());
                         double angle = Math.toDegrees(Math.acos(partGamma1.cosTheta(partGamma2)));
-                        if (angle > 1.5) {
+                        if (angle > 2) {
                             this.getDataGroup().getItem(2).getH1F("hi_pi0_mass_ft").fill(invmass * 1000);
                         }
                         this.getDataGroup().getItem(2).getH2F("hi_pi0_angle_ft").fill(invmass * 1000, angle);
@@ -462,6 +479,7 @@ public class EBmonitor extends AnalysisMonitor {
                 float vx = recBankEB.getFloat("vx", i);
                 float vy = recBankEB.getFloat("vy", i);
                 float vz = recBankEB.getFloat("vz", i);
+                float vt = recBankEB.getFloat("vt", i);
                 float beta = recBankEB.getFloat("beta", i);
                 short status = (short) Math.abs(recBankEB.getShort("status", i));
                 int nTracksInSector=0;
@@ -504,13 +522,36 @@ public class EBmonitor extends AnalysisMonitor {
                 if(startTime>-100 && trigger==11 && i>0 && recParticle!=null) {
                     double mass2   = Math.pow(recParticle.p()/beta, 2)-recParticle.p()*recParticle.p();
                     if(recParticle.getProperty("status")>=4000) {
+                        double pathCND=0;
+                        double timeCND=0;
+                        double betaCND=0;
+                        double massCND=-9999;
+                        for(int k=0; k<recDeteEB.rows(); k++) {
+                            int pindex   = recDeteEB.getShort("pindex", k);
+                            int detector = recDeteEB.getByte("detector",k);
+                            if(pindex==i && detector==DetectorType.CND.getDetectorId()) {
+                                pathCND = recDeteEB.getFloat("path", k);
+                                timeCND = recDeteEB.getFloat("time", k);
+                                break;
+                            }
+                        }
+                        if(pathCND>0 && timeCND>0) {
+                            betaCND = pathCND/(timeCND-vt)/PhysicsConstants.speedOfLight();
+                            massCND = Math.pow(recParticle.p()/betaCND, 2)-recParticle.p()*recParticle.p();
+                        }
                         if(recParticle.charge()==1)  {
                             this.getDataGroup().getItem(5).getH2F("hi_beta_pos_ctof").fill(recParticle.p(),beta);                    
-                            this.getDataGroup().getItem(4).getH1F("hi_mass_pos_ctof").fill(mass2);       
+                            this.getDataGroup().getItem(4).getH1F("hi_mass_pos_ctof").fill(mass2);     
+                            if(massCND !=-9999) {
+                                this.getDataGroup().getItem(4).getH1F("hi_mass_pos_cnd").fill(massCND); 
+                            }
                         }
                         if(recParticle.charge()==-1) {
                             this.getDataGroup().getItem(5).getH2F("hi_beta_neg_ctof").fill(recParticle.p(),beta);
                             this.getDataGroup().getItem(4).getH1F("hi_mass_neg_ctof").fill(mass2);                    
+                            if(massCND !=-9999) {
+                                this.getDataGroup().getItem(4).getH1F("hi_mass_neg_cnd").fill(massCND); 
+                            }
                         }
                     }
                     else if(recParticle.getProperty("status")>=2000 && nTracksMatched>=0) {

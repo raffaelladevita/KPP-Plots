@@ -146,7 +146,9 @@ public class EPI0monitor extends AnalysisMonitor {
         else {
             return;
         }
-        double ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
+        if(run == 0) return;
+        double ebeamRCDB = 10.6;
+        if(run!=11 && run!=10) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
         if(ebeamRCDB == 0) {
             ebeamRCDB = 10.6;
         }

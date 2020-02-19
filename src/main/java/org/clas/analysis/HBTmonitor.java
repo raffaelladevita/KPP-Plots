@@ -51,7 +51,7 @@ public class HBTmonitor extends AnalysisMonitor {
         H1F hi_phi_neg = new H1F("hi_phi_neg", "hi_phi_neg", 100, -180.0, 180.0);   
         hi_phi_neg.setTitleX("#phi (deg)");
         hi_phi_neg.setTitleY("Counts");
-        H1F hi_chi2_neg = new H1F("hi_chi2_neg", "hi_chi2_neg", 100, 0.0, 180.0);   
+        H1F hi_chi2_neg = new H1F("hi_chi2_neg", "hi_chi2_neg", 100, 0.0, 50.0);   
         hi_chi2_neg.setTitleX("#chi2");
         hi_chi2_neg.setTitleY("Counts");
         H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 100, -30.0, 30.0);   
@@ -74,7 +74,7 @@ public class HBTmonitor extends AnalysisMonitor {
         H2F hi_theta_phi_neg = new H2F("hi_theta_phi_neg", "hi_theta_phi_neg", 200, -180.0, 180.0, 200, 0.0, 40.0); 
         hi_theta_phi_neg.setTitleX("#phi (deg)");
         hi_theta_phi_neg.setTitleY("#theta (deg)");        
-        H2F hi_chi2_vz_neg = new H2F("hi_chi2_vz_neg", "hi_chi2_vz_neg", 100, -15.0, 15.0, 100, 0.0, 180.0);   
+        H2F hi_chi2_vz_neg = new H2F("hi_chi2_vz_neg", "hi_chi2_vz_neg", 100, -15.0, 15.0, 100, 0.0, 50.0);   
         hi_chi2_vz_neg.setTitleX("Vz (cm)");
         hi_chi2_vz_neg.setTitleY("#chi2");
         DataGroup dg_neg = new DataGroup(4,2);
@@ -99,7 +99,7 @@ public class HBTmonitor extends AnalysisMonitor {
         H1F hi_phi_pos = new H1F("hi_phi_pos", "hi_phi_pos", 100, -180.0, 180.0);   
         hi_phi_pos.setTitleX("#phi (deg)");
         hi_phi_pos.setTitleY("Counts");
-        H1F hi_chi2_pos = new H1F("hi_chi2_pos", "hi_chi2_pos", 100, 0.0, 180.0);   
+        H1F hi_chi2_pos = new H1F("hi_chi2_pos", "hi_chi2_pos", 100, 0.0, 50.0);   
         hi_chi2_pos.setTitleX("#chi2");
         hi_chi2_pos.setTitleY("Counts");
         H1F hi_vz_pos = new H1F("hi_vz_pos", "hi_vz_pos", 100, -30.0, 30.0);   
@@ -122,7 +122,7 @@ public class HBTmonitor extends AnalysisMonitor {
         H2F hi_theta_phi_pos = new H2F("hi_theta_phi_pos", "hi_theta_phi_pos", 200, -180.0, 180.0, 200, 0.0, 40.0); 
         hi_theta_phi_pos.setTitleX("#phi (deg)");
         hi_theta_phi_pos.setTitleY("#theta (deg)");  
-        H2F hi_chi2_vz_pos = new H2F("hi_chi2_vz_pos", "hi_chi2_vz_pos", 100, -15.0, 15.0, 100, 0.0, 180.0);   
+        H2F hi_chi2_vz_pos = new H2F("hi_chi2_vz_pos", "hi_chi2_vz_pos", 100, -15.0, 15.0, 100, 0.0, 50.0);   
         hi_chi2_vz_pos.setTitleX("Vz (cm)");
         hi_chi2_vz_pos.setTitleY("#chi2");
         DataGroup dg_pos = new DataGroup(4,2);
