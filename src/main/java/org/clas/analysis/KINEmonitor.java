@@ -168,6 +168,7 @@ public class KINEmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("ckaon"),"same");
         this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("cprot"),"same");
         this.getAnalysisCanvas().getCanvas("Charged Particles").cd(2);
+        this.getAnalysisCanvas().getCanvas("Charged Particles").getPad(2).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getH2F("hi_beta_pos_ft"));
         this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("fpion"),"same");
         this.getAnalysisCanvas().getCanvas("Charged Particles").draw(this.getDataGroup().getItem(2).getF1D("fkaon"),"same");

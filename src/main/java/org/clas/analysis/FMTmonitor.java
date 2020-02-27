@@ -37,10 +37,10 @@ public class FMTmonitor extends AnalysisMonitor {
     double[][][] FVT_stripsX; //Give the  end-points x-coordinates of the strip segment rotated in the correct frame for the layer
     double[][][] FVT_stripsY; //Give the  end-points y-coordinates of the strip segment
 
-    double[] FVT_Zlayer = {294.997, 306.897, 318.797, 332.697, 344.597, 356.497}; //Give z-coordinate of the layer
+    double[] FVT_Zlayer = {293.197, 305.097, 316.997, 330.897, 342.797, 354.697}; //Give z-coordinate of the layer
 //    double[] FVT_Alpha = {19, 79, 139, -161, -101, -41}; //Give the rotation angle to apply
     double[] FVT_Alpha = {157.5, 217.5, 277.5, 157.5, 217.5, 277.5}; //Give the rotation angle to apply
-    double[] MY_Alpha = {170, 50, -70, 170, 50, -70}; //Give the rotation angle to apply
+    double[] MY_Alpha = {67.5, 127.5, 187.5, 67.5, 127.5, 187.5}; //Give the rotation angle to apply
 
     int ntraj=0;
     int nfmt=0;

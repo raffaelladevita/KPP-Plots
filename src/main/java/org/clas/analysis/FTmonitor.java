@@ -7,8 +7,10 @@ package org.clas.analysis;
 
 import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
+import org.jlab.clas.pdg.PhysicsConstants;
 import org.jlab.clas.physics.LorentzVector;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.base.DetectorType;
 import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
@@ -205,6 +207,14 @@ public class FTmonitor extends AnalysisMonitor {
         H2F hi_etheta_ch = new H2F("hi_etheta_ch", 100, 0., 12., 100, 2., 5.6);
         hi_etheta_ch.setTitleX("E (GeV)");
         hi_etheta_ch.setTitleY("#theta (deg)");
+        H1F hi_dtime_cal = new H1F("hi_dtime_cal", "Tcal-vt(ns)", "Counts", 100, -2,2); 
+        hi_dtime_cal.setFillColor(3);
+        F1D ftime_cal = new F1D("ftime_cal", "[amp]*gaus(x,[mean],[sigma])", -4., 4.);
+        ftime_cal.setParameter(0, 0.0);
+        ftime_cal.setParameter(1, 0.0);
+        ftime_cal.setParameter(2, 2.0);
+        ftime_cal.setLineWidth(2);
+        ftime_cal.setOptStat("1111");
         H1F hi_dtime_calhodo = new H1F("hi_dtime_calhodo", "Tcal-Thodo(ns)", "Counts", 100, -10,10); 
         hi_dtime_calhodo.setFillColor(3);
         F1D ftime_calhodo = new F1D("ftime_calhodo", "[amp]*gaus(x,[mean],[sigma])", -4., 4.);
@@ -220,6 +230,8 @@ public class FTmonitor extends AnalysisMonitor {
         hi_cal_radius_size.setTitleY("Size");
         DataGroup dc_performance = new DataGroup(3,2);
         dc_performance.addDataSet(hi_e_ch,      0);
+        dc_performance.addDataSet(hi_dtime_cal, 1);
+        dc_performance.addDataSet(ftime_cal,    1);
         dc_performance.addDataSet(hi_theta_ch,  3);
         dc_performance.addDataSet(hi_etheta_ch, 4);
         dc_performance.addDataSet(hi_dtime_calhodo, 5);
@@ -324,6 +336,7 @@ public class FTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Calorimeter").getPad(2).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Calorimeter").draw(this.getDataGroup().getItem(1).getH2F("hi_cal_clsize_en"));
         this.getAnalysisCanvas().getCanvas("Calorimeter").cd(3);
+        this.getAnalysisCanvas().getCanvas("Calorimeter").getPad(3).getAxisY().setLog(true);
         this.getAnalysisCanvas().getCanvas("Calorimeter").draw(this.getDataGroup().getItem(1).getH1F("hi_cal_e_all"));
         this.getAnalysisCanvas().getCanvas("Calorimeter").draw(this.getDataGroup().getItem(1).getH1F("hi_cal_e_ch"),"same");
         this.getAnalysisCanvas().getCanvas("Calorimeter").draw(this.getDataGroup().getItem(1).getH1F("hi_cal_e_neu"),"same");
@@ -363,6 +376,8 @@ public class FTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Performance").cd(1);
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(1).getH1F("hi_cal_time_ch"));
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(1).getF1D("ftime_ch"),"same");
+//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(3).getH1F("hi_dtime_cal"));
+//        this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(3).getF1D("ftime_cal"),"same");
         this.getAnalysisCanvas().getCanvas("Performance").cd(2);
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(1).getH1F("hi_cal_time_neu"));
         this.getAnalysisCanvas().getCanvas("Performance").draw(this.getDataGroup().getItem(1).getF1D("ftime_neu"),"same");
@@ -404,6 +419,8 @@ public class FTmonitor extends AnalysisMonitor {
         DataBank recBankEB = null;
         DataBank recBankFT = null;
         DataBank recEvenEB = null;
+        DataBank recEvenFT = null;
+        DataBank recTagger = null;
         DataBank ftParticles = null;
         DataBank ftCalClusters = null;
         DataBank ftCalHits = null;
@@ -413,6 +430,8 @@ public class FTmonitor extends AnalysisMonitor {
         if(event.hasBank("REC::Particle"))          recBankEB   = event.getBank("REC::Particle");
         if(event.hasBank("RECFT::Particle"))        recBankFT   = event.getBank("RECFT::Particle");
         if(event.hasBank("REC::Event"))             recEvenEB   = event.getBank("REC::Event");
+        if(event.hasBank("RECFT::Event"))           recEvenFT   = event.getBank("RECFT::Event");
+        if(event.hasBank("REC::ForwardTagger"))     recTagger   = event.getBank("REC::ForwardTagger");
         if(event.hasBank("FT::particles"))          ftParticles = event.getBank("FT::particles");
         if(event.hasBank("FTCAL::clusters"))      ftCalClusters = event.getBank("FTCAL::clusters");
         if(event.hasBank("FTCAL::hits"))              ftCalHits = event.getBank("FTCAL::hits");
@@ -474,8 +493,8 @@ public class FTmonitor extends AnalysisMonitor {
 	        double energyR  = 0; 
 	        double energyM  = 0; 
 	        int    size     = 0;
-                double path     = 0;
                 double radius   = 0;
+	        int    sizeH    = 0;
                 double timeH    = 0;
                 double xClus    = 0;
                 double yClus    = 0;
@@ -488,18 +507,19 @@ public class FTmonitor extends AnalysisMonitor {
                         xClus    = ftCalClusters.getFloat("x", i);
                         yClus    = ftCalClusters.getFloat("y", i);
                         zClus    = ftCalClusters.getFloat("z", i);
-                        path     = Math.sqrt(xClus*xClus+yClus*yClus+zClus*zClus);
+                        double path     = Math.sqrt(xClus*xClus+yClus*yClus+zClus*zClus);
                         radius   = ftCalClusters.getFloat("radius", i);
                         time     = ftCalClusters.getFloat("time", i)-path/29.97;
 		    }
 	        }
                 if(ftHodoClusters!=null) {
                     for(int i=0; i<ftHodoClusters.rows(); i++) {
-                        if(calID == ftHodoClusters.getShort("id", i)) {
+                        if(hodoID == ftHodoClusters.getShort("id", i)) {
                             double x = ftHodoClusters.getFloat("x", i);
                             double y = ftHodoClusters.getFloat("y", i);
                             double z = ftHodoClusters.getFloat("z", i);
-                            path     = Math.sqrt(x*x+y*y+z*z);
+                            sizeH    = ftHodoClusters.getShort("size",i);
+                            double path     = Math.sqrt(x*x+y*y+z*z);
                             timeH    = ftHodoClusters.getFloat("time", i)-path/29.97;
                         }
                     }  
@@ -545,8 +565,8 @@ public class FTmonitor extends AnalysisMonitor {
                             this.getDataGroup().getItem(1).getH1F("hi_cal_time_neu").fill(time-startTime);
                             this.getDataGroup().getItem(1).getH2F("hi_cal_time_e_neu").fill(energy,time-startTime);
                             this.getDataGroup().getItem(1).getH2F("hi_cal_time_theta_neu").fill(Math.toDegrees(Math.acos(cz)),time-startTime);
+                            if(energy>2) this.getDataGroup().getItem(1).getH1F("hi_cal_time_cut_neu").fill(time-startTime);
                         }
-                        if(energy>2) this.getDataGroup().getItem(1).getH1F("hi_cal_time_cut_neu").fill(time-startTime);
                     }
                 }
             }
@@ -625,7 +645,7 @@ public class FTmonitor extends AnalysisMonitor {
             }
         }
         
-        if(recBankFT!=null && recBankEB!=null) {
+        if(recBankFT!=null && recBankEB!=null && recEvenFT!=null) {
             Particle electronFT = null;
             Particle piplus = null;
             Particle piminus = null;
@@ -637,6 +657,7 @@ public class FTmonitor extends AnalysisMonitor {
             LorentzVector rho  = null;
             int rows = recBankEB.rows();
             int ncharged=0;
+            double startTimeFT = recEvenFT.getFloat("startTime", 0);
             for(int loop = 0; loop < rows; loop++){
                 int pid         = recBankFT.getInt("pid", loop);
                 int charge      = recBankEB.getByte("charge", loop);
@@ -652,6 +673,7 @@ public class FTmonitor extends AnalysisMonitor {
                 if(status>2000 && charge!=0) ncharged++; 
                 if(pid==0) continue;
                 Particle recParticle = new Particle(pid,px,py,pz,vx,vy,vz);
+                recParticle.setProperty("pindex", loop);
                 recParticle.setProperty("beta", beta);
                 recParticle.setProperty("vt", vt);
                 recParticle.setProperty("status", (double) status);
@@ -659,6 +681,24 @@ public class FTmonitor extends AnalysisMonitor {
                 if(pid==211  && piplus==null)  piplus=recParticle;
                 if(pid==-211 && piminus==null) piminus=recParticle;
                 if(pid==2212 && proton==null)  proton=recParticle;
+            }
+            if(electronFT!=null && recTagger!=null && piminus!=null) {
+                for(int i=0; i<recTagger.rows(); i++) {
+                    int pindex   = recTagger.getShort("pindex", i);
+                    int detector = recTagger.getByte("detector", i);
+                    if(detector==DetectorType.FTCAL.getDetectorId() &&  pindex==electronFT.getProperty("pindex")) {
+                        double x = recTagger.getFloat("x", i);
+                        double y = recTagger.getFloat("y", i);
+                        double z = recTagger.getFloat("z", i);
+                        double size   = recTagger.getShort("size", i);
+                        double energy = recTagger.getFloat("energy", i);
+                        double time = recTagger.getFloat("time", i);
+                        double path = Math.sqrt(x*x+y*y+z*z);
+                        double theta = Math.toDegrees(electronFT.theta());
+                        double dt = time-path/PhysicsConstants.speedOfLight()-piminus.getProperty("vt");//startTimeFT;  
+                        if(energy>0.5 && size > 3 && theta>2.5 && theta<4.5) this.getDataGroup().getItem(3).getH1F("hi_dtime_cal").fill(dt);
+                    }
+                }
             }
             if(electronFT!=null && piplus!=null && piminus!=null && proton!=null && ncharged==3) {
 //                System.out.println(electronFT.getProperty("status") + " " + piplus.getProperty("status") + " " + piminus.getProperty("status") + " " + proton.getProperty("status"));
@@ -737,6 +777,12 @@ public class FTmonitor extends AnalysisMonitor {
         ftime = this.getDataGroup().getItem(1).getF1D("ftime_ch");
         this.initTimeGaussFitPar(ftime,htime);
         DataFitter.fit(ftime,htime,"LQ");
+        htime.setFunction(null);
+        htime = this.getDataGroup().getItem(3).getH1F("hi_dtime_cal");
+        ftime = this.getDataGroup().getItem(3).getF1D("ftime_cal");
+        this.initTimeGaussFitPar(ftime,htime);
+        DataFitter.fit(ftime,htime,"LQ");
+        htime.setFunction(null);
         htime.setFunction(null);
         htime = this.getDataGroup().getItem(3).getH1F("hi_dtime_calhodo");
         ftime = this.getDataGroup().getItem(3).getF1D("ftime_calhodo");
