@@ -481,6 +481,7 @@ public class EBmonitor extends AnalysisMonitor {
                 float vz = recBankEB.getFloat("vz", i);
                 float vt = recBankEB.getFloat("vt", i);
                 float beta = recBankEB.getFloat("beta", i);
+                float chi2pid = recBankEB.getFloat("chi2pid", i);
                 short status = (short) Math.abs(recBankEB.getShort("status", i));
                 int nTracksInSector=0;
                 int nTracksMatched=0;
@@ -554,8 +555,8 @@ public class EBmonitor extends AnalysisMonitor {
                             }
                         }
                     }
-                    else if(recParticle.getProperty("status")>=2000 && nTracksMatched>=0) {
-//                        recBankEB.show();recDeteEB.show();
+                    else if(recParticle.getProperty("status")>=2000 && nTracksMatched>=0 /*&& Math.abs(chi2pid)<3*/) {
+//                        if(beta==0) {System.out.println(i);recBankEB.show(); recDeteEB.show();}
                         if(recParticle.charge()==1)  {
                             this.getDataGroup().getItem(5).getH2F("hi_beta_pos_ftof").fill(recParticle.p(),beta);                    
                             this.getDataGroup().getItem(4).getH1F("hi_mass_pos_ftof").fill(mass2);                    
@@ -598,7 +599,8 @@ public class EBmonitor extends AnalysisMonitor {
                         double mass2 = Math.pow(recParticle.p()/beta, 2)-recParticle.p()*recParticle.p();
                         double betap = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+recParticle.mass2());
                         double dt   = (time - path/(betap*PhysicsConstants.speedOfLight()) - startTime);                
-                        if(startTime>-100 && trigger==11 && pindex>0) {                    
+                        if(startTime>-100 && trigger==11 && pindex>0) { 
+//                            if(path==0) {System.out.println(i + " " + pindex);recBankEB.show(); recDeteEB.show();} 
                             if(recParticle.getProperty("status")>=4000) {
                                 if(recParticle.charge()==1)  {
                                     this.getDataGroup().getItem(3).getH2F("hi_time_pos_ctof").fill(recParticle.p(),dt);

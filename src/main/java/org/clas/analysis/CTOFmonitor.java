@@ -360,12 +360,20 @@ public class CTOFmonitor extends AnalysisMonitor {
                 int adcId2    = recCtofHits.getShort("adc_idx2", loop);
                 int tdcId1    = recCtofHits.getShort("tdc_idx1", loop);
                 int tdcId2    = recCtofHits.getShort("tdc_idx2", loop);
-                double adc1   = (double) ctofADC.getInt("ADC",adcId1);
-                double adc2   = (double) ctofADC.getInt("ADC",adcId2);
-                double adct1  = (double) ctofADC.getFloat("time",adcId1);
-                double adct2  = (double) ctofADC.getFloat("time",adcId2);
-                double tdc1   = (double) ctofTDC.getInt("TDC",tdcId1);
-                double tdc2   = (double) ctofTDC.getInt("TDC",tdcId2);
+                double adc1   = 0;
+                double adc2   = 0;
+                double adct1  = 0;
+                double adct2  = 0;
+                double tdc1   = 0;
+                double tdc2   = 0;
+                if(ctofADC!=null && ctofTDC!=null) {
+                    adc1   = (double) ctofADC.getInt("ADC",adcId1);
+                    adc2   = (double) ctofADC.getInt("ADC",adcId2);
+                    adct1  = (double) ctofADC.getFloat("time",adcId1);
+                    adct2  = (double) ctofADC.getFloat("time",adcId2);
+                    tdc1   = (double) ctofTDC.getInt("TDC",tdcId1);
+                    tdc2   = (double) ctofTDC.getInt("TDC",tdcId2);
+                }
                 if(status>0) {
                     this.getDataGroup().getItem(2).getH2F("hi_en_paddle").fill(paddle*1.,energy);
                     if(trk_id!=-1 && energy>0 /*&& recRunRF!=null*/) {
