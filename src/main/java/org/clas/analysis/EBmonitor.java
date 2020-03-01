@@ -140,11 +140,11 @@ public class EBmonitor extends AnalysisMonitor {
         hi_pi0_angle_ft.setTitleX("Mass (MeV)"); 
         hi_pi0_angle_ft.setTitleY("#theta (deg)");
         H1F hi_pi0_mass_fd = new H1F("hi_pi0_mass_fd", "hi_pi0_mass_fd", 200, 0.,300.);  
-        hi_pi0_mass_fd.setTitleX("p(GeV)"); 
+        hi_pi0_mass_fd.setTitleX("M(GeV)"); 
         hi_pi0_mass_fd.setTitleY("Counts");
         hi_pi0_mass_fd.setFillColor(3);
         H1F hi_pi0_mass_ft = new H1F("hi_pi0_mass_ft", "hi_pi0_mass_ft", 200, 50.,300.);  
-        hi_pi0_mass_ft.setTitleX("p(GeV)"); 
+        hi_pi0_mass_ft.setTitleX("M(GeV)"); 
         hi_pi0_mass_ft.setTitleY("Counts");
         hi_pi0_mass_ft.setFillColor(3);
         F1D fpi0 = new F1D("fpi0", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x", 80.,200.);
@@ -377,12 +377,14 @@ public class EBmonitor extends AnalysisMonitor {
         DataBank recDeteEB = null;
         DataBank recFTagEB = null;
         DataBank recTracEB = null;
+        DataBank recTrajEB = null;
         DataBank recEvenEB = null;
         if(event.hasBank("RUN::config"))            recRun      = event.getBank("RUN::config");
         if(event.hasBank("REC::Particle"))          recBankEB   = event.getBank("REC::Particle");
         if(event.hasBank("REC::Scintillator"))      recDeteEB   = event.getBank("REC::Scintillator");
         if(event.hasBank("REC::ForwardTagger"))     recFTagEB   = event.getBank("REC::ForwardTagger");
         if(event.hasBank("REC::Track"))             recTracEB   = event.getBank("REC::Track");
+        if(event.hasBank("REC::Traj"))             recTrajEB   = event.getBank("REC::Traj");
         if(event.hasBank("REC::Event"))             recEvenEB   = event.getBank("REC::Event");
         if(recRun == null) return;
         int ev  = recRun.getInt("event",0);
@@ -534,12 +536,13 @@ public class EBmonitor extends AnalysisMonitor {
                                 pathCND = recDeteEB.getFloat("path", k);
                                 timeCND = recDeteEB.getFloat("time", k);
                                 break;
-                            }
+                            }                            
                         }
                         if(pathCND>0 && timeCND>0) {
                             betaCND = pathCND/(timeCND-vt)/PhysicsConstants.speedOfLight();
                             massCND = Math.pow(recParticle.p()/betaCND, 2)-recParticle.p()*recParticle.p();
                         }
+//                        if(path<=0 && recParticle.charge()!=0) {System.out.println(i);recBankEB.show(); recDeteEB.show();continue;}
                         if(recParticle.charge()==1)  {
                             this.getDataGroup().getItem(5).getH2F("hi_beta_pos_ctof").fill(recParticle.p(),beta);                    
                             this.getDataGroup().getItem(4).getH1F("hi_mass_pos_ctof").fill(mass2);     

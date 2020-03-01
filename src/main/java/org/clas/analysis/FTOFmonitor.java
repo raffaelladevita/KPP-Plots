@@ -511,59 +511,32 @@ public class FTOFmonitor extends AnalysisMonitor {
     
     @Override
     public void analyze() {
-//        ParallelSliceFitter fitter = new ParallelSliceFitter(this.getDataGroup().getItem(5).getH2F("hi_rf_paddle_2"));
-//        fitter.fitSlicesY();
-//        GraphErrors meanY = fitter.getMeanSlices();
         for(int layer=1; layer <= 3; layer++) {
-            H2F         h2    = this.getDataGroup().getItem(5).getH2F("hi_rf_neg_paddle_" + layer);
-            GraphErrors meanX = this.getDataGroup().getItem(5).getGraph("g_rf_neg_paddle_" + layer);
-            meanX.reset();
-            ArrayList<H1F> hslice = h2.getSlicesX();
-            for(int i=0; i<hslice.size(); i++) {
-                double  x = h2.getXAxis().getBinCenter(i);
-                double ex = 0;
-                double  y = hslice.get(i).getRMS();
-                double ey = 0;
-                double mean  = hslice.get(i).getDataX(hslice.get(i).getMaximumBin());
-                double amp   = hslice.get(i).getBinContent(hslice.get(i).getMaximumBin());
-                double sigma = hslice.get(i).getRMS();
-                F1D f1 = new F1D("f1_dvz_neg","[amp]*gaus(x,[mean],[sigma])+[p0]", -1.0, 1.0);
-                f1.setParameter(0, amp);
-                f1.setParameter(1, mean);
-                f1.setParameter(2, 0.1);
-                f1.setParameter(3, 0);
-                DataFitter.fit(f1, hslice.get(i), "Q"); //No options uses error for sigma 
-                if(amp>50) meanX.addPoint(x, f1.getParameter(2), ex, f1.parameter(2).error());
-            }
-//            this.getAnalysisCanvas().getCanvas("RF negative").cd(layer+2);
-//            this.getAnalysisCanvas().getCanvas("RF negative").draw(meanY);
-//            this.getAnalysisCanvas().getCanvas("RF negative").update();
-        }
-        for(int layer=1; layer <= 3; layer++) {
-            H2F         h2    = this.getDataGroup().getItem(6).getH2F("hi_rf_pos_paddle_" + layer);
-            GraphErrors meanX = this.getDataGroup().getItem(6).getGraph("g_rf_pos_paddle_" + layer);
-            meanX.reset();
-            ArrayList<H1F> hslice = h2.getSlicesX();
-            for(int i=0; i<hslice.size(); i++) {
-                double  x = h2.getXAxis().getBinCenter(i);
-                double ex = 0;
-                double  y = hslice.get(i).getRMS();
-                double ey = 0;
-                double mean  = hslice.get(i).getDataX(hslice.get(i).getMaximumBin());
-                double amp   = hslice.get(i).getBinContent(hslice.get(i).getMaximumBin());
-                double sigma = hslice.get(i).getRMS();
-                F1D f1 = new F1D("f1_dvz_neg","[amp]*gaus(x,[mean],[sigma])+[p0]", -1.0, 1.0);
-                f1.setParameter(0, amp);
-                f1.setParameter(1, mean);
-                f1.setParameter(2, 0.1);
-                f1.setParameter(3, 0);
-                DataFitter.fit(f1, hslice.get(i), "Q"); //No options uses error for sigma 
-                if(amp>50) meanX.addPoint(x, f1.getParameter(2), ex, f1.parameter(2).error());
-            }
-//            this.getAnalysisCanvas().getCanvas("RF positive").cd(layer+2);
-//            this.getAnalysisCanvas().getCanvas("RF positive").draw(meanX);
-//            this.getAnalysisCanvas().getCanvas("RF positive").update();
-        
+            this.fitSlices(this.getDataGroup().getItem(6).getH2F("hi_rf_pos_paddle_"+layer), this.getDataGroup().getItem(6).getGraph("g_rf_pos_paddle_"+layer));
+            this.fitSlices(this.getDataGroup().getItem(5).getH2F("hi_rf_neg_paddle_"+layer), this.getDataGroup().getItem(5).getGraph("g_rf_neg_paddle_"+layer));
         }
     }
+    
+    public void fitSlices(H2F histo, GraphErrors graph) {
+        graph.reset();
+        ArrayList<H1F> hslice = histo.getSlicesX();
+        for(int i=0; i<hslice.size(); i++) {
+            double  x = histo.getXAxis().getBinCenter(i);
+            double ex = 0;
+            double  y = hslice.get(i).getRMS();
+            double ey = 0;
+            double mean  = hslice.get(i).getDataX(hslice.get(i).getMaximumBin());
+            double amp   = hslice.get(i).getBinContent(hslice.get(i).getMaximumBin());
+            double sigma = hslice.get(i).getRMS();
+            F1D f1 = new F1D("f1","[amp]*gaus(x,[mean],[sigma])+[p0]", -1.0, 1.0);
+            f1.setParameter(0, amp);
+            f1.setParameter(1, mean);
+            f1.setParameter(2, 0.1);
+            f1.setParameter(3, 0);
+            DataFitter.fit(f1, hslice.get(i), "Q"); //No options uses error for sigma 
+            if(amp>50) graph.addPoint(x, f1.getParameter(2), ex, f1.parameter(2).error());
+            else       graph.addPoint(x, 0, ex, 0);
+        }
+    }
+
 }

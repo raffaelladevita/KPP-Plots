@@ -586,7 +586,7 @@ public class FTmonitor extends AnalysisMonitor {
                     }
                 }
             }       
-            if(ftHodoHits!= null) {
+            if(ftHodoHits!= null && ftParticles!=null) {
                for(int i=0; i<ftHodoHits.rows(); i++) {
                    int hodoC = ftHodoHits.getShort("clusterID",i);
                    int hodoS = ftHodoHits.getByte("sector",i);
@@ -635,7 +635,14 @@ public class FTmonitor extends AnalysisMonitor {
                         if(clusterId==ftHodoClusters.getShort("id", j) && ftHodoClusters.getShort("size", j)>1) {
                             this.getDataGroup().getItem(0).getH1F("hi_hodo_ematch_l"+hodoL).fill(hodoHitE);
                             this.getDataGroup().getItem(0).getH2F("hi_hodo_ematch_2D_l"+hodoL).fill(hodoHitE,tile);
-                            if(startTime > -100) {
+                            int charge = 0;
+                            for(int k=0; k<ftParticles.rows(); k++) {
+                                if(ftParticles.getShort("hodoID",k)==clusterId) {
+                                    charge=1;
+                                    break;
+                                }
+                            }
+                            if(startTime > -100 && charge==1) {
                                 this.getDataGroup().getItem(0).getH1F("hi_hodo_tmatch_l"+hodoL).fill(hodoHitT-path/29.97-startTime);
                                 this.getDataGroup().getItem(0).getH2F("hi_hodo_tmatch_2D_l"+hodoL).fill(hodoHitT-path/29.97-startTime,tile); 
                             }
