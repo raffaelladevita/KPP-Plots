@@ -58,10 +58,10 @@ public class TBTmonitor extends AnalysisMonitor {
         hi_chi2_neg_cut.setTitleX("#chi2");
         hi_chi2_neg_cut.setTitleY("Counts");
         hi_chi2_neg_cut.setLineColor(2);
-        H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 180, -25.0, 40.0);   
+        H1F hi_vz_neg = new H1F("hi_vz_neg", "hi_vz_neg", 180, -50.0, 40.0);   
         hi_vz_neg.setTitleX("Vz (cm)");
         hi_vz_neg.setTitleY("Counts");
-        H1F hi_vz_neg_cut = new H1F("hi_vz_neg_cut", "hi_vz_neg_cut", 180, -25.0, 40.0);   
+        H1F hi_vz_neg_cut = new H1F("hi_vz_neg_cut", "hi_vz_neg_cut", 180, -50.0, 40.0);   
         hi_vz_neg_cut.setTitleX("Vz (cm)");
         hi_vz_neg_cut.setTitleY("Counts");
         hi_vz_neg_cut.setLineColor(2);
@@ -287,7 +287,7 @@ public class TBTmonitor extends AnalysisMonitor {
         vertex.addDataSet(hi_vz_vs_phi_neg, 5);
         this.getDataGroup().add(vertex, 4);
         // Residuals
-        DataGroup residuals = new DataGroup(4,2);
+        DataGroup residuals = new DataGroup(4,4);
         for(int i=1; i<=3; i++) {
             H1F hi_res_pos = new H1F("hi_res_pos_R" + i, "hi_res_pos_R" + i, 100, -1000.0, 1000.0);   
             hi_res_pos.setTitleX("Residual (um)");
@@ -297,8 +297,23 @@ public class TBTmonitor extends AnalysisMonitor {
             hi_res_neg.setTitleX("Residual (um)");
             hi_res_neg.setTitleY("Counts");
             hi_res_neg.setTitle("Region " + i + " negatives");
+            H2F hi_res_LR = new H2F("hi_res_LR" + i, "hi_res_LR" + i, 100, -1000.0, 1000.0, 20, -5.0, 5.0);   
+            hi_res_LR.setTitleX("Residual (um)");
+            hi_res_LR.setTitleY("LR");
+            hi_res_LR.setTitle("Region " + i);
+            H2F hi_res_B = new H2F("hi_res_B" + i, "hi_res_B" + i, 100, -1000.0, 1000.0, 100, 0.7, 2.0);   
+            hi_res_B.setTitleX("Residual (um)");
+            hi_res_B.setTitleY("B");
+            hi_res_B.setTitle("Region " + i );
+            H2F hi_res_phi = new H2F("hi_res_phi" + i, "hi_res_phi" + i, 100, -1000.0, 1000.0, 200,-180,180);  
+            hi_res_phi.setTitleX("Residual (um)");
+            hi_res_phi.setTitleY("#phi (deg)");
+            hi_res_phi.setTitle("Region " + i);
             residuals.addDataSet(hi_res_pos, (i-1));
             residuals.addDataSet(hi_res_neg, (i-1)+4);
+            residuals.addDataSet(hi_res_LR,  (i-1)+4);
+            residuals.addDataSet(hi_res_B,   (i-1)+8);
+            residuals.addDataSet(hi_res_phi, (i-1)+12);
         }
         H1F hi_res_chi2_pos = new H1F("hi_res_chi2_pos", "hi_res_chi2_pos", 100, 0.0, 180.0);
         hi_res_chi2_pos.setTitleX("#chi2");
@@ -418,7 +433,10 @@ public class TBTmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Vertex").draw(this.getDataGroup().getItem(4).getH2F("hi_vz_vs_phi_neg"));
         for(int i=1; i<=3; i++) {
             this.getAnalysisCanvas().getCanvas("Residuals").cd(i-1);
-            this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(5).getH1F("hi_res_pos_R" + i));
+//            this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(5).getH1F("hi_res_pos_R" + i));
+            if(i==1) this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(5).getH2F("hi_res_LR2"));
+            if(i==2) this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(5).getH2F("hi_res_B2"));
+            if(i==3) this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(5).getH2F("hi_res_phi2"));
             this.getAnalysisCanvas().getCanvas("Residuals").cd(i+2);
             this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(5).getH1F("hi_res_neg_R" + i));
         }
@@ -457,7 +475,7 @@ public class TBTmonitor extends AnalysisMonitor {
                                           bank.getFloat("Vtx0_y", loop),
                                           bank.getFloat("Vtx0_z", loop));
                 int id     = bank.getShort("id", loop);
-                int sector = bank.getByte("sector", loop);
+                int sector = bank.getByte("sector", loop); 
                 recParticle.setProperty("chi2", bank.getFloat("chi2", loop));
                 recParticle.setProperty("ndf", (float) bank.getShort("ndf", loop));
                 if(recParticle.charge()>0 && recParticle.getProperty("ndf")>0) {
@@ -516,7 +534,12 @@ public class TBTmonitor extends AnalysisMonitor {
                             if(id==tbHits.getByte("trkID", j)) {
                                 int region = ((int) ((tbHits.getByte("superlayer", j)-1)/2))+1;
                                 double res = 10000*tbHits.getFloat("fitResidual", j);
+                                double B   = tbHits.getFloat("B", j);
+                                int    LR  = tbHits.getByte("LR", j);
                                 this.getDataGroup().getItem(5).getH1F("hi_res_neg_R" + region).fill(res);
+                                this.getDataGroup().getItem(5).getH2F("hi_res_LR" + region).fill(res, LR);
+                                this.getDataGroup().getItem(5).getH2F("hi_res_B" + region).fill(res, B);
+                                this.getDataGroup().getItem(5).getH2F("hi_res_phi" + region).fill(res, Math.toDegrees(recParticle.phi()));
                                 chi2 += res*res/300/300;
                                 ndf  +=1;                                
                             }

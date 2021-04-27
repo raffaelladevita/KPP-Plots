@@ -505,6 +505,12 @@ public class EBmonitor extends AnalysisMonitor {
 //                        if(recDeteEB.getShort("index", j)==index && recDeteEB.getByte("detector", j)==DetectorType.FTOF.getDetectorId() && recDeteEB.getByte("layer", j)==2) nTracksMatched++;
 //                    }
 //                }
+                if(recDeteEB!=null) {
+                    for(int j=0; j<recDeteEB.rows(); j++) {
+                        if(recDeteEB.getShort("pindex", j)==i) sector = recDeteEB.getByte("sector",j);
+                    }
+                }
+//                if(sector==1) continue;
                 Particle recParticle = null;
                 if(pid!=0) {
                     recParticle = new Particle(pid,px,py,pz,vx,vy,vz);

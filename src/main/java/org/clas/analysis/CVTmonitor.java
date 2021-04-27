@@ -268,7 +268,7 @@ public class CVTmonitor extends AnalysisMonitor {
         H2F hi_dp_phi_pos = new H2F("hi_dp_phi_pos","hi_dp_phi_pos",100, -180, 180, 100, -0.4, 0.4);
         hi_dp_phi_pos.setTitleX("#phi (deg)");
         hi_dp_phi_pos.setTitleY("#DeltaP/P ");
-        H2F hi_dp_z_pos = new H2F("hi_dp_z_pos","hi_dp_z_pos",100, -5, 5, 100, -0.4, 0.4);
+        H2F hi_dp_z_pos = new H2F("hi_dp_z_pos","hi_dp_z_pos",100, -10, 10, 100, -0.4, 0.4);
         hi_dp_z_pos.setTitleX("z (cm)");
         hi_dp_z_pos.setTitleY("#DeltaP/P ");
         H2F hi_dp_p_neg = new H2F("hi_dp_p_neg","hi_dp_p_neg",100, 0., 3., 100, -0.4, 0.4);
@@ -280,7 +280,7 @@ public class CVTmonitor extends AnalysisMonitor {
         H2F hi_dp_phi_neg = new H2F("hi_dp_phi_neg","hi_dp_phi_neg",100, -180, 180, 100, -0.4, 0.4);
         hi_dp_phi_neg.setTitleX("#phi (deg)");
         hi_dp_phi_neg.setTitleY("#DeltaP/P ");
-        H2F hi_dp_z_neg = new H2F("hi_dp_z_neg","hi_dp_z_neg",100, -5, 5, 100, -0.4, 0.4);
+        H2F hi_dp_z_neg = new H2F("hi_dp_z_neg","hi_dp_z_neg",100, -10, 10, 100, -0.4, 0.4);
         hi_dp_z_neg.setTitleX("z (cm)");
         hi_dp_z_neg.setTitleY("#DeltaP/P ");
         DataGroup mc2d = new DataGroup(4,2);
@@ -297,7 +297,7 @@ public class CVTmonitor extends AnalysisMonitor {
         H2F hi_vxy_pos = new H2F("hi_vxy_pos","hi_vxy_pos",100,-1.,1.,100,-1.,1);
         hi_vxy_pos.setTitleX("Vx (cm)");
         hi_vxy_pos.setTitleY("Vy (cm)");
-        H2F hi_vxy_neg = new H2F("hi_vxy_neg","hi_vxy_neg",100,-1.,1.,100,-1.,1);
+        H2F hi_vxy_neg = new H2F("hi_vxy_neg","hi_vxy_neg",100,-0.2,0.2,100,-0.2,0.2);
         hi_vxy_neg.setTitleX("Vx (cm)");
         hi_vxy_neg.setTitleY("Vy (cm)"); 
         H2F hi_vz_vs_theta_pos = new H2F("hi_vz_vs_theta_pos","hi_vz_vs_theta_pos",100, 30.,120.,100,-15.,15);
@@ -309,7 +309,7 @@ public class CVTmonitor extends AnalysisMonitor {
         H2F hi_vz_vs_phi_pos = new H2F("hi_vz_vs_phi_pos","hi_vz_vs_phi_pos",200,-15.,15.,200,-180,180);
         hi_vz_vs_phi_pos.setTitleX("Vz (cm)");
         hi_vz_vs_phi_pos.setTitleY("#phi (deg)");
-        H2F hi_vz_vs_phi_neg = new H2F("hi_vz_vs_phi_neg","hi_vz_vs_phi_neg",200,-15.,15.,200,-180,180);
+        H2F hi_vz_vs_phi_neg = new H2F("hi_vz_vs_phi_neg","hi_vz_vs_phi_neg",200,-5.,5.,200,-180,180);
         hi_vz_vs_phi_neg.setTitleX("Vz (cm)");
         hi_vz_vs_phi_neg.setTitleY("#phi (deg)");
         DataGroup vertex = new DataGroup(3,2);
@@ -489,9 +489,9 @@ public class CVTmonitor extends AnalysisMonitor {
         Particle partGenPos = null;
         Particle partRecNeg = null;
         Particle partRecPos = null;
-        if(event.hasBank("CVTRec::Tracks") && event.hasBank("CVTRec::Trajectory")){
+        if(event.hasBank("CVTRec::Tracks")){
             DataBank  bank = event.getBank("CVTRec::Tracks");
-            DataBank  traj = event.getBank("CVTRec::Trajectory");
+            DataBank  traj = null;
             int rows = bank.rows();
             for(int loop = 0; loop < rows; loop++){
             	
@@ -513,23 +513,30 @@ public class CVTmonitor extends AnalysisMonitor {
                 recParticle.setProperty("ndf", bank.getShort("ndf", loop));
                 double[] path = new double[10];
                 double trajZ = 0;
-                for(int j=0; j<traj.rows(); j++) {
-                    if(bank.getShort("ID",loop)==traj.getShort("id",j)) {
-                        int detector = traj.getByte("detector",j);
-                        int layer    = traj.getByte("layer",j);
-                        if(detector==DetectorType.CVT.getDetectorId() && layer>6) {
-                            path[-7+layer]= traj.getFloat("path", j);
-                        }
-                        else if(detector==DetectorType.CTOF.getDetectorId()) {
-                            path[5+layer]= traj.getFloat("path", j);
-                        }
-                        else if(detector==DetectorType.CND.getDetectorId()) {
-                            path[6+layer]= traj.getFloat("path", j);
-                            if(layer==3) trajZ = traj.getFloat("z", j);
+                double svtZ = 0;
+                if(event.hasBank("CVTRec::Trajectory")) {
+                    traj = event.getBank("CVTRec::Trajectory");
+                    for(int j=0; j<traj.rows(); j++) {
+                        if(bank.getShort("ID",loop)==traj.getShort("id",j)) {
+                            int detector = traj.getByte("detector",j);
+                            int layer    = traj.getByte("layer",j);
+                            if(detector==DetectorType.CVT.getDetectorId() && layer==1) {
+                                svtZ = traj.getFloat("z", j);
+                            }
+                            if(detector==DetectorType.CVT.getDetectorId() && layer>6) {
+                                path[-7+layer]= traj.getFloat("path", j);
+                            }
+                            else if(detector==DetectorType.CTOF.getDetectorId()) {
+                                path[5+layer]= traj.getFloat("path", j);
+                            }
+                            else if(detector==DetectorType.CND.getDetectorId()) {
+                                path[6+layer]= traj.getFloat("path", j);
+                                if(layer==3) trajZ = traj.getFloat("z", j);
+                            }
                         }
                     }
                 }
-                if(recParticle.charge()>0 && recParticle.getProperty("ndf")>=3 && recParticle.getProperty("pt")>0.2) {
+                if(recParticle.charge()>0 && recParticle.getProperty("ndf")>=-3 && recParticle.getProperty("pt")>0.2) {
                     this.getDataGroup().getItem(2).getH1F("hi_p_pos").fill(recParticle.p());
                     this.getDataGroup().getItem(2).getH1F("hi_theta_pos").fill((float) Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(2).getH1F("hi_phi_pos").fill(Math.toDegrees(recParticle.phi()));
@@ -548,7 +555,7 @@ public class CVTmonitor extends AnalysisMonitor {
                        for(int k=0; k<9; k++) this.getDataGroup().getItem(6).getH1F("hi_dpath_pos_traj").fill(path[k+1]-path[k]);
                     }
                 }
-                else if(recParticle.charge()<0 && recParticle.getProperty("ndf")>=3 && recParticle.getProperty("pt")>0.2){
+                else if(recParticle.charge()<0 && recParticle.getProperty("ndf")>=-3 && recParticle.getProperty("pt")>0.2){
                     this.getDataGroup().getItem(1).getH1F("hi_p_neg").fill(recParticle.p());
                     this.getDataGroup().getItem(1).getH1F("hi_theta_neg").fill(Math.toDegrees(recParticle.theta()));
                     this.getDataGroup().getItem(1).getH1F("hi_phi_neg").fill(Math.toDegrees(recParticle.phi()));
@@ -609,12 +616,25 @@ public class CVTmonitor extends AnalysisMonitor {
                                                   genBank.getFloat("vy", loop),
                                                   genBank.getFloat("vz", loop));
                     //
+                    double svtZ = 0;
+                    if(event.hasBank("CVTRec::Trajectory")) {
+                        DataBank traj = event.getBank("CVTRec::Trajectory");
+                        for(int j=0; j<traj.rows(); j++) {
+                            if(event.getBank("CVTRec::Tracks").getShort("ID",loop)==traj.getShort("id",j)) {
+                                int detector = traj.getByte("detector",j);
+                                int layer    = traj.getByte("layer",j);
+                                if(detector==DetectorType.CVT.getDetectorId() && layer==1) {
+                                    svtZ = traj.getFloat("z", j);
+                                }
+                            }
+                        }
+                    }
                     //if(genPart.pid()==11  && partGenNeg==null) partGenNeg=genPart;
                     //if(genPart.pid()!=211 && partGenPos==null) partGenPos=genPart;
 //                    partGenPos=genPart;
 //                    System.out.println(" --> q+ = "+partRecPos.charge()+" "+((partRecPos != null)) +" "+partRecPos.p() );
 //                    System.out.println(" --> q- = "+partRecNeg.charge()+" "+((partRecNeg != null)) );
-                    if(partRecNeg != null && genPart.charge()==-1 && partRecNeg.getProperty("ndf")>=3 && partRecNeg.getProperty("pt")>0.2) { 
+                    if(partRecNeg != null && genPart.charge()==-1 && partRecNeg.getProperty("ndf")>=-3 && partRecNeg.getProperty("pt")>0.2) { 
                         //System.out.println(" Filling negative track info ...");
                         this.getDataGroup().getItem(3).getH1F("hi_dp_neg").fill((partRecNeg.p()-genPart.p())/genPart.p());
                         this.getDataGroup().getItem(3).getH1F("hi_dtheta_neg").fill(Math.toDegrees(partRecNeg.theta()-genPart.theta()));
@@ -624,8 +644,9 @@ public class CVTmonitor extends AnalysisMonitor {
                         this.getDataGroup().getItem(4).getH2F("hi_dp_theta_neg").fill(Math.toDegrees(genPart.theta()),(partRecNeg.p()-genPart.p())/genPart.p());
                         this.getDataGroup().getItem(4).getH2F("hi_dp_phi_neg").fill(Math.toDegrees(genPart.phi()),(partRecNeg.p()-genPart.p())/genPart.p());
                         this.getDataGroup().getItem(4).getH2F("hi_dp_z_neg").fill(genPart.vz(),(partRecNeg.p()-genPart.p())/genPart.p());
+                        this.getDataGroup().getItem(4).getH2F("hi_dp_z_pos").fill(svtZ,(partRecNeg.p()-genPart.p())/genPart.p());
                     }
-                    if(partRecPos != null && genPart.charge()==1 && partRecPos.getProperty("ndf")>=3 && partRecPos.getProperty("pt")>0.2) { 
+                    if(partRecPos != null && genPart.charge()==1 && partRecPos.getProperty("ndf")>=-3 && partRecPos.getProperty("pt")>0.2) { 
                         //System.out.println(" Filling positive track info ...");
                         this.getDataGroup().getItem(3).getH1F("hi_dp_pos").fill((partRecPos.p()-genPart.p())/genPart.p());
                         this.getDataGroup().getItem(3).getH1F("hi_dtheta_pos").fill(Math.toDegrees(partRecPos.theta()-genPart.theta()));

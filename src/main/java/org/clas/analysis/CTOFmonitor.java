@@ -8,6 +8,7 @@ package org.clas.analysis;
 import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.base.DetectorType;
 import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.GraphErrors;
 import org.jlab.groot.data.H1F;
@@ -126,7 +127,7 @@ public class CTOFmonitor extends AnalysisMonitor {
         g_rf_pos_paddle.setTitleX("RF offset (ns)"); 
         g_rf_pos_paddle.setTitleY("Counter");
         for(int i=1; i<=nPaddle; i++) g_rf_pos_paddle.addPoint((double) i, 0, 0, 0);
-        H1F hi_rf_neg = new H1F("hi_rf_neg", "hi_rf_neg", 100, -this.rfPeriod/2, this.rfPeriod/2);  
+        H1F hi_rf_neg = new H1F("hi_rf_neg", "hi_rf_neg", 200, -this.rfPeriod/2, this.rfPeriod/2);  
         hi_rf_neg.setTitleX("Vertex Time (ns)");
         hi_rf_neg.setTitleY("Counts"); 
         F1D f1_rf_neg = new F1D("f1_rf_neg","[amp]*gaus(x,[mean],[sigma])+[p0]", -1.0, 1.0);
@@ -137,12 +138,21 @@ public class CTOFmonitor extends AnalysisMonitor {
         f1_rf_neg.setLineWidth(2);
         f1_rf_neg.setLineColor(2);
         f1_rf_neg.setOptStat("1111");
-        H1F hi_rf_pos = new H1F("hi_rf_pos", "hi_rf_pos", 100, -this.rfPeriod/2, this.rfPeriod/2);  
+        H1F hi_rf_pos = new H1F("hi_rf_pos", "hi_rf_pos", 200, -this.rfPeriod/2, this.rfPeriod/2);  
         hi_rf_pos.setTitleX("Vertex Time (ns)");
         hi_rf_pos.setTitleY("Counts"); 
+        F1D f1_rf_pos = new F1D("f1_rf_pos","[amp]*gaus(x,[mean],[sigma])+[p0]", -1.0, 1.0);
+        f1_rf_pos.setParameter(0, 0);
+        f1_rf_pos.setParameter(1, 0);
+        f1_rf_pos.setParameter(2, 0.08);
+        f1_rf_pos.setParameter(3, 0);
+        f1_rf_pos.setLineWidth(2);
+        f1_rf_pos.setLineColor(2);
+        f1_rf_pos.setOptStat("1111");
         dc_rf.addDataSet(hi_rf_pos_paddle, 0);
         dc_rf.addDataSet(hi_rf_neg_paddle, 1);
         dc_rf.addDataSet(hi_rf_pos,        2);
+        dc_rf.addDataSet(f1_rf_pos,        2);
         dc_rf.addDataSet(g_rf_neg_paddle,  3);
         dc_rf.addDataSet(g_rf_pos_paddle,  4);        
         dc_rf.addDataSet(hi_rf_neg,        5);
@@ -257,6 +267,7 @@ public class CTOFmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle"));
         this.getAnalysisCanvas().getCanvas("RF").cd(2);
         this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getH1F("hi_rf_pos"));
+        this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getF1D("f1_rf_pos"),"same");
         this.getAnalysisCanvas().getCanvas("RF").cd(3);
         this.getAnalysisCanvas().getCanvas("RF").getPad(3).getAxisY().setRange(0, 0.3);
         this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getGraph("g_rf_pos_paddle"));
@@ -336,6 +347,7 @@ public class CTOFmonitor extends AnalysisMonitor {
         DataBank recRun    = null;
         DataBank recBankEB = null;
         DataBank recDeteEB = null;
+        DataBank recTrackEB = null;
         DataBank recEvenEB = null;
         DataBank recRunRF  = null;
         DataBank recCtofHits = null;
@@ -346,6 +358,7 @@ public class CTOFmonitor extends AnalysisMonitor {
         if(event.hasBank("RUN::config"))            recRun      = event.getBank("RUN::config");
         if(event.hasBank("REC::Particle"))          recBankEB   = event.getBank("REC::Particle");
         if(event.hasBank("REC::Scintillator"))      recDeteEB   = event.getBank("REC::Scintillator");
+        if(event.hasBank("REC::Track"))             recTrackEB  = event.getBank("REC::Track");
         if(event.hasBank("REC::Event"))             recEvenEB   = event.getBank("REC::Event");
         if(event.hasBank("RUN::rf"))                recRunRF    = event.getBank("RUN::rf");
         if(event.hasBank("CTOF::hits"))             recCtofHits = event.getBank("CTOF::hits");
@@ -407,21 +420,26 @@ public class CTOFmonitor extends AnalysisMonitor {
                         double z0   = recHBTTrack.getFloat("z0",trk_id-1);
                         Particle recParticle = new Particle(211,pt*Math.cos(phi0),pt*Math.sin(phi0),Math.sqrt(p*p-pt*pt),0,0,z0);
                         double beta = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+recParticle.mass2());
-                        double trf = 0;
-//                        for(int k = 0; k < recRunRF.rows(); k++){
-//                            if(recRunRF.getInt("id", k)==1) trf = recRunRF.getFloat("time",k);
-//                        }
                         this.getDataGroup().getItem(3).getH1F("hi_z_hit").fill(z);
                         this.getDataGroup().getItem(3).getH1F("hi_z_track").fill(tz);
                         this.getDataGroup().getItem(3).getH2F("hi_rz_hit").fill(z,Math.sqrt(x*x+y*y));
                         this.getDataGroup().getItem(3).getH2F("hi_rz_track").fill(tz,Math.sqrt(tx*tx+ty*ty));
                         this.getDataGroup().getItem(3).getH2F("hi_z_hit_track").fill(z,tz);
                         this.getDataGroup().getItem(3).getH2F("hi_z_residual").fill(z-tz,paddle*1.);
-                        if(recEvenEB!=null && recBankEB!=null && recDeteEB!=null) {
+                        if(recEvenEB!=null && recBankEB!=null && recDeteEB!=null && recTrackEB!=null) {
                             double vt = -100;
+                            int pindex = -1;
+                            for(int i=0; i<recTrackEB.rows(); i++) {
+                                if(recTrackEB.getShort("index",i)==trk_id-1 && recTrackEB.getByte("detector",i)==DetectorType.CVT.getDetectorId()) {
+                                    vt=recBankEB.getFloat("vt", recTrackEB.getShort("pindex", i));
+                                    pindex=recTrackEB.getShort("pindex", i);
+                                    break;
+                                }                                                             
+                            }
                             for(int i=0; i<recDeteEB.rows(); i++) {
-                                if(recDeteEB.getShort("index",i)==loop) {
-                                    vt=recBankEB.getFloat("vt", recDeteEB.getShort("pindex", i));
+                                if(recDeteEB.getShort("pindex",i)==pindex && recDeteEB.getByte("detector",i)==DetectorType.CTOF.getDetectorId()) {
+                                    time=recDeteEB.getFloat("time", i);
+                                    path=recDeteEB.getFloat("path", i);
                                     break;
                                 }                               
                             }
@@ -511,6 +529,7 @@ public class CTOFmonitor extends AnalysisMonitor {
     public void analyze() {
         this.fitSlices(this.getDataGroup().getItem(4).getH2F("hi_rf_pos_paddle"), this.getDataGroup().getItem(4).getGraph("g_rf_pos_paddle"));
         this.fitSlices(this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle"), this.getDataGroup().getItem(4).getGraph("g_rf_neg_paddle"));
+        this.initParGauss(this.getDataGroup().getItem(4).getH1F("hi_rf_pos"), this.getDataGroup().getItem(4).getF1D("f1_rf_pos"));
         this.initParGauss(this.getDataGroup().getItem(4).getH1F("hi_rf_neg"), this.getDataGroup().getItem(4).getF1D("f1_rf_neg"));
     }
     
@@ -536,7 +555,7 @@ public class CTOFmonitor extends AnalysisMonitor {
         f1.setParameter(0, amp);
         f1.setParameter(1, mean);
         f1.setParameter(2, 0.1);
-        f1.setRange(mean-0.8*sigma, mean+0.8*sigma);
+        f1.setRange(mean-1.6*sigma, mean+1.6*sigma);
         DataFitter.fit(f1, histo, "Q"); //No options uses error for sigma 
     }
 }

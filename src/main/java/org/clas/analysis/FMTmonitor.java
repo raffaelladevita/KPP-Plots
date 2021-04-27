@@ -41,6 +41,7 @@ public class FMTmonitor extends AnalysisMonitor {
 //    double[] FVT_Alpha = {19, 79, 139, -161, -101, -41}; //Give the rotation angle to apply
     double[] FVT_Alpha = {157.5, 217.5, 277.5, 157.5, 217.5, 277.5}; //Give the rotation angle to apply
     double[] MY_Alpha = {67.5, 127.5, 187.5, 67.5, 127.5, 187.5}; //Give the rotation angle to apply
+//    double[] MY_Alpha = {157.5, 217.5, 277.5, 157.5, 217.5, 277.5}; //Give the rotation angle to apply
 
     int ntraj=0;
     int nfmt=0;

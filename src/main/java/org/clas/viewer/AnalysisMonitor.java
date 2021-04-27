@@ -208,7 +208,7 @@ public class AnalysisMonitor implements IDataEventListener {
             GStyle.getAxisAttributesX().setTitleFontName("Arial");
             GStyle.getAxisAttributesY().setTitleFontName("Arial");
             GStyle.getAxisAttributesZ().setTitleFontName("Arial");           
-//            GStyle.getH1FAttributes().setOptStat("1001111");
+            GStyle.getH1FAttributes().setOptStat("1001111");
         }
         else {
             GStyle.getAxisAttributesX().setTitleFontSize(24);

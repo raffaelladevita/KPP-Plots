@@ -8,6 +8,7 @@ package org.clas.analysis;
 import java.util.ArrayList;
 import org.clas.viewer.AnalysisMonitor;
 import org.jlab.clas.physics.Particle;
+import org.jlab.detector.base.DetectorType;
 import org.jlab.detector.calib.utils.ConstantsManager;
 import org.jlab.groot.data.GraphErrors;
 import org.jlab.groot.data.H1F;
@@ -113,11 +114,11 @@ public class CNDmonitor extends AnalysisMonitor {
         dc_residuals.addDataSet(hi_z_residual,  5);        
         this.getDataGroup().add(dc_residuals, 3);   
         // RF offsets
-        DataGroup dc_rf = new DataGroup(2,2);
-        H2F hi_rf_neg_paddle = new H2F("hi_rf_neg_paddle", "hi_rf_neg_paddle", nPaddle, 1, nPaddle+1., 100, -rfPeriod*1.0, rfPeriod*1.0);
+        DataGroup dc_rf = new DataGroup(3,2);
+        H2F hi_rf_neg_paddle = new H2F("hi_rf_neg_paddle", "hi_rf_neg_paddle", nPaddle, 1, nPaddle+1., 100, -this.rfPeriod/2, this.rfPeriod/2);  
         hi_rf_neg_paddle.setTitleX("Counter");
         hi_rf_neg_paddle.setTitleY("Vertex Time (ns)"); 
-        H2F hi_rf_pos_paddle = new H2F("hi_rf_pos_paddle", "hi_rf_pos_paddle", nPaddle, 1, nPaddle+1., 100, -rfPeriod*1.0, rfPeriod*1.0);
+        H2F hi_rf_pos_paddle = new H2F("hi_rf_pos_paddle", "hi_rf_pos_paddle", nPaddle, 1, nPaddle+1., 100, -this.rfPeriod/2, this.rfPeriod/2);  
         hi_rf_pos_paddle.setTitleX("Counter");
         hi_rf_pos_paddle.setTitleY("Vertex Time (ns)"); 
         GraphErrors g_rf_neg_paddle = new GraphErrors("g_rf_neg_paddle");
@@ -127,10 +128,36 @@ public class CNDmonitor extends AnalysisMonitor {
         g_rf_pos_paddle.setTitleX("RF offset (ns)"); 
         g_rf_pos_paddle.setTitleY("Counter");
         for(int i=1; i<=nPaddle; i++) g_rf_pos_paddle.addPoint((double) i, 0, 0, 0);
-        dc_rf.addDataSet(hi_rf_neg_paddle, 0);
-        dc_rf.addDataSet(hi_rf_pos_paddle, 1);
-        dc_rf.addDataSet(g_rf_neg_paddle,  2);
-        dc_rf.addDataSet(g_rf_pos_paddle,  3);        
+        H1F hi_rf_neg = new H1F("hi_rf_neg", "hi_rf_neg", 200, -this.rfPeriod/2, this.rfPeriod/2);  
+        hi_rf_neg.setTitleX("Vertex Time (ns)");
+        hi_rf_neg.setTitleY("Counts"); 
+        F1D f1_rf_neg = new F1D("f1_rf_neg","[amp]*gaus(x,[mean],[sigma])+[p0]", -1.0, 1.0);
+        f1_rf_neg.setParameter(0, 0);
+        f1_rf_neg.setParameter(1, 0);
+        f1_rf_neg.setParameter(2, 0.08);
+        f1_rf_neg.setParameter(3, 0);
+        f1_rf_neg.setLineWidth(2);
+        f1_rf_neg.setLineColor(2);
+        f1_rf_neg.setOptStat("1111");
+        H1F hi_rf_pos = new H1F("hi_rf_pos", "hi_rf_pos", 200, -this.rfPeriod/2, this.rfPeriod/2);  
+        hi_rf_pos.setTitleX("Vertex Time (ns)");
+        hi_rf_pos.setTitleY("Counts"); 
+        F1D f1_rf_pos = new F1D("f1_rf_pos","[amp]*gaus(x,[mean],[sigma])+[p0]", -1.0, 1.0);
+        f1_rf_pos.setParameter(0, 0);
+        f1_rf_pos.setParameter(1, 0);
+        f1_rf_pos.setParameter(2, 0.08);
+        f1_rf_pos.setParameter(3, 0);
+        f1_rf_pos.setLineWidth(2);
+        f1_rf_pos.setLineColor(2);
+        f1_rf_pos.setOptStat("1111");
+        dc_rf.addDataSet(hi_rf_pos_paddle, 0);
+        dc_rf.addDataSet(hi_rf_neg_paddle, 1);
+        dc_rf.addDataSet(hi_rf_pos,        2);
+        dc_rf.addDataSet(f1_rf_pos,        2);
+        dc_rf.addDataSet(g_rf_neg_paddle,  3);
+        dc_rf.addDataSet(g_rf_pos_paddle,  4);        
+        dc_rf.addDataSet(hi_rf_neg,        5);
+        dc_rf.addDataSet(f1_rf_neg,        5);
         this.getDataGroup().add(dc_rf, 4);   
         // beta
         DataGroup dc_beta = new DataGroup(2,2);
@@ -148,9 +175,17 @@ public class CNDmonitor extends AnalysisMonitor {
         H2F hi_beta_neg = new H2F("hi_beta_neg", "hi_beta_neg", 100, 0., 2., 100, 0., 1.4);  
         hi_beta_neg.setTitleX("p (GeV)"); 
         hi_beta_neg.setTitleY("#beta");
+        F1D cpion = new F1D("cpion","x/sqrt(x*x+0.1396*0.1396)", 0.2, 2.0);
+        F1D ckaon = new F1D("ckaon","x/sqrt(x*x+0.4935*0.4935)", 0.2, 2.0);
+        F1D cprot = new F1D("cprot","x/sqrt(x*x+0.9383*0.9383)", 0.2, 2.0);
+        F1D cdeut = new F1D("cdeut","x/sqrt(x*x+1.8756*1.8756)", 0.2, 2.0);
         dc_beta.addDataSet(hi_mass_pos,  0);
         dc_beta.addDataSet(hi_mass_neg,  1);
         dc_beta.addDataSet(hi_beta_pos,  2);
+        dc_beta.addDataSet(cpion,        2);
+        dc_beta.addDataSet(ckaon,        2);
+        dc_beta.addDataSet(cprot,        2);
+        dc_beta.addDataSet(cdeut,        2);  
         dc_beta.addDataSet(hi_beta_neg,  3);
         this.getDataGroup().add(dc_beta, 5);  
         // adc-tdc matching
@@ -190,7 +225,7 @@ public class CNDmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("ADC-TDC").divide(3,2);
         this.getAnalysisCanvas().getCanvas("ADC-TDC").setGridX(false);
         this.getAnalysisCanvas().getCanvas("ADC-TDC").setGridY(false);
-        this.getAnalysisCanvas().getCanvas("RF").divide(2, 2);
+        this.getAnalysisCanvas().getCanvas("RF").divide(3, 2);
         this.getAnalysisCanvas().getCanvas("RF").setGridX(false);
         this.getAnalysisCanvas().getCanvas("RF").setGridY(false);
         this.getAnalysisCanvas().getCanvas("Residuals").divide(3, 2);
@@ -232,11 +267,17 @@ public class CNDmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("RF").cd(1);
         this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle"));
         this.getAnalysisCanvas().getCanvas("RF").cd(2);
-        this.getAnalysisCanvas().getCanvas("RF").getPad(2).getAxisY().setRange(0, 0.3);
-        this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getGraph("g_rf_pos_paddle"));
+        this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getH1F("hi_rf_pos"));
+        this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getF1D("f1_rf_pos"),"same");
         this.getAnalysisCanvas().getCanvas("RF").cd(3);
         this.getAnalysisCanvas().getCanvas("RF").getPad(3).getAxisY().setRange(0, 0.3);
+        this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getGraph("g_rf_pos_paddle"));
+        this.getAnalysisCanvas().getCanvas("RF").cd(4);
+        this.getAnalysisCanvas().getCanvas("RF").getPad(4).getAxisY().setRange(0, 0.3);
         this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getGraph("g_rf_neg_paddle"));
+        this.getAnalysisCanvas().getCanvas("RF").cd(5);
+        this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getH1F("hi_rf_neg"));
+        this.getAnalysisCanvas().getCanvas("RF").draw(this.getDataGroup().getItem(4).getF1D("f1_rf_neg"),"same");
         this.getAnalysisCanvas().getCanvas("Residuals").cd(0);
         this.getAnalysisCanvas().getCanvas("Residuals").draw(this.getDataGroup().getItem(3).getH1F("hi_z_hit"));
         this.getAnalysisCanvas().getCanvas("Residuals").cd(1);
@@ -269,9 +310,14 @@ public class CNDmonitor extends AnalysisMonitor {
         this.getAnalysisCanvas().getCanvas("Beta and Mass").cd(2);
         this.getAnalysisCanvas().getCanvas("Beta and Mass").getPad(2).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getH2F("hi_beta_pos"));
+        this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getF1D("cpion"),"same");
+        this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getF1D("ckaon"),"same");
+        this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getF1D("cprot"),"same");
         this.getAnalysisCanvas().getCanvas("Beta and Mass").cd(3);
         this.getAnalysisCanvas().getCanvas("Beta and Mass").getPad(3).getAxisZ().setLog(true);
         this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getH2F("hi_beta_neg"));
+        this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getF1D("cpion"),"same");
+        this.getAnalysisCanvas().getCanvas("Beta and Mass").draw(this.getDataGroup().getItem(5).getF1D("ckaon"),"same");
 
         this.getAnalysisCanvas().getCanvas("MIPs").update();    
         this.getAnalysisCanvas().getCanvas("ADC-TDC").update();    
@@ -288,6 +334,7 @@ public class CNDmonitor extends AnalysisMonitor {
         DataBank recRun    = null;
         DataBank recBankEB = null;
         DataBank recDeteEB = null;
+        DataBank recTrackEB = null;
         DataBank recEvenEB = null;
         DataBank recRunRF  = null;
         DataBank recCndHits = null;
@@ -297,6 +344,7 @@ public class CNDmonitor extends AnalysisMonitor {
         if(event.hasBank("RUN::config"))            recRun      = event.getBank("RUN::config");
         if(event.hasBank("REC::Particle"))          recBankEB   = event.getBank("REC::Particle");
         if(event.hasBank("REC::Scintillator"))      recDeteEB   = event.getBank("REC::Scintillator");
+        if(event.hasBank("REC::Track"))             recTrackEB  = event.getBank("REC::Track");
         if(event.hasBank("REC::Event"))             recEvenEB   = event.getBank("REC::Event");
         if(event.hasBank("CND::hits"))              recCndHits = event.getBank("CND::hits");
         if(event.hasBank("CND::adc"))               cndADC     = event.getBank("CND::adc");
@@ -365,46 +413,62 @@ public class CNDmonitor extends AnalysisMonitor {
                     this.getDataGroup().getItem(2).getH2F("hi_en_paddle").fill(paddle*1.,energy);
                     this.getDataGroup().getItem(2).getH2F("hi_time_paddle").fill(paddle*1.,(tdc1-tdc2)*tdcConv);
                     if(trk_id!=-1 && energy>0) {
-                        int    q    = recHBTTrack.getInt("q",trk_id-1);
-                        double p    = recHBTTrack.getFloat("p",trk_id-1);
-                        double pt   = recHBTTrack.getFloat("pt",trk_id-1);
-                        double phi0 = recHBTTrack.getFloat("phi0",trk_id-1);
+                        int    q    = recHBTTrack.getInt("q",trk_id);
+                        double p    = recHBTTrack.getFloat("p",trk_id);
+                        double pt   = recHBTTrack.getFloat("pt",trk_id);
+                        double phi0 = recHBTTrack.getFloat("phi0",trk_id);
+                        Particle recParticle = new Particle(211,pt*Math.cos(phi0),pt*Math.sin(phi0),Math.sqrt(p*p-pt*pt),0,0,0);
+                        double beta = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+recParticle.mass2());
                         this.getDataGroup().getItem(3).getH1F("hi_z_hit").fill(z);
                         this.getDataGroup().getItem(3).getH1F("hi_z_track").fill(tz);
                         this.getDataGroup().getItem(3).getH2F("hi_rz_hit").fill(z,Math.sqrt(x*x+y*y));
                         this.getDataGroup().getItem(3).getH2F("hi_rz_track").fill(tz,Math.sqrt(tx*tx+ty*ty));
                         this.getDataGroup().getItem(3).getH2F("hi_z_hit_track").fill(z,tz);
                         this.getDataGroup().getItem(3).getH2F("hi_z_residual").fill(z-tz,paddle*1.);
-                        double dt      = -100;
-                        double betaTof = -100;
-                        double mass2   = -100;                                
-                        Particle recParticle = new Particle(211,pt*Math.cos(phi0),pt*Math.sin(phi0),Math.sqrt(p*p-pt*pt),0,0,0);
-                        double beta = recParticle.p()/Math.sqrt(recParticle.p()*recParticle.p()+recParticle.mass2());
-                        if(recEvenEB!=null) {
-                            double startTime = recEvenEB.getFloat("startTime", 0);
-                            double trf       = recEvenEB.getFloat("RFTime", 0);
-//                            dt = (time - path/(beta*29.97) - trf + 120.5*rfPeriod)%rfPeriod-rfPeriod/2.0;
-                            if(startTime>-100 /*&& recBankEB.getInt("pid", 0)==11*/) {
-                                dt = time - path/(beta*29.97) - startTime;
-                                betaTof = path/(time-startTime)/29.97;
-                                mass2   = Math.pow(recParticle.p()/betaTof, 2)-recParticle.p()*recParticle.p();
+                        if(recEvenEB!=null && recBankEB!=null && recDeteEB!=null && recTrackEB!=null) {
+                            double vt = -100;
+                            int pindex = -1;
+                            for(int i=0; i<recTrackEB.rows(); i++) {
+                                if(recTrackEB.getShort("index",i)==trk_id && recTrackEB.getByte("detector",i)==DetectorType.CVT.getDetectorId()) {
+                                    vt=recBankEB.getFloat("vt", recTrackEB.getShort("pindex", i));
+                                    pindex=recTrackEB.getShort("pindex", i);
+                                    break;
+                                }                               
                             }
-                        }
-                        if(q==1)  {
-                            this.getDataGroup().getItem(1).getH1F("hi_pos_en").fill(energy/dx);
-                            this.getDataGroup().getItem(1).getH2F("hi_pos_en_p").fill(recParticle.p(),energy/dx);
-                            this.getDataGroup().getItem(1).getH2F("hi_pos_en_paddle").fill(paddle*1.,energy/dx);
-                            if(recParticle.p()>0.1 && dt!=-100) this.getDataGroup().getItem(4).getH2F("hi_rf_pos_paddle").fill(paddle*1.,dt);
-                            this.getDataGroup().getItem(5).getH2F("hi_beta_pos").fill(recParticle.p(),betaTof);
-                            this.getDataGroup().getItem(5).getH1F("hi_mass_pos").fill(mass2);
-                        }
-                        if(q==-1) {
-                            this.getDataGroup().getItem(1).getH1F("hi_neg_en").fill(energy/dx);
-                            this.getDataGroup().getItem(1).getH2F("hi_neg_en_p").fill(recParticle.p(),energy/dx);
-                            this.getDataGroup().getItem(1).getH2F("hi_neg_en_paddle").fill(paddle*1.,energy/dx);
-                            if(recParticle.p()>0.1 && dt!=-100) this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle").fill(paddle*1.,dt);
-                            this.getDataGroup().getItem(5).getH2F("hi_beta_neg").fill(recParticle.p(),betaTof);
-                            this.getDataGroup().getItem(5).getH1F("hi_mass_neg").fill(mass2);
+                            for(int i=0; i<recDeteEB.rows(); i++) {
+                                if(recDeteEB.getShort("pindex",i)==pindex && recDeteEB.getByte("detector",i)==DetectorType.CND.getDetectorId()) {
+                                    time=recDeteEB.getFloat("time", i);
+                                    path=recDeteEB.getFloat("path", i);
+                                    break;
+                                }                               
+                            }
+                            if(vt>-100 && recBankEB.getInt("pid", 0)==11) {
+                                double dt = time - path/(beta*29.97) - vt;
+                                double betaTof = path/(time-vt)/29.97;
+                                double mass2   = Math.pow(recParticle.p()/betaTof, 2)-recParticle.p()*recParticle.p();
+                                if(q==1)  {
+                                    this.getDataGroup().getItem(1).getH1F("hi_pos_en").fill(energy/dx);
+                                    this.getDataGroup().getItem(1).getH2F("hi_pos_en_p").fill(recParticle.p(),energy/dx);
+                                    this.getDataGroup().getItem(1).getH2F("hi_pos_en_paddle").fill(paddle*1.,energy/dx);
+                                    if(recParticle.p()>0.4) {
+                                        this.getDataGroup().getItem(4).getH2F("hi_rf_pos_paddle").fill(paddle*1.,dt);
+                                        this.getDataGroup().getItem(4).getH1F("hi_rf_pos").fill(dt);
+                                    }
+                                    this.getDataGroup().getItem(5).getH2F("hi_beta_pos").fill(recParticle.p(),betaTof);
+                                    this.getDataGroup().getItem(5).getH1F("hi_mass_pos").fill(mass2);
+                                }
+                                if(q==-1) {
+                                    this.getDataGroup().getItem(1).getH1F("hi_neg_en").fill(energy/dx);
+                                    this.getDataGroup().getItem(1).getH2F("hi_neg_en_p").fill(recParticle.p(),energy/dx);
+                                    this.getDataGroup().getItem(1).getH2F("hi_neg_en_paddle").fill(paddle*1.,energy/dx);
+                                    if(recParticle.p()>0.4) {
+                                        this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle").fill(paddle*1.,dt);
+                                        this.getDataGroup().getItem(4).getH1F("hi_rf_neg").fill(dt);
+                                    }
+                                    this.getDataGroup().getItem(5).getH2F("hi_beta_neg").fill(recParticle.p(),betaTof);
+                                    this.getDataGroup().getItem(5).getH1F("hi_mass_neg").fill(mass2);
+                                }
+                            }
                         }
                     }
                 }
@@ -425,65 +489,35 @@ public class CNDmonitor extends AnalysisMonitor {
     
     @Override
     public void analyze() {
-//        for(int layer=1; layer <= 1; layer++) {
-//            H2F         h2    = this.getDataGroup().getItem(3).getH2F("hi_z_residual");
-//            ArrayList<H1F> hslice = h2.getSlicesY();
-//            for(int i=0; i<hslice.size(); i++) {
-//                double  x = h2.getYAxis().getBinCenter(i);
-//                double mean  = hslice.get(i).getDataX(hslice.get(i).getMaximumBin());
-//                System.out.println(x + " " + mean);
-//            }
-//        }
-        for(int layer=1; layer <= 1; layer++) {
-            H2F         h2    = this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle");
-            GraphErrors meanX = this.getDataGroup().getItem(4).getGraph("g_rf_neg_paddle");
-            meanX.reset();
-            ArrayList<H1F> hslice = h2.getSlicesX();
-            for(int i=0; i<hslice.size(); i++) {
-                double  x = h2.getXAxis().getBinCenter(i);
-                double ex = 0;
-                double  y = hslice.get(i).getRMS();
-                double ey = 0;
-                double mean  = hslice.get(i).getDataX(hslice.get(i).getMaximumBin());
-                double amp   = hslice.get(i).getBinContent(hslice.get(i).getMaximumBin());
-                double sigma = hslice.get(i).getRMS();
-                F1D f1 = new F1D("f1_dvz_neg","[amp]*gaus(x,[mean],[sigma])+[p0]", -1.0, 1.0);
-                f1.setParameter(0, amp);
-                f1.setParameter(1, mean);
-                f1.setParameter(2, 0.1);
-                f1.setParameter(3, 0);
-                DataFitter.fit(f1, hslice.get(i), "Q"); //No options uses error for sigma 
-                if(amp>50) meanX.addPoint(x, f1.getParameter(2), ex, f1.parameter(2).error());
-            }
-//            this.getAnalysisCanvas().getCanvas("RF negative").cd(layer+2);
-//            this.getAnalysisCanvas().getCanvas("RF negative").draw(meanY);
-//            this.getAnalysisCanvas().getCanvas("RF negative").update();
+        this.fitSlices(this.getDataGroup().getItem(4).getH2F("hi_rf_pos_paddle"), this.getDataGroup().getItem(4).getGraph("g_rf_pos_paddle"));
+        this.fitSlices(this.getDataGroup().getItem(4).getH2F("hi_rf_neg_paddle"), this.getDataGroup().getItem(4).getGraph("g_rf_neg_paddle"));
+        this.initParGauss(this.getDataGroup().getItem(4).getH1F("hi_rf_pos"), this.getDataGroup().getItem(4).getF1D("f1_rf_pos"));
+        this.initParGauss(this.getDataGroup().getItem(4).getH1F("hi_rf_neg"), this.getDataGroup().getItem(4).getF1D("f1_rf_neg"));
+    }
+
+    public void fitSlices(H2F histo, GraphErrors graph) {
+        graph.reset();
+        ArrayList<H1F> hslice = histo.getSlicesX();
+        for(int i=0; i<hslice.size(); i++) {
+            double  x = histo.getXAxis().getBinCenter(i);
+            double ex = 0;
+            double  y = hslice.get(i).getRMS();
+            double ey = 0;
+            F1D f1 = new F1D("f1","[amp]*gaus(x,[mean],[sigma])", -1.0, 1.0);
+            this.initParGauss(hslice.get(i), f1);
+            if(f1.getParameter(0)>50) graph.addPoint(x, f1.getParameter(2), ex, f1.parameter(2).error());
+            else                      graph.addPoint(x, 0, ex, 0);
         }
-        for(int layer=1; layer <= 1; layer++) {
-            H2F         h2    = this.getDataGroup().getItem(4).getH2F("hi_rf_pos_paddle");
-            GraphErrors meanX = this.getDataGroup().getItem(4).getGraph("g_rf_pos_paddle");
-            meanX.reset();
-            ArrayList<H1F> hslice = h2.getSlicesX();
-            for(int i=0; i<hslice.size(); i++) {
-                double  x = h2.getXAxis().getBinCenter(i);
-                double ex = 0;
-                double  y = hslice.get(i).getRMS();
-                double ey = 0;
-                double mean  = hslice.get(i).getDataX(hslice.get(i).getMaximumBin());
-                double amp   = hslice.get(i).getBinContent(hslice.get(i).getMaximumBin());
-                double sigma = hslice.get(i).getRMS();
-                F1D f1 = new F1D("f1_dvz_neg","[amp]*gaus(x,[mean],[sigma])+[p0]", -1.0, 1.0);
-                f1.setParameter(0, amp);
-                f1.setParameter(1, mean);
-                f1.setParameter(2, 0.1);
-                f1.setParameter(3, 0);
-                DataFitter.fit(f1, hslice.get(i), "Q"); //No options uses error for sigma 
-                if(amp>50) meanX.addPoint(x, f1.getParameter(2), ex, f1.parameter(2).error());
-            }
-//            this.getAnalysisCanvas().getCanvas("RF positive").cd(layer+2);
-//            this.getAnalysisCanvas().getCanvas("RF positive").draw(meanX);
-//            this.getAnalysisCanvas().getCanvas("RF positive").update();
-        
-        }
+    }
+    
+    public void initParGauss(H1F histo, F1D f1) {
+        double mean  = histo.getDataX(histo.getMaximumBin());
+        double amp   = histo.getBinContent(histo.getMaximumBin());
+        double sigma = histo.getRMS();
+        f1.setParameter(0, amp);
+        f1.setParameter(1, mean);
+        f1.setParameter(2, 0.1);
+        f1.setRange(mean-1.6*sigma, mean+1.6*sigma);
+        DataFitter.fit(f1, histo, "Q"); //No options uses error for sigma 
     }
 }

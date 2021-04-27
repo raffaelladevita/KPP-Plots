@@ -68,16 +68,23 @@ public class FTmonitor extends AnalysisMonitor {
             H2F hi_hodo_ematch_2D = new H2F("hi_hodo_ematch_2D_l"+layer,  "hi_hodo_ematch_2D_l"+layer, 100, 0, 10 , 118, 0, 118); 
             hi_hodo_ematch_2D.setTitleX("E (MeV)"); 
             hi_hodo_ematch_2D.setTitleY("Tile");
-            H1F hi_hodo_tmatch = new H1F("hi_hodo_tmatch_l"+layer,  "T-T_start (ns)", "Counts", 200, -50, 50); 
+            H1F hi_hodo_tmatch = new H1F("hi_hodo_tmatch_l"+layer,  "T-T_start (ns)", "Counts", 200, -20, 20); 
             hi_hodo_tmatch.setFillColor(3);
-            H2F hi_hodo_tmatch_2D = new H2F("hi_hodo_tmatch_2D_l"+layer,  "hi_hodo_tmatch_2DD_l"+layer, 100, -50, 50, 118, 0, 118); 
-            hi_hodo_tmatch_2D.setTitleX("E (MeV)"); 
+            F1D ftime_hodo = new F1D("ftime_hodo_"+layer, "[amp]*gaus(x,[mean],[sigma])", -3., 3.);
+            ftime_hodo.setParameter(0, 0.0);
+            ftime_hodo.setParameter(1, 0.0);
+            ftime_hodo.setParameter(2, 2.0);
+            ftime_hodo.setLineWidth(2);
+            ftime_hodo.setOptStat("1111");
+            H2F hi_hodo_tmatch_2D = new H2F("hi_hodo_tmatch_2D_l"+layer,  "hi_hodo_tmatch_2DD_l"+layer, 100, -20, 20, 118, 0, 118); 
+            hi_hodo_tmatch_2D.setTitleX("#DeltaT (ns)"); 
             hi_hodo_tmatch_2D.setTitleY("Tile");
             dc_hodo.addDataSet(hi_hodo_eall,      0+4*(layer-1));
             dc_hodo.addDataSet(hi_hodo_ematch,    0+4*(layer-1));
             dc_hodo.addDataSet(f_charge_landau,   0+4*(layer-1));
             dc_hodo.addDataSet(hi_hodo_ematch_2D, 1+4*(layer-1));
             dc_hodo.addDataSet(hi_hodo_tmatch,    2+4*(layer-1));
+            dc_hodo.addDataSet(ftime_hodo,        2+4*(layer-1));
             dc_hodo.addDataSet(hi_hodo_tmatch_2D, 3+4*(layer-1));
         }
         this.getDataGroup().add(dc_hodo, 0);
@@ -182,7 +189,7 @@ public class FTmonitor extends AnalysisMonitor {
         hpi0sum.setTitleY("Counts");
         hpi0sum.setTitle("2#gamma invariant mass");
         hpi0sum.setFillColor(3);
-        F1D fpi0 = new F1D("fpi0", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x", 80.,200.);
+        F1D fpi0 = new F1D("fpi0", "[amp]*gaus(x,[mean],[sigma])+[p0]+[p1]*x", 115.,160.);
         fpi0.setParameter(0, 0.0);
         fpi0.setParameter(1, 140.0);
         fpi0.setParameter(2, 2.0);
@@ -321,6 +328,7 @@ public class FTmonitor extends AnalysisMonitor {
             this.getAnalysisCanvas().getCanvas("Hodoscope time").cd(0+2*(layer-1));
 //        this.getAnalysisCanvas().getCanvas("Beta").getPad(0).getAxisZ().setLog(true);
             this.getAnalysisCanvas().getCanvas("Hodoscope time").draw(this.getDataGroup().getItem(0).getH1F("hi_hodo_tmatch_l"+layer));
+            this.getAnalysisCanvas().getCanvas("Hodoscope time").draw(this.getDataGroup().getItem(0).getF1D("ftime_hodo_"+layer),"same");
             this.getAnalysisCanvas().getCanvas("Hodoscope time").cd(1+2*(layer-1));
             this.getAnalysisCanvas().getCanvas("Hodoscope time").getPad(1+2*(layer-1)).getAxisZ().setLog(true);
             this.getAnalysisCanvas().getCanvas("Hodoscope time").draw(this.getDataGroup().getItem(0).getH2F("hi_hodo_tmatch_2D_l"+layer));
@@ -447,7 +455,7 @@ public class FTmonitor extends AnalysisMonitor {
             this.resetEventListener();
         }
         double ebeamRCDB = 0;
-        if(run>1000) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
+        if(run>4000) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
         if(ebeamRCDB == 0) {
             ebeamRCDB = 10.6;
         }
@@ -472,8 +480,20 @@ public class FTmonitor extends AnalysisMonitor {
             rfTime    = recEvenEB.getFloat("RFTime", 0);
         }
         // get trigger particle
-        int trigger=0;
-        if(recBankEB!=null) trigger = recBankEB.getInt("pid", 0);
+        int    trigger=0;
+        double vertex =-99;
+        if(recBankEB!=null) {
+            trigger = recBankEB.getInt("pid", 0);
+            for(int i=0; i<recBankEB.rows(); i++) {
+                int charge = recBankEB.getByte("charge", i);
+                int status = recBankEB.getShort("status", i);
+                status = (int) Math.abs(status/1000);
+                if(status==2 && charge!=0) {
+                    vertex = recBankEB.getFloat("vz", i);
+                    break;
+                }
+            }
+        }
      
         if (ftParticles != null && ftCalClusters!=null) {
             Particle p1 = null;
@@ -642,7 +662,7 @@ public class FTmonitor extends AnalysisMonitor {
                                     break;
                                 }
                             }
-                            if(startTime > -100 && charge==1) {
+                            if(startTime > -100 && charge==1 && trigger==11) {
                                 this.getDataGroup().getItem(0).getH1F("hi_hodo_tmatch_l"+hodoL).fill(hodoHitT-path/29.97-startTime);
                                 this.getDataGroup().getItem(0).getH2F("hi_hodo_tmatch_2D_l"+hodoL).fill(hodoHitT-path/29.97-startTime,tile); 
                             }
@@ -763,37 +783,42 @@ public class FTmonitor extends AnalysisMonitor {
             this.initLandauFitPar(h1, f1);
             DataFitter.fit(f1,h1,"LRQ");
             h1.setFunction(null); 
+            H1F htime = this.getDataGroup().getItem(0).getH1F("hi_hodo_tmatch_l"+layer);
+            F1D ftime = this.getDataGroup().getItem(0).getF1D("ftime_hodo_"+layer);
+            this.initTimeGaussFitPar(ftime,htime,0.5);
+            DataFitter.fit(ftime,htime,"LQ");
+            htime.setFunction(null);
         }
         // fit calorimeter time
         H1F htime = this.getDataGroup().getItem(1).getH1F("hi_cal_time_cut_ch");
         F1D ftime = this.getDataGroup().getItem(1).getF1D("ftime_ch_cut");
-        this.initTimeGaussFitPar(ftime,htime);
+        this.initTimeGaussFitPar(ftime,htime,1);
         DataFitter.fit(ftime,htime,"LQ");
         htime.setFunction(null);
         htime = this.getDataGroup().getItem(1).getH1F("hi_cal_time_cut_neu");
         ftime = this.getDataGroup().getItem(1).getF1D("ftime_neu_cut");
-        this.initTimeGaussFitPar(ftime,htime);
+        this.initTimeGaussFitPar(ftime,htime,1);
         DataFitter.fit(ftime,htime,"LQ");
         htime.setFunction(null);
         htime = this.getDataGroup().getItem(1).getH1F("hi_cal_time_neu");
         ftime = this.getDataGroup().getItem(1).getF1D("ftime_neu");
-        this.initTimeGaussFitPar(ftime,htime);
+        this.initTimeGaussFitPar(ftime,htime,1);
         DataFitter.fit(ftime,htime,"LQ");
         htime.setFunction(null);
         htime = this.getDataGroup().getItem(1).getH1F("hi_cal_time_ch");
         ftime = this.getDataGroup().getItem(1).getF1D("ftime_ch");
-        this.initTimeGaussFitPar(ftime,htime);
+        this.initTimeGaussFitPar(ftime,htime,1);
         DataFitter.fit(ftime,htime,"LQ");
         htime.setFunction(null);
         htime = this.getDataGroup().getItem(3).getH1F("hi_dtime_cal");
         ftime = this.getDataGroup().getItem(3).getF1D("ftime_cal");
-        this.initTimeGaussFitPar(ftime,htime);
+        this.initTimeGaussFitPar(ftime,htime,1);
         DataFitter.fit(ftime,htime,"LQ");
         htime.setFunction(null);
         htime.setFunction(null);
         htime = this.getDataGroup().getItem(3).getH1F("hi_dtime_calhodo");
         ftime = this.getDataGroup().getItem(3).getF1D("ftime_calhodo");
-        this.initTimeGaussFitPar(ftime,htime);
+        this.initTimeGaussFitPar(ftime,htime,1.6);
         DataFitter.fit(ftime,htime,"LQ");
         htime.setFunction(null);
         // fit pi0 mass
@@ -827,12 +852,12 @@ public class FTmonitor extends AnalysisMonitor {
 //        fcharge.setParLimits(4,  0.0, 3.0); //Changed from -10-0
     }
 
-    private void initTimeGaussFitPar(F1D ftime, H1F htime) {
+    private void initTimeGaussFitPar(F1D ftime, H1F htime, double range) {
         double hAmp  = htime.getBinContent(htime.getMaximumBin());
         double hMean = htime.getAxis().getBinCenter(htime.getMaximumBin());
         double hRMS  = htime.getRMS(); //ns
-        double rangeMin = (hMean - (1*hRMS)); 
-        double rangeMax = (hMean + (1*hRMS));  
+        double rangeMin = (hMean - (range*hRMS)); 
+        double rangeMax = (hMean + (range*hRMS));  
         double pm = hRMS*3;
         ftime.setRange(rangeMin, rangeMax);
         ftime.setParameter(0, hAmp);

@@ -265,9 +265,12 @@ public class ELASTICmonitor extends AnalysisMonitor {
         }
         if(run == 0) return;
         double ebeamRCDB = 10.6;
-        if(run!=11 && run!=10) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
+        if(run>4000) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
         if(ebeamRCDB == 0) {
             ebeamRCDB = 10.6;
+        }
+        if(run == 2391) {
+            ebeamRCDB = 2.2219;
         }
         if(ebeamRCDB!=ebeam) {
             ebeam=ebeamRCDB;
@@ -375,9 +378,9 @@ public class ELASTICmonitor extends AnalysisMonitor {
     
     public void fitW(H1F hiw,F1D f1w) {
 
-        // get histogram maximum in the rane 0.8-1.2
-        int i1=hiw.getXaxis().getBin(0.8);
-        int i2=hiw.getXaxis().getBin(1.25);
+        // get histogram maximum in the rane 0.7-1.1
+        int i1=hiw.getXaxis().getBin(0.7);
+        int i2=hiw.getXaxis().getBin(1.1);
         double hiMax=0;
         int    imax=i1;
         for(int i=i1; i<=i2; i++) {

@@ -223,7 +223,7 @@ public class KINEmonitor extends AnalysisMonitor {
         IndexedTable rfConfig = this.getCcdb().getConstants(run, "/calibration/eb/rf/config");
         double rfPeriod = rfConfig.getDoubleValue("clock", 1,1,1);
         double ebeamRCDB = 10.6;
-        if(run!=11 && run!=10) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
+        if(run>4000) ebeamRCDB = (double) this.getCcdb().getRcdbConstant(run, "beam_energy").getValue()/1000.;
         if(ebeamRCDB == 0) {
             ebeamRCDB = 10.6;
         }

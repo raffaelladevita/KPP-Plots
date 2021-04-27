@@ -403,7 +403,7 @@ public class FTOFmonitor extends AnalysisMonitor {
                 double ty     = recFtofHits.getFloat("ty", loop);
                 double tz     = recFtofHits.getFloat("tz", loop);
                 double dx     = recFtofHits.getFloat("pathLengthThruBar", loop);
-        	int adcId1    = recFtofHits.getShort("adc_idx1", loop);
+        	       int adcId1    = recFtofHits.getShort("adc_idx1", loop);
                 int adcId2    = recFtofHits.getShort("adc_idx2", loop);
                 int tdcId1    = recFtofHits.getShort("tdc_idx1", loop);
                 int tdcId2    = recFtofHits.getShort("tdc_idx2", loop);
