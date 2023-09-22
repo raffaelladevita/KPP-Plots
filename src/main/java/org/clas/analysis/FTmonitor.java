@@ -507,6 +507,7 @@ public class FTmonitor extends AnalysisMonitor {
                 double     cx = ftParticles.getFloat("cx", loop);
                 double     cy = ftParticles.getFloat("cy", loop);
                 double     cz = ftParticles.getFloat("cz", loop);
+                double     vz = ftParticles.getFloat("vz", loop);
                 int     calID = ftParticles.getShort("calID", loop);
                 int    hodoID = ftParticles.getShort("hodoID", loop);
                 
@@ -527,7 +528,7 @@ public class FTmonitor extends AnalysisMonitor {
                         xClus    = ftCalClusters.getFloat("x", i);
                         yClus    = ftCalClusters.getFloat("y", i);
                         zClus    = ftCalClusters.getFloat("z", i);
-                        double path     = Math.sqrt(xClus*xClus+yClus*yClus+zClus*zClus);
+                        double path     = Math.sqrt(xClus*xClus+yClus*yClus+(zClus-vz)*(zClus-vz));
                         radius   = ftCalClusters.getFloat("radius", i);
                         time     = ftCalClusters.getFloat("time", i)-path/29.97;
 		    }
@@ -539,7 +540,7 @@ public class FTmonitor extends AnalysisMonitor {
                             double y = ftHodoClusters.getFloat("y", i);
                             double z = ftHodoClusters.getFloat("z", i);
                             sizeH    = ftHodoClusters.getShort("size",i);
-                            double path     = Math.sqrt(x*x+y*y+z*z);
+                            double path     = Math.sqrt(x*x+y*y+(z-vz)*(z-vz));
                             timeH    = ftHodoClusters.getFloat("time", i)-path/29.97;
                         }
                     }  
@@ -647,7 +648,6 @@ public class FTmonitor extends AnalysisMonitor {
                     double hodoHitX = ftHodoHits.getFloat("x",i);
                     double hodoHitY = ftHodoHits.getFloat("y",i);
                     double hodoHitZ = ftHodoHits.getFloat("z",i);
-                    double path = Math.sqrt(hodoHitX*hodoHitX+hodoHitY*hodoHitY+hodoHitZ*hodoHitZ);
                     int   clusterId = ftHodoHits.getShort("clusterID",i);
                     this.getDataGroup().getItem(0).getH1F("hi_hodo_eall_l"+hodoL).fill(hodoHitE);
 //                    this.getDataGroup().getItem(0).getH2F("hi_hodo_eall_2D_l"+hodoL).fill(hodoHitE,tile);
@@ -656,13 +656,16 @@ public class FTmonitor extends AnalysisMonitor {
                             this.getDataGroup().getItem(0).getH1F("hi_hodo_ematch_l"+hodoL).fill(hodoHitE);
                             this.getDataGroup().getItem(0).getH2F("hi_hodo_ematch_2D_l"+hodoL).fill(hodoHitE,tile);
                             int charge = 0;
+                            double vz = 0;
                             for(int k=0; k<ftParticles.rows(); k++) {
                                 if(ftParticles.getShort("hodoID",k)==clusterId) {
                                     charge=1;
+                                    vz = ftParticles.getFloat("vz", k);
                                     break;
                                 }
                             }
                             if(startTime > -100 && charge==1 && trigger==11) {
+                                double path = Math.sqrt(hodoHitX*hodoHitX+hodoHitY*hodoHitY+(hodoHitZ-vz)*(hodoHitZ-vz));
                                 this.getDataGroup().getItem(0).getH1F("hi_hodo_tmatch_l"+hodoL).fill(hodoHitT-path/29.97-startTime);
                                 this.getDataGroup().getItem(0).getH2F("hi_hodo_tmatch_2D_l"+hodoL).fill(hodoHitT-path/29.97-startTime,tile); 
                             }
@@ -720,7 +723,7 @@ public class FTmonitor extends AnalysisMonitor {
                         double size   = recTagger.getShort("size", i);
                         double energy = recTagger.getFloat("energy", i);
                         double time = recTagger.getFloat("time", i);
-                        double path = Math.sqrt(x*x+y*y+z*z);
+                        double path = Math.sqrt(x*x+y*y+(z-electronFT.vz())*(z-electronFT.vz()));
                         double theta = Math.toDegrees(electronFT.theta());
                         double dt = time-path/PhysicsConstants.speedOfLight()-piminus.getProperty("vt");//startTimeFT;  
                         if(energy>0.5 && size > 3 && theta>2.5 && theta<4.5) this.getDataGroup().getItem(3).getH1F("hi_dtime_cal").fill(dt);
